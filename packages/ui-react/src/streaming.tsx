@@ -56,6 +56,15 @@ export function PopolaStreamingText(props: {
   const streaming = props.streaming ?? false
   const { words, shown } = useStreamingWords(props.text, streaming)
 
+  // Nothing has been revealed yet — the dots hold the place until the first word.
+  if (streaming && shown === 0) {
+    return (
+      <div className={cn(popolaClass.streamText, props.className)}>
+        <PopolaTypingIndicator />
+      </div>
+    )
+  }
+
   return (
     <div className={cn(popolaClass.streamText, props.className)}>
       {words.slice(0, shown).map((word, index) => (

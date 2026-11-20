@@ -13,11 +13,14 @@ import type { PopolaSlots } from "./context.js"
 export function PopolaConversation(props: { slots?: PopolaSlots; className?: string }) {
   const messages = usePopolaState(selectMessages)
   const busy = usePopolaState(selectIsBusy)
+  const last = messages[messages.length - 1]
+  // The assistant message is not in the list yet, so the card cannot host the dots.
+  const awaitingAssistant = busy && (last === undefined || last.role !== "assistant")
 
   return (
     <div className={cn(popolaClass.conversation, props.className)}>
       <div className={popolaClass.conversationScroll}>
-        {messages.length === 0 ? (
+        {messages.length === 0 && !awaitingAssistant ? (
           <Slot
             name="conversation.empty"
             slotProps={{}}
@@ -30,14 +33,20 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
               key={message.id}
               message={message}
               slots={props.slots}
-              // Only the last message can still be arriving.
-              streaming={busy && index === messages.length - 1}
+              // Only the assistant message still being written can stream.
+              streaming={busy && message.role === "assistant" && index === messages.length - 1}
             />
           ))
         )}
+        {awaitingAssistant ? <PendingReply /> : null}
       </div>
     </div>
   )
+}
+
+/** Shown after the user message, before the assistant message exists. */
+function PendingReply() {
+  return <PopolaCard message={{ id: "pending", role: "assistant", parts: [] }} streaming />
 }
 
 function MessageRow(props: { message: Message; slots?: PopolaSlots; streaming?: boolean }) {

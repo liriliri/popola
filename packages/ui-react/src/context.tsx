@@ -5,8 +5,6 @@ import { createStore, type Attachment, type PermissionDecision, type PopolaStore
  * A slot implementation. The props it receives are fixed by `SlotProps` in
  * `popola-ui`, so a host can write one without reading the renderer's source.
  */
-export type PopolaSlotComponent = React.ComponentType<never>
-
 export type PopolaSlots = Partial<Record<SlotName, React.ComponentType<any>>>
 
 export type PopolaSendPayload = {

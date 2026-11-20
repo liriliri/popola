@@ -27,7 +27,6 @@
   --popola-text-base: #14171e;
   --popola-text-muted: #6b7280;
   --popola-text-faint: #9ca3af;
-  --popola-text-inverse: #ffffff;
   --popola-text-accent: #2f6f5e;
 
   /* Borders */
@@ -57,7 +56,6 @@
   --popola-space-3: 12px;
   --popola-space-4: 16px;
   --popola-space-5: 24px;
-  --popola-space-6: 32px;
 
   /* Type */
   --popola-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
@@ -65,7 +63,6 @@
   --popola-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   --popola-text-size-sm: 12px;
   --popola-text-size-md: 14px;
-  --popola-text-size-lg: 16px;
   --popola-line-height: 1.6;
 
   /* Motion */
@@ -84,7 +81,6 @@
   --popola-text-base: #e8e9ec;
   --popola-text-muted: #9aa0ab;
   --popola-text-faint: #6b7280;
-  --popola-text-inverse: #14171e;
   --popola-text-accent: #6fbf9f;
 
   --popola-border-base: #2b2f38;

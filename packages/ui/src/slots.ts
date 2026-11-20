@@ -14,9 +14,7 @@ import type { Attachment, Message, PermissionRequest, ToolCall } from "./state.j
 export const popolaSlot = {
   shellHeader: "shell.header",
   shellSidebar: "shell.sidebar",
-  shellFooter: "shell.footer",
 
-  conversation: "conversation",
   conversationEmpty: "conversation.empty",
   message: "conversation.message",
   messageUser: "conversation.message.user",
@@ -24,17 +22,13 @@ export const popolaSlot = {
   reasoning: "conversation.reasoning",
   partText: "conversation.part.text",
   tool: "conversation.tool",
-  diff: "conversation.diff",
   attachment: "conversation.attachment",
   error: "conversation.error",
-  idle: "conversation.idle",
 
-  composer: "composer",
   composerInput: "composer.input",
   composerSend: "composer.send",
   composerStop: "composer.stop",
   composerContext: "composer.context",
-  composerModel: "composer.model",
 
   permissionDialog: "permission.dialog",
 } as const
@@ -58,9 +52,7 @@ export type PermissionDecision = "once" | "always" | "reject"
 export type SlotProps = {
   "shell.header": { title?: string }
   "shell.sidebar": Record<string, never>
-  "shell.footer": Record<string, never>
 
-  conversation: { messages: Message[] }
   "conversation.empty": Record<string, never>
   "conversation.message": { message: Message }
   "conversation.message.user": { message: Message }
@@ -68,12 +60,9 @@ export type SlotProps = {
   "conversation.reasoning": { text: string }
   "conversation.part.text": { text: string; streaming: boolean }
   "conversation.tool": { call: ToolCall }
-  "conversation.diff": { path: string; diff: string }
   "conversation.attachment": { attachment: Attachment }
   "conversation.error": { message: string }
-  "conversation.idle": Record<string, never>
 
-  composer: Record<string, never>
   "composer.input": {
     value: string
     onChange: (text: string) => void
@@ -85,7 +74,6 @@ export type SlotProps = {
     attachments: Attachment[]
     onRemove: (id: string) => void
   }
-  "composer.model": Record<string, never>
 
   "permission.dialog": {
     requests: PermissionRequest[]

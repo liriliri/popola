@@ -16,13 +16,12 @@ export function selectPermissions(state: PopolaState): PermissionRequest[] {
   return state.permissions
 }
 
+/** True while a run is in flight. Stopping is available for that same window. */
 export function selectIsBusy(state: PopolaState): boolean {
   return state.status === "busy"
 }
 
-export function selectCanStop(state: PopolaState): boolean {
-  return state.status === "busy"
-}
+export const selectCanStop = selectIsBusy
 
 /** Sending stays available while the agent runs — that is how steering works. */
 export function selectCanSend(state: PopolaState): boolean {

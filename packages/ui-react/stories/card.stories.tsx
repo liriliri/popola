@@ -44,6 +44,19 @@ export const Assistant: Story = {
   ),
 }
 
+/** The assistant message exists, but not a single word has arrived. */
+export const Waiting: Story = {
+  args: {
+    message: message("m7", "assistant", [textPart("p7", "")]),
+    streaming: true,
+  },
+  render: (args) => (
+    <Frame>
+      <PopolaCard {...args} />
+    </Frame>
+  ),
+}
+
 /** The assistant is still writing — the text arrives word by word. */
 export const Streaming: Story = {
   args: {

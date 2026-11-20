@@ -1,7 +1,7 @@
 import { popolaClass, type Message, type Part, type PermissionDecision, type PermissionRequest, type ToolCall } from "popola-ui"
 import { cn } from "./cn.js"
 import { Slot } from "./slot.js"
-import { PopolaStreamingText } from "./streaming.js"
+import { PopolaStreamingText, PopolaTypingIndicator } from "./streaming.js"
 import type { PopolaSlots } from "./context.js"
 
 /**
@@ -77,6 +77,7 @@ export function DefaultToolCall(props: { call: ToolCall }) {
 
   const running = call.status === "running" || call.status === "pending"
   const failed = call.status === "error"
+  const completed = call.status === "completed"
   const summary = summarizeInput(call.input)
   const request = formatInput(call.input)
   const result = call.error ?? call.output
@@ -86,6 +87,7 @@ export function DefaultToolCall(props: { call: ToolCall }) {
       className={cn(
         popolaClass.toolCall,
         running ? popolaClass.toolCallRunning : undefined,
+        completed ? popolaClass.toolCallCompleted : undefined,
         failed ? popolaClass.toolCallError : undefined,
       )}
     >
@@ -133,6 +135,14 @@ export function DefaultToolCall(props: { call: ToolCall }) {
 /* ── parts ────────────────────────────────────────────────────────────────── */
 
 export function DefaultPart(props: {
+  part: Part
+  slots?: PopolaSlots
+  streaming?: boolean
+}) {
+  return <div className={popolaClass.part}>{renderPart(props)}</div>
+}
+
+function renderPart(props: {
   part: Part
   slots?: PopolaSlots
   streaming?: boolean
@@ -213,17 +223,35 @@ export function PopolaCard(props: {
     : message.role === "assistant"
       ? popolaClass.messageAssistant
       : undefined
+  // A text part owns its own dots, so the typewriter stays mounted as words arrive.
+  const hasTextPart = message.parts.some((part) => part.type === "text")
+  const showTyping = props.streaming === true && !hasVisibleContent(message) && !hasTextPart
 
   return (
     <div className={cn(popolaClass.message, roleClass)}>
       {isUser ? null : <div className={popolaClass.messageRole}>{message.role}</div>}
       <div className={cn(popolaClass.card, isUser ? popolaClass.bubble : undefined)}>
+        {showTyping ? <PopolaTypingIndicator /> : null}
         {message.parts.map((part) => (
           <DefaultPart key={part.id} part={part} slots={slots} streaming={props.streaming} />
         ))}
       </div>
     </div>
   )
+}
+
+function hasVisibleContent(message: Message): boolean {
+  return message.parts.some((part) => {
+    switch (part.type) {
+      case "text":
+      case "reasoning":
+        return part.text.length > 0
+      case "tool":
+      case "attachment":
+      case "error":
+        return true
+    }
+  })
 }
 
 /* ── permission ───────────────────────────────────────────────────────────── */
