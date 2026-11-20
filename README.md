@@ -10,6 +10,7 @@ packages/ui/src/         framework-agnostic data and styles
 packages/ui-react/src/   React rendering, same directories
   stories/               Storybook, split the same way (dev only, never published)
   .storybook/            Storybook config
+packages/app/            Electron host for trying the UI against pi
 ```
 
 ## Commands
@@ -24,6 +25,9 @@ npm run clean
 npm run typecheck       # type-check the stories too
 npm run dev             # Storybook on http://localhost:6006
 npm run build-storybook # static Storybook into packages/ui-react/storybook-static/
+
+# from packages/app
+npm run dev             # Electron window, asks for a provider first
 ```
 
 ## The card

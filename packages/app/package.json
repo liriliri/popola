@@ -1,0 +1,33 @@
+{
+  "name": "popola-app",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Electron app for trying the popola UI against a pi coding agent.",
+  "main": "./dist/main/index.js",
+  "scripts": {
+    "dev": "vite build --config vite.main.ts && POPOLA_DEV=1 concurrently -k -n vite,app \"vite\" \"wait-on http://127.0.0.1:5173 && electron .\"",
+    "build": "tsc -b && vite build --config vite.main.ts && vite build",
+    "typecheck": "tsc -b && tsc -p tsconfig.renderer.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo .data"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "^0.80.6",
+    "@earendil-works/pi-ai": "^0.80.6",
+    "@earendil-works/pi-coding-agent": "^0.80.6",
+    "popola-ui": "^0.1.0",
+    "popola-ui-react": "^0.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.2",
+    "typescript": "7.0.2",
+    "vite": "^8.3.8",
+    "wait-on": "^8.0.5"
+  }
+}

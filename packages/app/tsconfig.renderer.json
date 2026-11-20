@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "lib": ["es2023", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "composite": false,
+    "paths": {
+      "popola-ui": ["../ui/src/index.ts"],
+      "popola-ui-react": ["../ui-react/src/index.ts"]
+    }
+  },
+  "include": ["src/renderer/**/*", "src/shared/**/*"]
+}
