@@ -1,0 +1,30 @@
+{
+  "name": "popola-ui",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "description": "Framework-agnostic core of the popola UI layer: state, slots, tokens, class contract.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tsc -b && node script/copy-css.mjs",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.13",
+    "typescript": "7.0.2"
+  }
+}

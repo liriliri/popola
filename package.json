@@ -1,0 +1,27 @@
+{
+  "name": "popola",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Embed a coding agent into any Electron app.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b && node packages/ui/script/copy-css.mjs",
+    "typecheck": "tsc -b",
+    "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo tsconfig.tsbuildinfo packages/*/storybook-static storybook-static"
+  },
+  "devDependencies": {
+    "@storybook/react-vite": "^10.6.7",
+    "@types/node": "22.18.13",
+    "@vitejs/plugin-react": "^6.3.0",
+    "storybook": "^10.6.7",
+    "typescript": "7.0.2",
+    "vite": "^8.3.8"
+  }
+}

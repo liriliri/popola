@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Stories are checked but never published: no emit, no composite, no project references of their own.",
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "composite": false,
+    "jsx": "react-jsx",
+    "lib": ["es2023", "DOM", "DOM.Iterable"]
+  },
+  "references": [],
+  "include": ["**/*.ts", "**/*.tsx"]
+}

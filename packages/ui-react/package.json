@@ -1,0 +1,56 @@
+{
+  "name": "popola-ui-react",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "description": "React rendering of the popola UI layer.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./shell": {
+      "types": "./dist/shell.d.ts",
+      "import": "./dist/shell.js"
+    },
+    "./conversation": {
+      "types": "./dist/conversation.d.ts",
+      "import": "./dist/conversation.js"
+    },
+    "./composer": {
+      "types": "./dist/composer.d.ts",
+      "import": "./dist/composer.js"
+    },
+    "./permission": {
+      "types": "./dist/permission.d.ts",
+      "import": "./dist/permission.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -p stories",
+    "dev": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo storybook-static"
+  },
+  "dependencies": {
+    "popola-ui": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "typescript": "7.0.2"
+  }
+}
