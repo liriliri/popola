@@ -14,7 +14,7 @@ store.dispatch({ type: "status", status: "busy" })
 
 ```
 src/
-  shell/  conversation/  message/  composer/  permission/
+  shell/  conversation/  message/  composer/  permission/  markdown/
 ```
 
 Each directory holds that component's data, selectors, slot contract, class names, and styles. The package entry re-exports them as one state, one slot map, and one class map.

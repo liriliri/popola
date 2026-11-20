@@ -36,6 +36,12 @@
       "module": "./dist/esm/permission/index.js",
       "require": "./dist/cjs/permission/index.js",
       "default": "./dist/cjs/permission/index.js"
+    },
+    "./markdown": {
+      "types": "./dist/esm/markdown/index.d.ts",
+      "module": "./dist/esm/markdown/index.js",
+      "require": "./dist/cjs/markdown/index.js",
+      "default": "./dist/cjs/markdown/index.js"
     }
   },
   "files": [
@@ -51,6 +57,7 @@
   },
   "dependencies": {
     "licia": "^1.49.0",
+    "markdown-it": "^14.3.3",
     "popola-ui": "^0.1.0"
   },
   "peerDependencies": {
@@ -58,6 +65,7 @@
     "react-dom": "^18 || ^19"
   },
   "devDependencies": {
+    "@types/markdown-it": "^14.2.0",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "react": "19.3.1",

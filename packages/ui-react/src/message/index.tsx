@@ -1,7 +1,8 @@
 import { popolaClass, type Message, type Part, type ToolCall } from "popola-ui"
 import className from "licia/className"
 import { Slot } from "../slot"
-import { PopolaStreamingText, PopolaTypingIndicator } from "./streaming"
+import { PopolaMarkdown } from "../markdown"
+import { PopolaTypingIndicator } from "./streaming"
 import type { PopolaSlots } from "../context"
 
 /**
@@ -153,7 +154,7 @@ function renderPart(props: {
           name="conversation.part.text"
           slotProps={{ text: part.text, streaming: props.streaming ?? false }}
           local={slots}
-          fallback={<PopolaStreamingText text={part.text} streaming={props.streaming} />}
+          fallback={<PopolaMarkdown text={part.text} streaming={props.streaming} />}
         />
       )
 

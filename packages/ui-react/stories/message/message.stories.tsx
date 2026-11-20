@@ -128,3 +128,29 @@ export const Failed: Story = {
   },
   render: (args) => show(args),
 }
+
+/** The text of a message is Markdown, so it is rendered as Markdown. */
+export const Markdown: Story = {
+  args: {
+    message: message("a1", "assistant", [
+      textPart(
+        "a1",
+        [
+          "## What I changed",
+          "",
+          "The registry is read in three places, so the loader now owns the lookup.",
+          "",
+          "- [x] Read the loader",
+          "- [ ] Wire the bridge to the new path",
+          "",
+          "```ts",
+          "export function readService(root: string): Service | undefined {",
+          "  return parse(readFileSync(join(root, \"service.json\"))).service",
+          "}",
+          "```",
+        ].join("\n"),
+      ),
+    ]),
+  },
+  render: (args) => show(args),
+}

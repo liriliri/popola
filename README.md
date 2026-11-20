@@ -6,7 +6,7 @@ Embed a coding agent into any Electron app.
 
 ```
 packages/ui/src/         framework-agnostic data and styles
-  shell/  conversation/  message/  composer/  permission/
+  shell/  conversation/  message/  composer/  permission/  markdown/
 packages/ui-react/src/   React rendering, same directories
   stories/               Storybook, split the same way (dev only, never published)
   .storybook/            Storybook config
@@ -43,8 +43,8 @@ import "popola-ui/styles.css"
 </PopolaProvider>
 ```
 
-A user's message is a bubble; the assistant's is plain text that arrives word
-by word, followed by one collapsible row per tool call. Every part renders
+A user's message is a bubble; the assistant's is Markdown that arrives word by
+word, followed by one collapsible row per tool call. Every part renders
 through a slot, so a host can replace one piece without forking the rest:
 
 ```tsx

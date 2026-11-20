@@ -13,3 +13,5 @@ export { PopolaPermissions, DefaultPermission } from "./permission/index"
 export { PopolaCard, DefaultPart, DefaultToolCall } from "./message/index"
 
 export { PopolaStreamingText, PopolaTypingIndicator, useStreamingWords } from "./message/streaming"
+
+export { PopolaMarkdown } from "./markdown"

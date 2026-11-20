@@ -45,7 +45,8 @@ export function useStreamingWords(text: string, streaming: boolean) {
 /**
  * Text that arrives word by word.
  *
- * A host that renders markdown replaces this through the
+ * This is the plain-text rendering. Markdown is the default for a text part;
+ * a host that wants something else replaces it through the
  * `conversation.part.text` slot.
  */
 export function PopolaStreamingText(props: {

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, shell } from "electron"
 import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -27,6 +27,12 @@ function createWindow(): BrowserWindow {
   })
 
   win.once("ready-to-show", () => win.show())
+
+  // A link in a message opens in the browser, not in a window of the app.
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^https?:\/\//.test(url)) void shell.openExternal(url)
+    return { action: "deny" }
+  })
 
   if (dev) {
     void win.loadURL("http://127.0.0.1:5173")

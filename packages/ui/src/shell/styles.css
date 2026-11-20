@@ -43,6 +43,9 @@
   flex: 1;
   min-height: 0;
   min-width: 0;
+  /* The body scrolls inside the shell. Content that is taller than the shell
+     scrolls here rather than spilling past its own background. */
+  overflow-y: auto;
 }
 
 .popola-shell__sidebar {
