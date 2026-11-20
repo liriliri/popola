@@ -5,11 +5,11 @@ Embed a coding agent into any Electron app.
 ## Layout
 
 ```
-packages/ui/             framework-agnostic core: state, slots, class names, tokens
-packages/ui-react/       React rendering of that core
-  ├── src/               the components
-  ├── stories/           Storybook stories (dev only, never published)
-  └── .storybook/        Storybook config
+packages/ui/src/         framework-agnostic data and styles
+  shell/  conversation/  message/  composer/  permission/
+packages/ui-react/src/   React rendering, same directories
+  stories/               Storybook, split the same way (dev only, never published)
+  .storybook/            Storybook config
 ```
 
 ## Commands
@@ -119,10 +119,10 @@ too, so `tsc -b` resolves the build order.
 ## Conventions
 
 - Package names: `popola-<name>`
-- Compiled distribution: `src/` holds the source, `dist/` holds the build output, `exports` points at `dist/`
+- Compiled distribution: `src/` holds the source. `dist/esm` is ESM, `dist/cjs` is CommonJS. `main` points at CommonJS; `module` and `types` point at ESM
 - Cross-package dependencies use a real version range (`"popola-ui": "^0.1.0"`); npm workspaces symlinks them locally
 - Scoped packages are private by default on npm; these packages are unscoped, so they publish as public with no extra flag
-- Node >= 22, TypeScript 7.0.2, `module`/`moduleResolution: nodenext` (relative imports need a `.js` suffix)
+- Node >= 22, TypeScript 7.0.2, `moduleResolution: bundler`. Relative imports omit the `.js` suffix. The CommonJS build is a second `tsc` pass
 - Packages extend the root `tsconfig.json`, so shared options live in one place. The root file keeps
   empty `files`/`include`: it is the solution root and owns no sources of its own
 - Styles live in `popola-ui/styles.css` and are keyed by class name only, never by DOM shape

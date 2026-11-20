@@ -5,7 +5,7 @@ import type {
   PermissionRequest,
   PopolaState,
   PopolaStatus,
-} from "./state.js"
+} from "./state"
 
 /**
  * Every change to the state arrives as one of these events.

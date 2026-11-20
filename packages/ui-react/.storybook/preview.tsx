@@ -5,7 +5,7 @@ const preview: Preview = {
   decorators: [
     // The shell is a full-height column, so give every story the viewport.
     (Story) => (
-      <div style={{ height: "100vh", display: "flex", minHeight: 0 }}>
+      <div style={{ height: "100vh" }}>
         <Story />
       </div>
     ),

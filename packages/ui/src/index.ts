@@ -14,13 +14,13 @@ export type {
   ToolCall,
   ToolPart,
   ToolStatus,
-} from "./state.js"
+} from "./state"
 
-export { reduce, initialState } from "./reducer.js"
-export type { PopolaEvent } from "./reducer.js"
+export { reduce, initialState } from "./reducer"
+export type { PopolaEvent } from "./reducer"
 
-export { createStore } from "./store.js"
-export type { PopolaStore } from "./store.js"
+export { createStore } from "./store"
+export type { PopolaStore } from "./store"
 
 export {
   selectCanSend,
@@ -29,9 +29,9 @@ export {
   selectIsBusy,
   selectMessages,
   selectPermissions,
-} from "./selectors.js"
+} from "./selectors"
 
-export { popolaSlot, resolveSlot } from "./slots.js"
+export { popolaSlot, resolveSlot } from "./slots"
 export type {
   PermissionDecision,
   PopolaSlotName,
@@ -39,7 +39,7 @@ export type {
   SlotProps,
   SlotPropsFor,
   ToolSlotName,
-} from "./slots.js"
+} from "./slots"
 
-export { popolaClass } from "./classes.js"
-export type { PopolaClassName } from "./classes.js"
+export { popolaClass } from "./classes"
+export type { PopolaClassName } from "./classes"

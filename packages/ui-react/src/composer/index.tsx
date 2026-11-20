@@ -1,9 +1,9 @@
 import { popolaClass, selectCanSend, selectCanStop, type Attachment } from "popola-ui"
-import { cn } from "./cn.js"
-import { usePopola } from "./context.js"
-import { usePopolaState } from "./use-popola-state.js"
-import { Slot } from "./slot.js"
-import type { PopolaSlots } from "./context.js"
+import className from "licia/className"
+import { usePopola } from "../context"
+import { usePopolaState } from "../use-popola-state"
+import { Slot } from "../slot"
+import type { PopolaSlots } from "../context"
 
 /**
  * The input area.
@@ -32,7 +32,7 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
   }
 
   return (
-    <div className={cn(popolaClass.composer, props.className)}>
+    <div className={className(popolaClass.composer, props.className)}>
       <Slot
         name="composer.context"
         slotProps={{ attachments, onRemove: removeAttachment }}
@@ -81,7 +81,7 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
           local={props.slots}
           fallback={
             <button
-              className={cn(popolaClass.composerButton, popolaClass.composerSend)}
+              className={className(popolaClass.composerButton, popolaClass.composerSend)}
               disabled={!canSend || !onSend}
               onClick={submit}
             >
@@ -96,7 +96,7 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
             slotProps={{ onClick: () => onStop?.() }}
             local={props.slots}
             fallback={
-              <button className={cn(popolaClass.composerButton, popolaClass.composerStop)} onClick={() => onStop?.()}>
+              <button className={className(popolaClass.composerButton, popolaClass.composerStop)} onClick={() => onStop?.()}>
                 Stop
               </button>
             }

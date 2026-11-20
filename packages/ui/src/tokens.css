@@ -1,0 +1,82 @@
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --popola-surface-base: #ffffff;
+  --popola-surface-raised: #f7f7f5;
+  --popola-surface-sunken: #efefec;
+  --popola-surface-overlay: #ffffff;
+
+  /* Text */
+  --popola-text-base: #14171e;
+  --popola-text-muted: #6b7280;
+  --popola-text-faint: #9ca3af;
+  --popola-text-accent: #2f6f5e;
+
+  /* Borders */
+  --popola-border-base: #e6e6e2;
+  --popola-border-strong: #d2d2cb;
+
+  /* Accent */
+  --popola-accent-base: #2f6f5e;
+  --popola-accent-hover: #275c4e;
+  --popola-accent-fg: #ffffff;
+
+  /* Status */
+  --popola-danger-base: #b06367;
+  --popola-danger-surface: #fdf2f2;
+  --popola-warning-base: #c97b3f;
+  --popola-success-base: #3f7d52;
+
+  /* Shape */
+  --popola-radius-sm: 4px;
+  --popola-radius-md: 8px;
+  --popola-radius-lg: 12px;
+  --popola-radius-pill: 999px;
+
+  /* Space */
+  --popola-space-1: 4px;
+  --popola-space-2: 8px;
+  --popola-space-3: 12px;
+  --popola-space-4: 16px;
+  --popola-space-5: 24px;
+
+  /* Type */
+  --popola-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --popola-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --popola-text-size-sm: 12px;
+  --popola-text-size-md: 14px;
+  --popola-line-height: 1.6;
+  --popola-column: 800px;
+
+  /* Motion */
+  --popola-duration: 120ms;
+  --popola-easing: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+[data-popola-theme="dark"] {
+  color-scheme: dark;
+
+  --popola-surface-base: #16181d;
+  --popola-surface-raised: #1e2128;
+  --popola-surface-sunken: #101216;
+  --popola-surface-overlay: #22252d;
+
+  --popola-text-base: #e8e9ec;
+  --popola-text-muted: #9aa0ab;
+  --popola-text-faint: #6b7280;
+  --popola-text-accent: #6fbf9f;
+
+  --popola-border-base: #2b2f38;
+  --popola-border-strong: #3a3f4a;
+
+  --popola-accent-base: #3f8f78;
+  --popola-accent-hover: #4aa78c;
+  --popola-accent-fg: #0d1114;
+
+  --popola-danger-base: #d98a8e;
+  --popola-danger-surface: #2a1c1e;
+  --popola-warning-base: #d9a05b;
+  --popola-success-base: #6fbf8f;
+}

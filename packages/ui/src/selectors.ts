@@ -1,4 +1,4 @@
-import type { Message, PermissionRequest, PopolaState } from "./state.js"
+import type { PopolaState } from "./state"
 
 /**
  * Selectors are plain functions over the state.
@@ -8,13 +8,9 @@ import type { Message, PermissionRequest, PopolaState } from "./state.js"
  * every framework, and a renderer only recomputes the slice it actually reads.
  */
 
-export function selectMessages(state: PopolaState): Message[] {
-  return state.messages
-}
-
-export function selectPermissions(state: PopolaState): PermissionRequest[] {
-  return state.permissions
-}
+export { selectMessages } from "./conversation/selectors"
+export { selectCanSend } from "./composer/selectors"
+export { selectPermissions } from "./permission/selectors"
 
 /** True while a run is in flight. Stopping is available for that same window. */
 export function selectIsBusy(state: PopolaState): boolean {
@@ -22,11 +18,6 @@ export function selectIsBusy(state: PopolaState): boolean {
 }
 
 export const selectCanStop = selectIsBusy
-
-/** Sending stays available while the agent runs — that is how steering works. */
-export function selectCanSend(state: PopolaState): boolean {
-  return state.composer.text.trim().length > 0 || state.composer.attachments.length > 0
-}
 
 export function selectError(state: PopolaState): string | undefined {
   return state.error

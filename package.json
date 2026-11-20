@@ -12,7 +12,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b && node packages/ui/script/copy-css.mjs",
+    "build": "npm run build -w popola-ui && npm run build -w popola-ui-react",
     "typecheck": "tsc -b",
     "clean": "rm -rf packages/*/dist packages/*/tsconfig.tsbuildinfo tsconfig.tsbuildinfo packages/*/storybook-static storybook-static"
   },

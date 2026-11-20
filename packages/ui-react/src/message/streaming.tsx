@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { popolaClass } from "popola-ui"
-import { cn } from "./cn.js"
+import className from "licia/className"
 
 /**
  * Reveals text word by word while the agent is generating.
@@ -59,21 +59,20 @@ export function PopolaStreamingText(props: {
   // Nothing has been revealed yet — the dots hold the place until the first word.
   if (streaming && shown === 0) {
     return (
-      <div className={cn(popolaClass.streamText, props.className)}>
+      <div className={className(popolaClass.streamText, props.className)}>
         <PopolaTypingIndicator />
       </div>
     )
   }
 
   return (
-    <div className={cn(popolaClass.streamText, props.className)}>
+    <div className={className(popolaClass.streamText, props.className)}>
       {words.slice(0, shown).map((word, index) => (
         <span
           key={index}
-          className={cn(
-            popolaClass.streamWord,
-            streaming && index >= shown - 2 ? popolaClass.streamWordFresh : undefined,
-          )}
+          className={className(popolaClass.streamWord, {
+            [popolaClass.streamWordFresh]: streaming && index >= shown - 2,
+          })}
         >
           {word}{" "}
         </span>
@@ -86,7 +85,7 @@ export function PopolaStreamingText(props: {
 /** Three dots shown while the agent is producing its first words. */
 export function PopolaTypingIndicator(props: { className?: string }) {
   return (
-    <span className={cn(popolaClass.typing, props.className)}>
+    <span className={className(popolaClass.typing, props.className)}>
       {[0, 150, 300].map((delay) => (
         <span key={delay} className={popolaClass.typingDot} style={{ animationDelay: `${delay}ms` }} />
       ))}

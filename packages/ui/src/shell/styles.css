@@ -1,0 +1,63 @@
+/* ── blanket reset ─────────────────────────────────────────────────────── */
+
+.popola-shell,
+.popola-shell * {
+  box-sizing: border-box;
+}
+
+.popola-shell {
+  font-family: var(--popola-font-sans);
+  font-size: var(--popola-text-size-md);
+  line-height: var(--popola-line-height);
+  color: var(--popola-text-base);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--popola-surface-base);
+}
+
+/* ── shell ─────────────────────────────────────────────────────────────── */
+
+.popola-shell__header {
+  display: flex;
+  align-items: center;
+  gap: var(--popola-space-3);
+  padding: var(--popola-space-3) var(--popola-space-4);
+  border-bottom: 1px solid var(--popola-border-base);
+  background: var(--popola-surface-base);
+  flex: none;
+}
+
+.popola-shell__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.popola-shell__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.popola-shell__sidebar {
+  flex: none;
+  width: 260px;
+  border-right: 1px solid var(--popola-border-base);
+  background: var(--popola-surface-raised);
+  overflow-y: auto;
+}
+
+.popola-shell__footer {
+  flex: none;
+  padding: var(--popola-space-2) var(--popola-space-4);
+  border-top: 1px solid var(--popola-border-base);
+  background: var(--popola-surface-base);
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+}

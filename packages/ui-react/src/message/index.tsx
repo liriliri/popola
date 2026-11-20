@@ -1,8 +1,8 @@
-import { popolaClass, type Message, type Part, type PermissionDecision, type PermissionRequest, type ToolCall } from "popola-ui"
-import { cn } from "./cn.js"
-import { Slot } from "./slot.js"
-import { PopolaStreamingText, PopolaTypingIndicator } from "./streaming.js"
-import type { PopolaSlots } from "./context.js"
+import { popolaClass, type Message, type Part, type ToolCall } from "popola-ui"
+import className from "licia/className"
+import { Slot } from "../slot"
+import { PopolaStreamingText, PopolaTypingIndicator } from "./streaming"
+import type { PopolaSlots } from "../context"
 
 /**
  * The built-in renderings.
@@ -84,29 +84,26 @@ export function DefaultToolCall(props: { call: ToolCall }) {
 
   return (
     <details
-      className={cn(
-        popolaClass.toolCall,
-        running ? popolaClass.toolCallRunning : undefined,
-        completed ? popolaClass.toolCallCompleted : undefined,
-        failed ? popolaClass.toolCallError : undefined,
-      )}
+      className={className(popolaClass.toolCall, {
+        [popolaClass.toolCallRunning]: running,
+        [popolaClass.toolCallCompleted]: completed,
+        [popolaClass.toolCallError]: failed,
+      })}
     >
       <summary className={popolaClass.toolCallTrigger}>
         <span className={popolaClass.toolCallIcon}>{running ? <SpinnerIcon /> : <ChevronIcon />}</span>
         <span
-          className={cn(
-            popolaClass.toolCallLabel,
-            running ? popolaClass.toolCallLabelRunning : undefined,
-          )}
+          className={className(popolaClass.toolCallLabel, {
+            [popolaClass.toolCallLabelRunning]: running,
+          })}
         >
           {call.title ?? call.name}
         </span>
         {summary ? <span className={popolaClass.toolCallQuery}>{summary}</span> : null}
         <span
-          className={cn(
-            popolaClass.toolCallStatus,
-            failed ? popolaClass.toolCallStatusError : undefined,
-          )}
+          className={className(popolaClass.toolCallStatus, {
+            [popolaClass.toolCallStatusError]: failed,
+          })}
         >
           {running ? null : failed ? <CrossIcon /> : <CheckIcon />}
         </span>
@@ -228,9 +225,9 @@ export function PopolaCard(props: {
   const showTyping = props.streaming === true && !hasVisibleContent(message) && !hasTextPart
 
   return (
-    <div className={cn(popolaClass.message, roleClass)}>
+    <div className={className(popolaClass.message, roleClass)}>
       {isUser ? null : <div className={popolaClass.messageRole}>{message.role}</div>}
-      <div className={cn(popolaClass.card, isUser ? popolaClass.bubble : undefined)}>
+      <div className={className(popolaClass.card, { [popolaClass.bubble]: isUser })}>
         {showTyping ? <PopolaTypingIndicator /> : null}
         {message.parts.map((part) => (
           <DefaultPart key={part.id} part={part} slots={slots} streaming={props.streaming} />
@@ -252,39 +249,4 @@ function hasVisibleContent(message: Message): boolean {
         return true
     }
   })
-}
-
-/* ── permission ───────────────────────────────────────────────────────────── */
-
-export function DefaultPermission(props: {
-  requests: PermissionRequest[]
-  onReply: (id: string, decision: PermissionDecision) => void
-}) {
-  return (
-    <div className={popolaClass.permissionLayer}>
-      {props.requests.map((request) => (
-        <div key={request.id} className={popolaClass.permission}>
-          <div className={popolaClass.permissionTitle}>{request.title}</div>
-          <div className={popolaClass.permissionResources}>{request.resources.join("\n")}</div>
-          <div className={popolaClass.permissionActions}>
-            <button
-              className={cn(popolaClass.button, popolaClass.buttonPrimary)}
-              onClick={() => props.onReply(request.id, "once")}
-            >
-              Allow once
-            </button>
-            <button className={popolaClass.button} onClick={() => props.onReply(request.id, "always")}>
-              Always allow
-            </button>
-            <button
-              className={cn(popolaClass.button, popolaClass.buttonGhost)}
-              onClick={() => props.onReply(request.id, "reject")}
-            >
-              Reject
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
 }

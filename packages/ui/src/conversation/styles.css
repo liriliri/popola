@@ -1,0 +1,28 @@
+/* ── conversation ──────────────────────────────────────────────────────── */
+
+.popola-conversation {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  max-width: var(--popola-column);
+  min-height: 0;
+  min-width: 0;
+}
+
+.popola-conversation__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--popola-space-5) var(--popola-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-5);
+}
+
+.popola-conversation__empty {
+  margin: auto;
+  color: var(--popola-text-faint);
+  text-align: center;
+  font-size: var(--popola-text-size-md);
+}

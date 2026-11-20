@@ -1,11 +1,11 @@
 import type { ReactNode } from "react"
 import { popolaClass } from "popola-ui"
-import { cn } from "./cn.js"
-import { usePopola, useResolvedTheme, type PopolaSlots } from "./context.js"
-import { Slot } from "./slot.js"
-import { PopolaConversation } from "./conversation.js"
-import { PopolaComposer } from "./composer.js"
-import { PopolaPermissions } from "./permission.js"
+import className from "licia/className"
+import { usePopola, useResolvedTheme, type PopolaSlots } from "../context"
+import { Slot } from "../slot"
+import { PopolaConversation } from "../conversation/index"
+import { PopolaComposer } from "../composer/index"
+import { PopolaPermissions } from "../permission/index"
 
 /**
  * The full shell: header, optional sidebar, and the conversation area.
@@ -23,7 +23,7 @@ export function PopolaShell(props: {
   const theme = useResolvedTheme(context.theme)
 
   return (
-    <div className={cn(popolaClass.shell, props.className)} data-popola-theme={theme}>
+    <div className={className(popolaClass.shell, props.className)} data-popola-theme={theme}>
       <Slot
         name="shell.header"
         slotProps={{ title: props.title }}

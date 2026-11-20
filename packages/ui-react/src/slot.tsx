@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { resolveSlot, type SlotName, type SlotPropsFor } from "popola-ui"
-import { usePopola, type PopolaSlots } from "./context.js"
+import { usePopola, type PopolaSlots } from "./context"
 
 /**
  * Renders one slot.

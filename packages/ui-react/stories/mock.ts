@@ -1,13 +1,17 @@
 import type { Message, Part, PopolaRole, ToolCall } from "popola-ui"
 
-/**
- * Story data.
- *
- * Plain domain objects — a card is rendered from a message, not from a store.
- */
+/** Story data. Plain domain objects the thread renders from the store. */
 
 export function textPart(id: string, text: string): Part {
   return { id, type: "text", text }
+}
+
+export function reasoningPart(id: string, text: string): Part {
+  return { id, type: "reasoning", text }
+}
+
+export function errorPart(id: string, message: string): Part {
+  return { id, type: "error", message }
 }
 
 export function toolPart(id: string, call: ToolCall): Part {

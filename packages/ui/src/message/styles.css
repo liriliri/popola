@@ -1,0 +1,279 @@
+/* ── message ───────────────────────────────────────────────────────────── */
+
+.popola-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-2);
+  max-width: 780px;
+  width: 100%;
+}
+
+.popola-message--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.popola-message__role {
+  font-size: var(--popola-text-size-sm);
+  color: var(--popola-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.popola-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-3);
+}
+
+.popola-bubble {
+  max-width: 560px;
+  background: var(--popola-surface-raised);
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-lg);
+  padding: var(--popola-space-3) var(--popola-space-4);
+}
+
+/* ── parts ─────────────────────────────────────────────────────────────── */
+
+.popola-part {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.popola-reasoning {
+  color: var(--popola-text-muted);
+  font-style: italic;
+  border-left: 2px solid var(--popola-border-base);
+  padding-left: var(--popola-space-3);
+}
+
+.popola-error {
+  color: var(--popola-danger-base);
+  background: var(--popola-danger-surface);
+  border: 1px solid var(--popola-danger-base);
+  border-radius: var(--popola-radius-md);
+  padding: var(--popola-space-2) var(--popola-space-3);
+  font-size: var(--popola-text-size-sm);
+}
+
+/* ── tool call ─────────────────────────────────────────────────────────── */
+
+.popola-tool-call {
+  width: 100%;
+  max-width: 480px;
+  font-family: var(--popola-font-mono);
+  font-size: var(--popola-text-size-sm);
+  color: var(--popola-text-muted);
+}
+
+.popola-tool-call__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--popola-space-2);
+  width: 100%;
+  padding: var(--popola-space-1) var(--popola-space-2);
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: none;
+  text-align: left;
+  list-style: none;
+  cursor: pointer;
+}
+
+.popola-tool-call__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.popola-tool-call__trigger:hover {
+  background: var(--popola-surface-sunken);
+}
+
+.popola-tool-call__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+}
+
+.popola-tool-call__spinner {
+  animation: popola-spin 900ms linear infinite;
+}
+
+.popola-tool-call__label {
+  flex: none;
+  font-weight: 500;
+  color: var(--popola-text-accent);
+}
+
+.popola-tool-call__query {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px var(--popola-space-2);
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-sunken);
+  color: var(--popola-text-muted);
+}
+
+.popola-tool-call__status {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: var(--popola-success-base);
+}
+
+.popola-tool-call__label--running {
+  animation: popola-pulse 1.4s ease-in-out infinite;
+}
+
+.popola-tool-call--error {
+  color: var(--popola-danger-base);
+}
+
+.popola-tool-call__status--error {
+  color: var(--popola-danger-base);
+}
+
+.popola-tool-call__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-2);
+  margin-top: var(--popola-space-2);
+}
+
+.popola-tool-call__section {
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-sm);
+  padding: var(--popola-space-2) var(--popola-space-3);
+}
+
+.popola-tool-call__section-title {
+  margin: 0 0 var(--popola-space-1);
+  font-family: var(--popola-font-sans);
+  font-size: var(--popola-text-size-sm);
+  color: var(--popola-text-faint);
+}
+
+.popola-tool-call__section-body {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--popola-text-base);
+}
+
+/* ── streaming text ────────────────────────────────────────────────────── */
+
+.popola-stream-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.popola-stream-text__word {
+  animation: popola-word-in 240ms ease-out both;
+}
+
+.popola-stream-text__word--fresh {
+  color: var(--popola-text-accent);
+}
+
+.popola-stream-text__cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--popola-text-accent);
+  animation: popola-pulse 1s ease-in-out infinite;
+}
+
+/* ── typing indicator ──────────────────────────────────────────────────── */
+
+.popola-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 16px;
+}
+
+.popola-typing__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--popola-text-accent);
+  animation: popola-typing-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes popola-word-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popola-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes popola-typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@keyframes popola-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── diff ──────────────────────────────────────────────────────────────── */
+
+.popola-diff {
+  font-family: var(--popola-font-mono);
+  font-size: var(--popola-text-size-sm);
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+  padding: var(--popola-space-3);
+  overflow: auto;
+}
+
+/* ── attachment ────────────────────────────────────────────────────────── */
+
+.popola-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--popola-space-2);
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-pill);
+  background: var(--popola-surface-raised);
+  padding: 2px var(--popola-space-3);
+  font-size: var(--popola-text-size-sm);
+}
+
+.popola-attachment__name {
+  color: var(--popola-text-base);
+}

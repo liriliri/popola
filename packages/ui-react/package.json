@@ -1,31 +1,41 @@
 {
   "name": "popola-ui-react",
   "version": "0.1.0",
-  "type": "module",
   "license": "MIT",
   "description": "React rendering of the popola UI layer.",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/esm/index.d.ts",
+      "module": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/cjs/index.js"
     },
     "./shell": {
-      "types": "./dist/shell.d.ts",
-      "import": "./dist/shell.js"
+      "types": "./dist/esm/shell/index.d.ts",
+      "module": "./dist/esm/shell/index.js",
+      "require": "./dist/cjs/shell/index.js",
+      "default": "./dist/cjs/shell/index.js"
     },
     "./conversation": {
-      "types": "./dist/conversation.d.ts",
-      "import": "./dist/conversation.js"
+      "types": "./dist/esm/conversation/index.d.ts",
+      "module": "./dist/esm/conversation/index.js",
+      "require": "./dist/cjs/conversation/index.js",
+      "default": "./dist/cjs/conversation/index.js"
     },
     "./composer": {
-      "types": "./dist/composer.d.ts",
-      "import": "./dist/composer.js"
+      "types": "./dist/esm/composer/index.d.ts",
+      "module": "./dist/esm/composer/index.js",
+      "require": "./dist/cjs/composer/index.js",
+      "default": "./dist/cjs/composer/index.js"
     },
     "./permission": {
-      "types": "./dist/permission.d.ts",
-      "import": "./dist/permission.js"
+      "types": "./dist/esm/permission/index.d.ts",
+      "module": "./dist/esm/permission/index.js",
+      "require": "./dist/cjs/permission/index.js",
+      "default": "./dist/cjs/permission/index.js"
     }
   },
   "files": [
@@ -33,13 +43,14 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b && tsc -p tsconfig.cjs.json",
     "typecheck": "tsc -p stories",
     "dev": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "clean": "rm -rf dist tsconfig.tsbuildinfo storybook-static"
   },
   "dependencies": {
+    "licia": "^1.49.0",
     "popola-ui": "^0.1.0"
   },
   "peerDependencies": {

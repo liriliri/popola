@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from "react"
 import type { PopolaState } from "popola-ui"
-import { usePopola } from "./context.js"
+import { usePopola } from "./context"
 
 /**
  * Reads a slice of the state and re-renders when that slice changes.

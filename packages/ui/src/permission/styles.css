@@ -1,0 +1,87 @@
+/* ── buttons ───────────────────────────────────────────────────────────── */
+
+.popola-button {
+  font-family: inherit;
+  font-size: var(--popola-text-size-md);
+  line-height: 1;
+  border-radius: var(--popola-radius-md);
+  border: 1px solid var(--popola-border-base);
+  background: var(--popola-surface-base);
+  color: var(--popola-text-base);
+  padding: var(--popola-space-2) var(--popola-space-3);
+  cursor: pointer;
+  transition: background var(--popola-duration) var(--popola-easing),
+    border-color var(--popola-duration) var(--popola-easing);
+}
+
+.popola-button:hover:not(:disabled) {
+  background: var(--popola-surface-raised);
+}
+
+.popola-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popola-button--primary {
+  background: var(--popola-accent-base);
+  border-color: var(--popola-accent-base);
+  color: var(--popola-accent-fg);
+}
+
+.popola-button--primary:hover:not(:disabled) {
+  background: var(--popola-accent-hover);
+  border-color: var(--popola-accent-hover);
+}
+
+.popola-button--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--popola-text-muted);
+}
+
+/* ── permission ────────────────────────────────────────────────────────── */
+
+.popola-permission-layer {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--popola-space-4);
+  background: rgb(0 0 0 / 0.35);
+  z-index: 100;
+}
+
+.popola-permission {
+  border: 1px solid var(--popola-warning-base);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-overlay);
+  padding: var(--popola-space-3) var(--popola-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-2);
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 8px 28px -6px rgb(0 0 0 / 0.18);
+}
+
+.popola-permission__title {
+  font-size: var(--popola-text-size-md);
+  color: var(--popola-text-base);
+  font-weight: 600;
+}
+
+.popola-permission__resources {
+  font-family: var(--popola-font-mono);
+  font-size: var(--popola-text-size-sm);
+  color: var(--popola-text-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.popola-permission__actions {
+  display: flex;
+  gap: var(--popola-space-2);
+  margin-top: var(--popola-space-1);
+}

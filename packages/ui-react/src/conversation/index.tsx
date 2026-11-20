@@ -1,9 +1,9 @@
 import { popolaClass, selectIsBusy, selectMessages, type Message } from "popola-ui"
-import { cn } from "./cn.js"
-import { usePopolaState } from "./use-popola-state.js"
-import { Slot } from "./slot.js"
-import { PopolaCard } from "./defaults.js"
-import type { PopolaSlots } from "./context.js"
+import className from "licia/className"
+import { usePopolaState } from "../use-popola-state"
+import { Slot } from "../slot"
+import { PopolaCard } from "../message/index"
+import type { PopolaSlots } from "../context"
 
 /**
  * The conversation area: one column of messages, newest at the bottom.
@@ -18,7 +18,7 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
   const awaitingAssistant = busy && (last === undefined || last.role !== "assistant")
 
   return (
-    <div className={cn(popolaClass.conversation, props.className)}>
+    <div className={className(popolaClass.conversation, props.className)}>
       <div className={popolaClass.conversationScroll}>
         {messages.length === 0 && !awaitingAssistant ? (
           <Slot

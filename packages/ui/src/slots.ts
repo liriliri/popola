@@ -1,4 +1,8 @@
-import type { Attachment, Message, PermissionRequest, ToolCall } from "./state.js"
+import { composerSlot, type ComposerSlotProps } from "./composer/slots"
+import { conversationSlot, type ConversationSlotProps } from "./conversation/slots"
+import { messageSlot, type MessageSlotProps } from "./message/slots"
+import { permissionSlot, type PermissionSlotProps } from "./permission/slots"
+import { shellSlot, type ShellSlotProps } from "./shell/slots"
 
 /**
  * The slot catalogue.
@@ -12,26 +16,16 @@ import type { Attachment, Message, PermissionRequest, ToolCall } from "./state.j
  * while everything else falls back to the generic tool slot.
  */
 export const popolaSlot = {
-  shellHeader: "shell.header",
-  shellSidebar: "shell.sidebar",
-
-  conversationEmpty: "conversation.empty",
-  message: "conversation.message",
-  messageUser: "conversation.message.user",
-  messageAssistant: "conversation.message.assistant",
-  reasoning: "conversation.reasoning",
-  partText: "conversation.part.text",
-  tool: "conversation.tool",
-  attachment: "conversation.attachment",
-  error: "conversation.error",
-
-  composerInput: "composer.input",
-  composerSend: "composer.send",
-  composerStop: "composer.stop",
-  composerContext: "composer.context",
-
-  permissionDialog: "permission.dialog",
-} as const
+  ...shellSlot,
+  ...conversationSlot,
+  ...messageSlot,
+  ...composerSlot,
+  ...permissionSlot,
+} as typeof shellSlot &
+  typeof conversationSlot &
+  typeof messageSlot &
+  typeof composerSlot &
+  typeof permissionSlot
 
 export type PopolaSlotName = (typeof popolaSlot)[keyof typeof popolaSlot]
 
@@ -40,8 +34,7 @@ export type ToolSlotName = `conversation.tool.${string}`
 
 export type SlotName = PopolaSlotName | ToolSlotName
 
-/** How a host answers a permission request. */
-export type PermissionDecision = "once" | "always" | "reject"
+export type { PermissionDecision } from "./permission/slots"
 
 /**
  * The props each slot receives.
@@ -49,37 +42,11 @@ export type PermissionDecision = "once" | "always" | "reject"
  * These are plain data plus callbacks — no framework types — so the same
  * contract holds for React, Vue or anything else.
  */
-export type SlotProps = {
-  "shell.header": { title?: string }
-  "shell.sidebar": Record<string, never>
-
-  "conversation.empty": Record<string, never>
-  "conversation.message": { message: Message }
-  "conversation.message.user": { message: Message }
-  "conversation.message.assistant": { message: Message }
-  "conversation.reasoning": { text: string }
-  "conversation.part.text": { text: string; streaming: boolean }
-  "conversation.tool": { call: ToolCall }
-  "conversation.attachment": { attachment: Attachment }
-  "conversation.error": { message: string }
-
-  "composer.input": {
-    value: string
-    onChange: (text: string) => void
-    onSubmit: () => void
-  }
-  "composer.send": { canSend: boolean; onClick: () => void }
-  "composer.stop": { onClick: () => void }
-  "composer.context": {
-    attachments: Attachment[]
-    onRemove: (id: string) => void
-  }
-
-  "permission.dialog": {
-    requests: PermissionRequest[]
-    onReply: (id: string, decision: PermissionDecision) => void
-  }
-}
+export type SlotProps = ShellSlotProps &
+  ConversationSlotProps &
+  MessageSlotProps &
+  ComposerSlotProps &
+  PermissionSlotProps
 
 export type SlotPropsFor<Name extends SlotName> = Name extends `conversation.tool.${string}`
   ? SlotProps["conversation.tool"]

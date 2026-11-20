@@ -1,5 +1,5 @@
-import { reduce, initialState, type PopolaEvent } from "./reducer.js"
-import type { PopolaState } from "./state.js"
+import { reduce, initialState, type PopolaEvent } from "./reducer"
+import type { PopolaState } from "./state"
 
 /**
  * The state container every renderer talks to.
