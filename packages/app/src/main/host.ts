@@ -8,6 +8,8 @@ import {
   createReadToolDefinition,
   createWriteToolDefinition,
 } from "@earendil-works/pi-coding-agent"
+import isErr from "licia/isErr"
+import rtrim from "licia/rtrim"
 import type { HostEvent, ProviderConfig } from "../shared/types"
 import { serializeMessages } from "./serialize"
 
@@ -57,8 +59,7 @@ function createModel(config: ProviderConfig): Model<"openai-completions"> {
 }
 
 function errorText(error: unknown): string {
-  if (error instanceof Error && error.message) return error.message
-  return "The request failed."
+  return isErr(error) && error.message ? error.message : "The request failed."
 }
 
 export class AgentHost {
@@ -204,7 +205,7 @@ export function parseProvider(input: unknown): ProviderConfig | null {
   const apiKey = typeof record.apiKey === "string" ? record.apiKey.trim() : ""
   let baseUrl = typeof record.baseUrl === "string" ? record.baseUrl.trim() : ""
   if (!provider || !model || !apiKey || !baseUrl) return null
-  if (baseUrl.endsWith("/")) baseUrl = baseUrl.slice(0, -1)
+  baseUrl = rtrim(baseUrl, "/")
   try {
     const url = new URL(baseUrl)
     if (url.protocol !== "http:" && url.protocol !== "https:") return null

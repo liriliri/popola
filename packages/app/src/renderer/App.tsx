@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import isErr from "licia/isErr"
 import { createStore, popolaClass } from "popola-ui"
 import type { ProviderConfig } from "../shared/types"
 import { PopolaProvider, PopolaShell } from "popola-ui-react"
@@ -34,7 +35,7 @@ export function App() {
         })
       } catch (error) {
         if (cancelled) return
-        setFormError(error instanceof Error ? error.message : "The app bridge is missing.")
+        setFormError(isErr(error) ? error.message : "The app bridge is missing.")
         setScreen("provider")
       }
     })()
@@ -57,7 +58,7 @@ export function App() {
       setSaved(config)
       setScreen("chat")
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : "Could not save the provider.")
+      setFormError(isErr(error) ? error.message : "Could not save the provider.")
     } finally {
       setSaving(false)
     }

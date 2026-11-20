@@ -367,21 +367,15 @@ function revealWords(content: string): ReactNode {
 }
 
 /** The heading class for a level. */
+const HEADING_CLASS = [
+  popolaClass.markdownHeading1,
+  popolaClass.markdownHeading2,
+  popolaClass.markdownHeading3,
+  popolaClass.markdownHeading4,
+  popolaClass.markdownHeading5,
+  popolaClass.markdownHeading6,
+] as const
+
 function headingModifier(level: number): string | undefined {
-  switch (level) {
-    case 1:
-      return popolaClass.markdownHeading1
-    case 2:
-      return popolaClass.markdownHeading2
-    case 3:
-      return popolaClass.markdownHeading3
-    case 4:
-      return popolaClass.markdownHeading4
-    case 5:
-      return popolaClass.markdownHeading5
-    case 6:
-      return popolaClass.markdownHeading6
-    default:
-      return undefined
-  }
+  return HEADING_CLASS[level - 1]
 }

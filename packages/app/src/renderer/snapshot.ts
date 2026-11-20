@@ -1,3 +1,4 @@
+import isEqual from "licia/isEqual"
 import type { Message, Part, PopolaStore } from "popola-ui"
 
 function samePart(left: Part | undefined, right: Part): boolean {
@@ -31,12 +32,9 @@ function samePart(left: Part | undefined, right: Part): boolean {
       ) {
         return false
       }
-      // Reference check skips serialising for committed calls; streaming
-      // snapshots rebuild `input`, so fall back to a structural compare.
-      return (
-        previous.input === next.input ||
-        JSON.stringify(previous.input) === JSON.stringify(next.input)
-      )
+      // `isEqual` short-circuits on identity, so committed calls skip the
+      // deep walk; streaming snapshots rebuild `input` and compare by value.
+      return isEqual(previous.input, next.input)
     }
   }
 }

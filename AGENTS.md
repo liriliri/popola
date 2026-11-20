@@ -18,7 +18,7 @@ private test app wiring a real agent to them.
 | Build | `tsc -b` project references; second `tsc -p tsconfig.cjs.json` pass emits CommonJS |
 | React | 18 or 19 (peer); renderer uses `useSyncExternalStore` |
 | Markdown | `markdown-it` (raw HTML off) |
-| Utilities | `licia` (`className`) |
+| Utilities | `licia` (`className`, `Lru`, `isEqual`, `isErr`, `rtrim`) |
 | Test app | Electron 39, Vite 8, `@vitejs/plugin-react`, `@earendil-works/pi-*` |
 | Dev tooling | Storybook 10 (`react-vite`), `concurrently`, `wait-on` |
 | Styling | Plain CSS in `popola-ui`, keyed by class name only; values from tokens |
