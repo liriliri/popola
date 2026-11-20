@@ -13,7 +13,7 @@
       "require": "./dist/cjs/index.js",
       "default": "./dist/cjs/index.js"
     },
-    "./styles.css": "./src/styles.css"
+    "./style.css": "./src/style.css"
   },
   "files": [
     "dist",

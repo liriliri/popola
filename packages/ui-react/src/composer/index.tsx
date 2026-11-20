@@ -1,7 +1,7 @@
 import { popolaClass, selectCanSend, selectCanStop, type Attachment } from "popola-ui"
 import className from "licia/className"
 import { usePopola } from "../context"
-import { usePopolaState } from "../use-popola-state"
+import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import type { PopolaSlots } from "../context"
 
@@ -43,6 +43,14 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
               {attachments.map((attachment: Attachment) => (
                 <span key={attachment.id} className={popolaClass.attachment}>
                   <span className={popolaClass.attachmentName}>{attachment.name}</span>
+                  <button
+                    type="button"
+                    className={className(popolaClass.button, popolaClass.buttonGhost)}
+                    aria-label={`Remove ${attachment.name}`}
+                    onClick={() => removeAttachment(attachment.id)}
+                  >
+                    ×
+                  </button>
                 </span>
               ))}
             </div>

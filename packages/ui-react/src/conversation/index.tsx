@@ -1,6 +1,6 @@
 import { popolaClass, selectIsBusy, selectMessages, type Message } from "popola-ui"
 import className from "licia/className"
-import { usePopolaState } from "../use-popola-state"
+import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import { PopolaCard } from "../message/index"
 import type { PopolaSlots } from "../context"

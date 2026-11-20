@@ -1,0 +1,152 @@
+# AGENTS.md
+
+Guidance for AI agents and contributors. For usage, see [README.md](./README.md).
+
+## What this is
+
+`popola` is an npm workspace monorepo for embedding a coding agent's UI into an
+Electron/React app: one framework-agnostic state core, one React renderer, one
+private test app wiring a real agent to them.
+
+## Tech stack
+
+| concern | choice |
+| --- | --- |
+| Language | TypeScript 7.0.2, `strict`, `moduleResolution: bundler`, ES2023 |
+| Runtime | Node >= 22; ESM everywhere |
+| Package manager | npm workspaces (`packages/*`) |
+| Build | `tsc -b` project references; second `tsc -p tsconfig.cjs.json` pass emits CommonJS |
+| React | 18 or 19 (peer); renderer uses `useSyncExternalStore` |
+| Markdown | `markdown-it` (raw HTML off) |
+| Utilities | `licia` (`className`) |
+| Test app | Electron 39, Vite 8, `@vitejs/plugin-react`, `@earendil-works/pi-*` |
+| Dev tooling | Storybook 10 (`react-vite`), `concurrently`, `wait-on` |
+| Styling | Plain CSS in `popola-ui`, keyed by class name only; values from tokens |
+| Linting/tests | none — verify with `npm run typecheck` and `npm run build` |
+
+## Layout
+
+```
+packages/
+  ui/          popola-ui       framework-agnostic core (published)
+    src/
+      index.ts               public re-exports
+      state.ts reducer.ts store.ts selectors.ts slots.ts classes.ts style.css
+      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/
+        index.ts             data shapes, selectors, slot/class contracts for that domain
+        style.css           authored CSS, @imported by root style.css
+  ui-react/    popola-ui-react React renderer (published)
+    src/                     mirrors the domain dirs
+    stories/ .storybook/     dev only, never published
+  app/         popola-app     Electron test host (private)
+    src/main/                window, IPC, AgentHost, pi transcript → popola
+    src/preload.cjs          contextBridge exposing window.popola
+    src/renderer/            provider form, bridge, store snapshot
+    src/shared/types.ts      main/renderer wire contract
+    vite.config.ts vite.main.ts
+    .data/                   dev userData (gitignored)
+
+tsconfig.json               solution root + shared compiler options
+package.json                workspace root scripts
+README.md                   usage only     AGENTS.md   this file
+```
+
+Each `ui` domain is one `index.ts` (data, selectors, slots, class names) plus a
+standalone `style.css`; root aggregators re-export them as one state, one slot
+map, one class map.
+
+## Packages
+
+- **`popola-ui`** (`0.1.0`, MIT) — no React/DOM; usable in an Electron main
+  process. Pure reducer over a closed event set, minimal store
+  (`getState`/`subscribe`/`dispatch`), plain selectors, slots, class names, CSS.
+  Reducer returns the *same* state object on a no-op, so renderers skip work by
+  identity. Exports `.` (dual ESM/CJS) and `./style.css` (authored CSS, not
+  built). `sideEffects: ["*.css"]`.
+- **`popola-ui-react`** (`0.1.0`, MIT) — binds the core with
+  `useSyncExternalStore`. Exports `.` + subpaths `./shell`, `./conversation`,
+  `./composer`, `./permission`, `./markdown`. React/ReactDOM peers; `licia`,
+  `markdown-it`, `popola-ui` runtime deps. `sideEffects: false`.
+- **`popola-app`** (`0.0.0`, private) — Electron host running a `pi` agent.
+  See [packages/app/README.md](./packages/app/README.md).
+
+## Build system
+
+- Root `tsconfig.json` is solution root + shared base: empty `files`/`include`,
+  one `references` per package; each package extends it with `composite`,
+  `outDir`, `rootDir`. `tsc -b` resolves order from `references`; a dependent
+  package also lists its dependency there.
+- Published packages emit twice: `dist/esm` (ESNext + declarations) and
+  `dist/cjs` (`module: commonjs`, `verbatimModuleSyntax` off). `src/` is truth;
+  `dist/` is gitignored.
+- `popola-app`: `tsc -b` only checks main/shared into `dist/types`; Vite bundles
+  main (`vite.main.ts`) and renderer (`vite.config.ts`) into `dist/main` and
+  `dist/renderer`. Vite aliases both libs to `src/index.ts`, so dev needs no
+  prior build.
+- Storybook type-checks separately (`tsc -p stories`), never published.
+
+## Commands
+
+```bash
+# root
+npm run build           # ui + ui-react (ESM + CJS)
+npm run typecheck       # tsc -b across references
+npm run clean           # dist, tsbuildinfo, storybook-static
+
+# packages/ui-react
+npm run dev             # Storybook on :6006
+npm run build-storybook # static build
+npm run typecheck       # also checks stories
+
+# packages/app
+npm run dev             # Vite + Electron (POPOLA_DEV=1)
+npm run build           # tsc + bundle main/renderer
+npm run typecheck       # main + renderer
+```
+
+## Conventions
+
+- Package names `popola-<name>`; unscoped, publish as public with no flag.
+- Cross-package deps use real version ranges (`"popola-ui": "^0.1.0"`);
+  workspaces symlink them locally.
+- Relative imports omit `.js`; use `import type` (`verbatimModuleSyntax` on).
+- Class names are a public contract: stylesheet targets names only, never DOM
+  shape/nesting; renaming is breaking for hosts.
+- State core stays framework-agnostic: plain data, pure reducer, no I/O/clocks.
+- Slots resolve by scope before specificity (component > provider; exact >
+  family base). Tool slots: `conversation.tool.<toolName>` → `conversation.tool`.
+- Raw HTML in messages is shown as text, never parsed.
+
+## Adding a package
+
+```
+packages/agent/
+├── package.json
+├── tsconfig.json
+└── src/index.ts
+```
+
+`package.json` (adapt `main`/`exports` if you emit CJS):
+
+```json
+{
+  "name": "popola-agent", "version": "0.0.0", "type": "module",
+  "main": "./dist/index.js", "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": { "build": "tsc -b", "clean": "rm -rf dist tsconfig.tsbuildinfo" }
+}
+```
+
+`tsconfig.json`:
+
+```json
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "composite": true, "outDir": "./dist", "rootDir": "./src" },
+  "include": ["src/**/*"]
+}
+```
+
+Add `{ "path": "packages/agent" }` to root `tsconfig.json` `references`, and to
+any package depending on it.

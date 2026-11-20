@@ -1,10 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
 import { createStore, type Attachment, type PermissionDecision, type PopolaStore, type SlotName } from "popola-ui"
 
-/**
- * A slot implementation. The props it receives are fixed by `SlotProps` in
- * `popola-ui`, so a host can write one without reading the renderer's source.
- */
+/** Slot implementations; prop types come from `SlotProps` in `popola-ui`. */
 export type PopolaSlots = Partial<Record<SlotName, React.ComponentType<any>>>
 
 export type PopolaSendPayload = {

@@ -2,21 +2,43 @@ import type { Message, Part, PopolaStore } from "popola-ui"
 
 function samePart(left: Part | undefined, right: Part): boolean {
   if (!left || left.type !== right.type) return false
-  if (left.type === "text" && right.type === "text") return left.text === right.text
-  if (left.type === "reasoning" && right.type === "reasoning") return left.text === right.text
-  if (left.type === "error" && right.type === "error") return left.message === right.message
-  if (left.type === "tool" && right.type === "tool") {
-    const previous = left.call
-    const next = right.call
-    return (
-      previous.status === next.status &&
-      previous.output === next.output &&
-      previous.error === next.error &&
-      previous.name === next.name &&
-      JSON.stringify(previous.input) === JSON.stringify(next.input)
-    )
+  switch (left.type) {
+    case "text":
+      return right.type === "text" && left.text === right.text
+    case "reasoning":
+      return right.type === "reasoning" && left.text === right.text
+    case "error":
+      return right.type === "error" && left.message === right.message
+    case "attachment":
+      return (
+        right.type === "attachment" &&
+        left.attachment.id === right.attachment.id &&
+        left.attachment.name === right.attachment.name &&
+        left.attachment.mimeType === right.attachment.mimeType &&
+        left.attachment.size === right.attachment.size &&
+        left.attachment.url === right.attachment.url
+      )
+    case "tool": {
+      if (right.type !== "tool") return false
+      const previous = left.call
+      const next = right.call
+      if (
+        previous.status !== next.status ||
+        previous.output !== next.output ||
+        previous.error !== next.error ||
+        previous.name !== next.name ||
+        previous.title !== next.title
+      ) {
+        return false
+      }
+      // Reference check skips serialising for committed calls; streaming
+      // snapshots rebuild `input`, so fall back to a structural compare.
+      return (
+        previous.input === next.input ||
+        JSON.stringify(previous.input) === JSON.stringify(next.input)
+      )
+    }
   }
-  return false
 }
 
 /** Replace the transcript with a snapshot. The composer is left alone. */

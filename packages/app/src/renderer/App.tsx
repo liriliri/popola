@@ -63,6 +63,34 @@ export function App() {
     }
   }
 
+  // Keep the slot map stable so the header component is not remounted on
+  // every App render (a new component type would unmount the host's slot).
+  const slots = useMemo(
+    () => ({
+      "shell.header": function Header() {
+        return (
+          <div className={popolaClass.shellHeader}>
+            <span>popola</span>
+            <span className="app-header__spacer" />
+            {saved ? (
+              <button
+                type="button"
+                className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
+                onClick={() => {
+                  setFormError(null)
+                  setScreen("provider")
+                }}
+              >
+                Provider
+              </button>
+            ) : null}
+          </div>
+        )
+      },
+    }),
+    [saved],
+  )
+
   return (
     <PopolaProvider
       store={store}
@@ -73,30 +101,7 @@ export function App() {
         void bridge().abort()
       }}
     >
-      <PopolaShell
-        slots={{
-          "shell.header": function Header() {
-            return (
-              <div className={popolaClass.shellHeader}>
-                <span>popola</span>
-                <span className="popola-app-header__spacer" />
-                {saved ? (
-                  <button
-                    type="button"
-                    className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
-                    onClick={() => {
-                      setFormError(null)
-                      setScreen("provider")
-                    }}
-                  >
-                    Provider
-                  </button>
-                ) : null}
-              </div>
-            )
-          },
-        }}
-      >
+      <PopolaShell slots={slots}>
         {screen === "provider" ? (
           <ProviderForm
             key={saved?.model ?? "empty"}

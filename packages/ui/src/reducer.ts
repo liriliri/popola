@@ -7,13 +7,7 @@ import type {
   PopolaStatus,
 } from "./state"
 
-/**
- * Every change to the state arrives as one of these events.
- *
- * The event set is closed on purpose: the reducer below is a pure function over
- * it, so the state can be replayed, snapshotted and reasoned about without a
- * running agent.
- */
+/** Closed event set; the reducer is a pure function over it. */
 export type PopolaEvent =
   | { type: "message.started"; message: Message }
   /** Upserts a part by id inside the message, so streaming text can replace its own part. */
@@ -37,11 +31,8 @@ export const initialState: PopolaState = {
 }
 
 /**
- * The one place state changes.
- *
- * Pure: no mutation of the input, no I/O, no clocks. It returns the *same*
- * object when an event changes nothing, so a renderer comparing snapshots by
- * identity can skip the work entirely.
+ * Pure: no mutation, I/O or clocks. Returns the same object on a no-op event,
+ * so renderers can skip work by comparing snapshots by identity.
  */
 export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
   switch (event.type) {

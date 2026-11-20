@@ -1,4 +1,15 @@
-import type { Message } from "../message/state"
+import type { Message } from "../message"
+import type { PopolaState } from "../state"
+
+export function selectMessages(state: PopolaState): Message[] {
+  return state.messages
+}
+
+export const conversationClass = {
+  conversation: "popola-conversation",
+  conversationScroll: "popola-conversation__scroll",
+  conversationEmpty: "popola-conversation__empty",
+} as const
 
 export const conversationSlot = {
   conversationEmpty: "conversation.empty",

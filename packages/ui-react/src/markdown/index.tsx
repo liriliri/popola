@@ -11,16 +11,7 @@ import { splitStreamingTokens } from "./streaming"
 const NO_TAIL: Token[] = []
 
 /**
- * Markdown text.
- *
- * The text a model produces is Markdown, so it is rendered as Markdown: a
- * heading is a heading, a list is a list, a fence is a code block. Every
- * element carries the class name the stylesheet targets, so the look is the
- * same in every framework that renders the popola UI layer.
- *
- * While the agent writes, the blocks it has finished are parsed once and kept,
- * and only the block still being written is rendered again. The words of that
- * block arrive one by one, so the eye can follow the writing.
+ * Renders Markdown; finished blocks are cached while the last block streams.
  */
 export function PopolaMarkdown(props: {
   text: string
@@ -67,14 +58,7 @@ export function PopolaMarkdown(props: {
   )
 }
 
-/**
- * The blocks that are closed.
- *
- * The head covers a piece of text, and that text alone decides how it
- * renders. While the same text stays closed, the elements from before are
- * kept, and React leaves that part of a long message alone while the rest is
- * still being written.
- */
+/** Keeps the rendered head while its source text is unchanged. */
 function useClosedBlocks(tokens: Token[], source: string): ReactNode[] {
   const cache = useRef<{ source: string; nodes: ReactNode[] } | undefined>(undefined)
 

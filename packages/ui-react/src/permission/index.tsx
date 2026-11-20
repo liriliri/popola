@@ -1,7 +1,7 @@
 import { popolaClass, selectPermissions, type PermissionDecision, type PermissionRequest } from "popola-ui"
 import className from "licia/className"
 import { usePopola } from "../context"
-import { usePopolaState } from "../use-popola-state"
+import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import type { PopolaSlots } from "../context"
 

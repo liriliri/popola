@@ -3,15 +3,8 @@ import { resolveSlot, type SlotName, type SlotPropsFor } from "popola-ui"
 import { usePopola, type PopolaSlots } from "./context"
 
 /**
- * Renders one slot.
- *
- * Looks for an implementation in the local map first (a `slots` prop on the
- * component), then the provider's map, then falls back to the built-in
- * rendering the caller supplied.
- *
- * The `base` argument names the slot family, so a host can register
- * `conversation.message.user` to change only user messages, or
- * `conversation.message` to change every message.
+ * Renders one slot using `resolveSlot` (local → global → built-in fallback).
+ * `base` names the slot family for a broader override.
  */
 export function Slot<Name extends SlotName>(props: {
   name: Name

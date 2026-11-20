@@ -3,25 +3,13 @@ import type { Token } from "markdown-it"
 import { popolaClass } from "popola-ui"
 import className from "licia/className"
 
-/**
- * Renders a Markdown token stream as React elements.
- *
- * Every element carries the class name the stylesheet targets, and nothing
- * else. The stylesheet never reaches down to a child, so the shape of the tree
- * is the renderer's own business.
- */
+/** Renders a Markdown token stream as React elements. */
 
-/** What the renderer needs to know beyond the tokens themselves. */
+/** Extra state the renderer needs beyond the tokens themselves. */
 export type RenderContext = {
-  /**
-   * The text token revealed word by word while the agent writes. It is the
-   * last text of the document, so the eye has something to follow.
-   */
+  /** Last text token, revealed word by word while the agent writes. */
   readonly reveal?: Token
-  /**
-   * The task marker of the list item being rendered: the text to remove and
-   * the state of the checkbox that replaces it.
-   */
+  /** Task marker to strip from the list item, and the checkbox replacing it. */
   readonly strip?: {
     /** The inline token the marker opens. */
     readonly parent: Token
@@ -34,12 +22,7 @@ export type RenderContext = {
   }
 }
 
-/**
- * A task marker: `- [ ] todo` or `- [x] done`.
- *
- * A marker at the very end of the item counts too — the item is a task with
- * nothing written in it yet.
- */
+/** `- [ ] todo` / `- [x] done`; an item with only a marker still counts. */
 const TASK_MARKER = /^\[([ xX])\](?:[ \t]+|$)/
 
 /** Renders the blocks of a parsed document. */
@@ -47,12 +30,7 @@ export function renderBlocks(tokens: Token[], ctx: RenderContext = {}): ReactNod
   return renderRange(tokens, 0, tokens.length, ctx)
 }
 
-/**
- * The last run of text in a document.
- *
- * This is the text the agent is still writing, so it is the text revealed
- * word by word. A document made only of code has no such run.
- */
+/** Last non-empty text token — the text still being written. */
 export function findRevealTarget(tokens: Token[]): Token | undefined {
   let target: Token | undefined
 
@@ -73,13 +51,7 @@ export function findRevealTarget(tokens: Token[]): Token | undefined {
   return target
 }
 
-/**
- * Renders a range of tokens.
- *
- * The token stream is flat: an opening token, its content, a closing token.
- * A container is rendered by walking its content and handing the result to
- * the element that wraps it.
- */
+/** Walks the flat token stream, wrapping each container's content in its element. */
 function renderRange(tokens: Token[], from: number, to: number, ctx: RenderContext): ReactNode[] {
   const out: ReactNode[] = []
   let index = from
@@ -253,12 +225,7 @@ function renderContainer(token: Token, inner: ReactNode[], key: number): ReactNo
   }
 }
 
-/**
- * A list item.
- *
- * An item whose text opens with a task marker gets a checkbox, and the marker
- * itself is dropped from the text.
- */
+/** A task item gets a checkbox and drops its marker from the text. */
 function renderListItem(
   tokens: Token[],
   open: number,
@@ -361,8 +328,7 @@ function renderLeaf(token: Token, ctx: RenderContext, key: number): ReactNode {
 
     case "html_block":
     case "html_inline":
-      // Raw HTML is shown as text. It is never parsed, so it cannot become an
-      // element the stylesheet did not ask for.
+      // Raw HTML is shown as text, never parsed into a styled element.
       return <Fragment key={key}>{token.content}</Fragment>
 
     default:
@@ -378,11 +344,7 @@ function renderText(token: Token, ctx: RenderContext, key: number): ReactNode {
   return <Fragment key={key}>{revealWords(content)}</Fragment>
 }
 
-/**
- * Words that fade in one by one, with the newest ones highlighted.
- *
- * The last two words carry the accent colour, and a cursor sits after them.
- */
+/** Words fade in; the last two keep the accent colour, followed by a cursor. */
 function revealWords(content: string): ReactNode {
   const words = content.split(" ")
 

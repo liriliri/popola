@@ -1,3 +1,67 @@
+export type PopolaRole = "user" | "assistant" | "system"
+
+export type ToolStatus = "pending" | "running" | "completed" | "error"
+
+export type ToolCall = {
+  readonly id: string
+  readonly name: string
+  readonly status: ToolStatus
+  /** Human-readable label the host may override. */
+  readonly title?: string
+  readonly input?: Record<string, unknown>
+  readonly output?: string
+  readonly error?: string
+  readonly startedAt?: number
+  readonly endedAt?: number
+}
+
+export type Attachment = {
+  readonly id: string
+  readonly name: string
+  readonly mimeType?: string
+  readonly size?: number
+  readonly url?: string
+}
+
+export type TextPart = {
+  readonly id: string
+  readonly type: "text"
+  readonly text: string
+}
+
+export type ReasoningPart = {
+  readonly id: string
+  readonly type: "reasoning"
+  readonly text: string
+}
+
+export type ToolPart = {
+  readonly id: string
+  readonly type: "tool"
+  readonly call: ToolCall
+}
+
+export type AttachmentPart = {
+  readonly id: string
+  readonly type: "attachment"
+  readonly attachment: Attachment
+}
+
+export type ErrorPart = {
+  readonly id: string
+  readonly type: "error"
+  readonly message: string
+}
+
+export type Part = TextPart | ReasoningPart | ToolPart | AttachmentPart | ErrorPart
+
+export type Message = {
+  readonly id: string
+  readonly role: PopolaRole
+  readonly parts: Part[]
+  readonly createdAt?: number
+}
+
 export const messageClass = {
   message: "popola-message",
   messageUser: "popola-message--user",
@@ -32,10 +96,6 @@ export const messageClass = {
   toolCallRunning: "popola-tool-call--running",
   toolCallCompleted: "popola-tool-call--completed",
   toolCallError: "popola-tool-call--error",
-  /**
-   * State modifiers that live on the element they style. The stylesheet never
-   * reaches down to a child, so a renderer is free to nest differently.
-   */
   toolCallLabelRunning: "popola-tool-call__label--running",
   toolCallStatusError: "popola-tool-call__status--error",
 
@@ -56,3 +116,19 @@ export const messageClass = {
 
   error: "popola-error",
 } as const
+
+export const messageSlot = {
+  reasoning: "conversation.reasoning",
+  partText: "conversation.part.text",
+  tool: "conversation.tool",
+  attachment: "conversation.attachment",
+  error: "conversation.error",
+} as const
+
+export type MessageSlotProps = {
+  "conversation.reasoning": { text: string }
+  "conversation.part.text": { text: string; streaming: boolean }
+  "conversation.tool": { call: ToolCall }
+  "conversation.attachment": { attachment: Attachment }
+  "conversation.error": { message: string }
+}

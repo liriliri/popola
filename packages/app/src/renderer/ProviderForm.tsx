@@ -25,13 +25,13 @@ export function ProviderForm(props: {
 
   return (
     <form
-      className="popola-setup"
+      className="app-setup"
       onSubmit={(event) => {
         event.preventDefault()
         props.onSave(draft)
       }}
     >
-      <div className="popola-setup__intro">
+      <div className="app-setup__intro">
         <h1>Provider</h1>
         <p>Point the agent at an OpenAI-compatible endpoint. The key stays on this machine.</p>
       </div>
@@ -74,9 +74,9 @@ export function ProviderForm(props: {
         />
       </label>
 
-      {props.error ? <p className="popola-setup__error">{props.error}</p> : null}
+      {props.error ? <p className="app-setup__error">{props.error}</p> : null}
 
-      <div className="popola-setup__actions">
+      <div className="app-setup__actions">
         <button
           type="submit"
           className={`${popolaClass.button} ${popolaClass.buttonPrimary}`}
@@ -90,7 +90,7 @@ export function ProviderForm(props: {
           </button>
         ) : null}
       </div>
-      <p className="popola-setup__note">Saving starts a new session.</p>
+      <p className="app-setup__note">Saving starts a new session.</p>
     </form>
   )
 }

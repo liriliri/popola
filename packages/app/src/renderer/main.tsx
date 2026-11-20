@@ -1,7 +1,7 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { App } from "./App"
-import "popola-ui/styles.css"
+import "popola-ui/style.css"
 import "./app.css"
 
 const root = document.getElementById("root")

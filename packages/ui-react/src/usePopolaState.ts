@@ -3,15 +3,9 @@ import type { PopolaState } from "popola-ui"
 import { usePopola } from "./context"
 
 /**
- * Reads a slice of the state and re-renders when that slice changes.
- *
- * The snapshot is cached against the state object, and the reducer returns the
- * same object when nothing changed — so an event that does not touch the
- * selected slice never recomputes it, and never re-renders this component.
- *
- * Selectors should return primitives or stable references. Returning a fresh
- * object each time defeats the comparison and re-renders on every store
- * change.
+ * Reads a slice of state; re-renders only when that slice changes.
+ * Selectors must return primitives or stable references — a fresh object each
+ * call defeats the comparison and re-renders on every store change.
  */
 export function usePopolaState<T>(selector: (state: PopolaState) => T): T {
   const store = usePopola().store

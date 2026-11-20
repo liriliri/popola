@@ -11,13 +11,13 @@
  *    whole UI, and a host can override any token on any container because
  *    custom properties inherit.
  *
- * Import once: `import "popola-ui/styles.css"`.
+ * Import once: `import "popola-ui/style.css"`.
  */
 
 @import "./tokens.css";
-@import "./shell/styles.css";
-@import "./conversation/styles.css";
-@import "./message/styles.css";
-@import "./composer/styles.css";
-@import "./permission/styles.css";
-@import "./markdown/styles.css";
+@import "./shell/style.css";
+@import "./conversation/style.css";
+@import "./message/style.css";
+@import "./composer/style.css";
+@import "./permission/style.css";
+@import "./markdown/style.css";

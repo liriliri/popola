@@ -18,7 +18,20 @@ const markdownEngine = MarkdownIt({
   breaks: false,
 })
 
+/** Bounded cache: the same text is re-parsed on remounts and the final frame. */
+const CACHE_LIMIT = 4
+const parseCache = new Map<string, Token[]>()
+
 /** Parses Markdown into the token stream the renderer walks. */
 export function parseMarkdown(text: string): Token[] {
-  return markdownEngine.parse(text, {})
+  const cached = parseCache.get(text)
+  if (cached) return cached
+
+  const tokens = markdownEngine.parse(text, {})
+  if (parseCache.size >= CACHE_LIMIT) {
+    const oldest = parseCache.keys().next().value
+    if (oldest !== undefined) parseCache.delete(oldest)
+  }
+  parseCache.set(text, tokens)
+  return tokens
 }

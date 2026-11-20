@@ -1,11 +1,4 @@
-/**
- * Class names for rendered Markdown.
- *
- * The stylesheet targets these names and nothing else, so a renderer in any
- * framework produces the same look by using the same strings. Every element a
- * Markdown document produces carries its own class — the stylesheet never
- * reaches down to a child, so a renderer is free to nest differently.
- */
+/** Class names for rendered Markdown. See `popolaClass` for the style contract. */
 export const markdownClass = {
   /** The container every Markdown block renders inside. */
   markdown: "popola-markdown",

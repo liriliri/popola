@@ -1,11 +1,9 @@
 import type { Token } from "markdown-it"
 
 /**
- * A link reference definition: `[label]: https://example.com`.
- *
- * A definition may sit after the link that uses it, so a document that holds
- * one stays mutable from the start. Splitting it could leave a link in the
- * closed part pointing at a definition that has not arrived yet.
+ * Link reference definitions (`[label]: url`) may appear after their link, so
+ * a document containing one stays mutable from the start — splitting could
+ * strand a link in the closed head.
  */
 const REFERENCE_DEFINITION = /^[ \t]{0,3}\[[^\]\n]+\]:/m
 
@@ -24,22 +22,13 @@ export type MarkdownSplit = {
 }
 
 /**
- * Splits a parsed document into the blocks that are closed and the block that
- * is still open.
- *
- * A block is closed once the next block has started, so the head is always a
- * whole number of blocks — a document the renderer can keep. The tail holds
- * the last block, which more text can still extend.
- *
- * The tokens are split rather than the text, so the document is parsed once
- * and not again.
+ * Splits tokens into closed blocks (`head`) and the still-open last block
+ * (`tail`). Splitting tokens, not text, avoids re-parsing the document.
  */
 export function splitStreamingTokens(text: string, tokens: Token[]): MarkdownSplit {
   if (REFERENCE_DEFINITION.test(text)) return { head: [], tail: tokens, headSource: "" }
 
-  // The last token that opens at the outermost level starts the block that is
-  // still being written. A closing token sits at that level too, so it is
-  // left out.
+  // The last level-0 opening token starts the block still being written.
   let start = -1
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index]!

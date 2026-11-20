@@ -1,7 +1,7 @@
 export { PopolaProvider, usePopola, useResolvedTheme } from "./context"
 export type { PopolaContextValue, PopolaSendPayload, PopolaSlots, PopolaTheme } from "./context"
 
-export { usePopolaState } from "./use-popola-state"
+export { usePopolaState } from "./usePopolaState"
 
 export { Slot } from "./slot"
 
@@ -12,6 +12,6 @@ export { PopolaPermissions, DefaultPermission } from "./permission/index"
 
 export { PopolaCard, DefaultPart, DefaultToolCall } from "./message/index"
 
-export { PopolaStreamingText, PopolaTypingIndicator, useStreamingWords } from "./message/streaming"
+export { PopolaTypingIndicator } from "./message/streaming"
 
 export { PopolaMarkdown } from "./markdown"

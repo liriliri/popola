@@ -1,20 +1,26 @@
 # popola-ui
 
-Framework-agnostic core of the popola UI: state, slots, class names, and the stylesheet. No React and no DOM, so the same module can run in an Electron main process.
+Framework-agnostic core: state, slots, class names, stylesheet. No React/DOM, so
+it runs in an Electron main process.
 
 ```ts
 import { createStore } from "popola-ui"
-import "popola-ui/styles.css"
+import "popola-ui/style.css"
 
 const store = createStore()
 store.dispatch({ type: "status", status: "busy" })
 ```
 
-`require("popola-ui")` loads the CommonJS build. Bundlers that ask for the `module` condition get the ESM build. `popola-ui/styles.css` is the authored stylesheet; it targets the `popolaClass` names and reads every visual decision from a token.
+- `require("popola-ui")` → CommonJS; `module` condition → ESM.
+- `popola-ui/style.css` is the authored stylesheet (not built); it targets
+  `popolaClass` names and reads visual values from tokens.
 
 ```
 src/
-  shell/  conversation/  message/  composer/  permission/  markdown/
+  shell/ conversation/ message/ composer/ permission/ markdown/
+    index.ts      data, selectors, slots, class names
+    style.css    authored CSS
 ```
 
-Each directory holds that component's data, selectors, slot contract, class names, and styles. The package entry re-exports them as one state, one slot map, and one class map.
+Each domain is one `index.ts` plus a standalone `style.css`; root aggregators
+re-export one state, one slot map, one class map.

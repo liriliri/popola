@@ -1,8 +1,8 @@
-import { composerSlot, type ComposerSlotProps } from "./composer/slots"
-import { conversationSlot, type ConversationSlotProps } from "./conversation/slots"
-import { messageSlot, type MessageSlotProps } from "./message/slots"
-import { permissionSlot, type PermissionSlotProps } from "./permission/slots"
-import { shellSlot, type ShellSlotProps } from "./shell/slots"
+import { composerSlot, type ComposerSlotProps } from "./composer"
+import { conversationSlot, type ConversationSlotProps } from "./conversation"
+import { messageSlot, type MessageSlotProps } from "./message"
+import { permissionSlot, type PermissionDecision, type PermissionSlotProps } from "./permission"
+import { shellSlot, type ShellSlotProps } from "./shell"
 
 /**
  * The slot catalogue.
@@ -34,14 +34,9 @@ export type ToolSlotName = `conversation.tool.${string}`
 
 export type SlotName = PopolaSlotName | ToolSlotName
 
-export type { PermissionDecision } from "./permission/slots"
+export type { PermissionDecision }
 
-/**
- * The props each slot receives.
- *
- * These are plain data plus callbacks — no framework types — so the same
- * contract holds for React, Vue or anything else.
- */
+/** Plain data plus callbacks — no framework types. */
 export type SlotProps = ShellSlotProps &
   ConversationSlotProps &
   MessageSlotProps &
@@ -55,24 +50,10 @@ export type SlotPropsFor<Name extends SlotName> = Name extends `conversation.too
     : Record<string, never>
 
 /**
- * Picks the implementation for a slot.
- *
- * Precedence, most specific first:
- *
- * 1. the exact name in the local map (a prop on the component)
- * 2. the family base in the local map
- * 3. the exact name in the global map (the provider)
- * 4. the family base in the global map
- *
- * Scope wins before specificity: a slot handed to one component beats a slot
- * the provider registers for everything, because the narrower scope is the
- * more deliberate override. Within a scope, the exact name beats the family
- * base.
- *
- * When nothing matches the caller falls back to the built-in rendering.
- *
- * The value type is generic so this stays free of any framework's component
- * type; a renderer passes its own.
+ * Picks a slot implementation. Scope beats specificity: local (component)
+ * slots win over global (provider) ones; within each, the exact name wins over
+ * the family base. Order: local exact → local base → global exact → global
+ * base. No match means the caller uses its built-in rendering.
  */
 export function resolveSlot<T>(
   local: Partial<Record<SlotName, T>> | undefined,

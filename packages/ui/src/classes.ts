@@ -1,22 +1,14 @@
-import { composerClass } from "./composer/classes"
-import { conversationClass } from "./conversation/classes"
-import { markdownClass } from "./markdown/classes"
-import { messageClass } from "./message/classes"
-import { permissionClass } from "./permission/classes"
-import { shellClass } from "./shell/classes"
+import { composerClass } from "./composer"
+import { conversationClass } from "./conversation"
+import { markdownClass } from "./markdown"
+import { messageClass } from "./message"
+import { permissionClass } from "./permission"
+import { shellClass } from "./shell"
 
 /**
- * Class names are part of the public contract.
- *
- * The stylesheet in `popola-ui/styles.css` targets these names and nothing else,
- * so a renderer in any framework produces the same look by using the same
- * strings. Two rules keep that true:
- *
- * 1. Styles depend on class names only — never on DOM shape. No descendant or
- *    child selectors that assume a particular nesting. A renderer is free to
- *    wrap things differently.
- * 2. Names are stable. Renaming one is a breaking change for every host that
- *    styled around it.
+ * Class names are the public style contract: the stylesheet targets these
+ * strings only, never DOM shape, so any renderer can nest freely. Renaming one
+ * is a breaking change for hosts that styled around it.
  */
 export const popolaClass = {
   ...shellClass,

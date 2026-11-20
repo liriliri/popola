@@ -5,11 +5,11 @@ body,
   margin: 0;
 }
 
-.popola-app-header__spacer {
+.app-header__spacer {
   flex: 1;
 }
 
-.popola-setup {
+.app-setup {
   width: 100%;
   max-width: var(--popola-column);
   padding: var(--popola-space-5) var(--popola-space-4);
@@ -18,24 +18,24 @@ body,
   gap: var(--popola-space-4);
 }
 
-.popola-setup__intro h1 {
+.app-setup__intro h1 {
   margin: 0;
   font-size: var(--popola-text-size-md);
   font-weight: 600;
 }
 
-.popola-setup__intro p,
-.popola-setup__note {
+.app-setup__intro p,
+.app-setup__note {
   margin: var(--popola-space-2) 0 0;
   color: var(--popola-text-muted);
 }
 
-.popola-setup__note {
+.app-setup__note {
   margin: 0;
   font-size: var(--popola-text-size-sm);
 }
 
-.popola-setup label {
+.app-setup label {
   display: flex;
   flex-direction: column;
   gap: var(--popola-space-1);
@@ -43,7 +43,7 @@ body,
   font-size: var(--popola-text-size-sm);
 }
 
-.popola-setup input {
+.app-setup input {
   width: 100%;
   border: 1px solid var(--popola-border-base);
   border-radius: var(--popola-radius-md);
@@ -56,16 +56,16 @@ body,
   outline: none;
 }
 
-.popola-setup input:focus {
+.app-setup input:focus {
   border-color: var(--popola-accent-base);
 }
 
-.popola-setup__actions {
+.app-setup__actions {
   display: flex;
   gap: var(--popola-space-2);
 }
 
-.popola-setup__error {
+.app-setup__error {
   margin: 0;
   color: var(--popola-danger-base);
 }

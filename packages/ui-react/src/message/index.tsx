@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { popolaClass, type Message, type Part, type ToolCall } from "popola-ui"
 import className from "licia/className"
 import { Slot } from "../slot"
@@ -5,12 +6,7 @@ import { PopolaMarkdown } from "../markdown"
 import { PopolaTypingIndicator } from "./streaming"
 import type { PopolaSlots } from "../context"
 
-/**
- * The built-in renderings.
- *
- * Each one is a plain component a host can reuse directly, or replace through
- * the matching slot.
- */
+/** Built-in renderings; hosts can reuse them or replace them via slots. */
 
 /* ── icons ────────────────────────────────────────────────────────────────── */
 
@@ -67,12 +63,7 @@ function formatInput(input: Record<string, unknown> | undefined): string {
   }
 }
 
-/**
- * A tool call: one collapsible row.
- *
- * The row always shows what ran, the argument summary and whether it is still
- * running or failed. The panel below holds the request and the result.
- */
+/** A collapsible tool row: summary always visible, request/result in a panel. */
 export function DefaultToolCall(props: { call: ToolCall }) {
   const { call } = props
 
@@ -137,19 +128,12 @@ export function DefaultPart(props: {
   slots?: PopolaSlots
   streaming?: boolean
 }) {
-  return <div className={popolaClass.part}>{renderPart(props)}</div>
-}
-
-function renderPart(props: {
-  part: Part
-  slots?: PopolaSlots
-  streaming?: boolean
-}) {
   const { part, slots } = props
+  let content: ReactNode
 
   switch (part.type) {
     case "text":
-      return (
+      content = (
         <Slot
           name="conversation.part.text"
           slotProps={{ text: part.text, streaming: props.streaming ?? false }}
@@ -157,9 +141,10 @@ function renderPart(props: {
           fallback={<PopolaMarkdown text={part.text} streaming={props.streaming} />}
         />
       )
+      break
 
     case "reasoning":
-      return (
+      content = (
         <Slot
           name="conversation.reasoning"
           slotProps={{ text: part.text }}
@@ -167,9 +152,10 @@ function renderPart(props: {
           fallback={<div className={popolaClass.reasoning}>{part.text}</div>}
         />
       )
+      break
 
     case "tool":
-      return (
+      content = (
         <Slot
           name={`conversation.tool.${part.call.name}`}
           base="conversation.tool"
@@ -178,9 +164,10 @@ function renderPart(props: {
           fallback={<DefaultToolCall call={part.call} />}
         />
       )
+      break
 
     case "attachment":
-      return (
+      content = (
         <Slot
           name="conversation.attachment"
           slotProps={{ attachment: part.attachment }}
@@ -192,9 +179,10 @@ function renderPart(props: {
           }
         />
       )
+      break
 
     case "error":
-      return (
+      content = (
         <Slot
           name="conversation.error"
           slotProps={{ message: part.message }}
@@ -202,7 +190,10 @@ function renderPart(props: {
           fallback={<div className={popolaClass.error}>{part.message}</div>}
         />
       )
+      break
   }
+
+  return <div className={popolaClass.part}>{content}</div>
 }
 
 /* ── message card ─────────────────────────────────────────────────────────── */
