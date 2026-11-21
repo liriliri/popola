@@ -11,6 +11,7 @@
     "declarationMap": false,
     "composite": false,
     "paths": {
+      "popola-protocol": ["../protocol/src/index.ts"],
       "popola-ui": ["../ui/src/index.ts"],
       "popola-ui-react": ["../ui-react/src/index.ts"]
     }

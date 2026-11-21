@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>
 
 function show(store = createStore()) {
   return (
-    <Stage store={store} onSend={() => {}} onStop={() => store.dispatch({ type: "status", status: "idle" })}>
+    <Stage store={store} onSend={() => {}} onStop={() => store.dispatch({ type: "turn.completed", turnID: "story" })}>
       <div style={{ flex: 1 }} />
       <PopolaComposer />
     </Stage>

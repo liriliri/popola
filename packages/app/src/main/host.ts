@@ -1,74 +1,26 @@
 import { readFile, writeFile } from "node:fs/promises"
-import type { AgentTool } from "@earendil-works/pi-agent-core"
-import { Agent } from "@earendil-works/pi-agent-core"
-import type { Model } from "@earendil-works/pi-ai"
-import {
-  createBashToolDefinition,
-  createEditToolDefinition,
-  createReadToolDefinition,
-  createWriteToolDefinition,
-} from "@earendil-works/pi-coding-agent"
+import { initialState, reduce, selectSnapshot } from "popola-ui"
+import type { AgentEvent, AgentSession, PermissionDecision, PopolaState } from "popola-ui"
 import isErr from "licia/isErr"
 import rtrim from "licia/rtrim"
+import { createPiSession } from "./adapters/pi"
 import type { HostEvent, ProviderConfig } from "../shared/types"
-import { serializeMessages } from "./serialize"
 
-const SYSTEM_PROMPT = `You are a coding assistant running inside the Popola test app.
-You can read, edit, and write files, and run shell commands in the workspace.
-Be concise and prefer making concrete code changes when asked.`
+const NOTICE_ID = "host-notice"
 
-function asTool(definition: {
-  name: string
-  label: string
-  description: string
-  parameters: AgentTool["parameters"]
-  prepareArguments?: AgentTool["prepareArguments"]
-  execute: Function
-}): AgentTool {
-  const execute = definition.execute as (
-    toolCallId: string,
-    params: unknown,
-    signal: AbortSignal | undefined,
-    onUpdate: unknown,
-    ctx: unknown,
-  ) => Promise<Awaited<ReturnType<AgentTool["execute"]>>>
-
-  return {
-    name: definition.name,
-    label: definition.label,
-    description: definition.description,
-    parameters: definition.parameters,
-    prepareArguments: definition.prepareArguments,
-    execute: (toolCallId, params, signal, onUpdate) => execute(toolCallId, params, signal, onUpdate, undefined),
-  }
-}
-
-function createModel(config: ProviderConfig): Model<"openai-completions"> {
-  return {
-    id: config.model,
-    name: config.model,
-    api: "openai-completions",
-    provider: config.provider,
-    baseUrl: config.baseUrl,
-    reasoning: false,
-    input: ["text"],
-    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
-    contextWindow: 128000,
-    maxTokens: 8192,
-  }
-}
-
-function errorText(error: unknown): string {
-  return isErr(error) && error.message ? error.message : "The request failed."
-}
-
+/**
+ * Owns the agent session and mirrors its state.
+ *
+ * The mirror exists so a renderer that joins mid-run can be handed a
+ * `session.snapshot` instead of the whole event history.
+ */
 export class AgentHost {
-  private agent: Agent | null = null
-  private unsubscribe: (() => void) | null = null
+  private session: AgentSession | null = null
+  private state: PopolaState = initialState
   private config: ProviderConfig | null = null
-  private running = false
-  private notice: string | null = null
   private readonly listeners = new Set<(event: HostEvent) => void>()
+  /** Counts recreations, so a losing one can drop its session. */
+  private generation = 0
 
   constructor(
     private readonly cwd: string,
@@ -77,14 +29,14 @@ export class AgentHost {
 
   onEvent(listener: (event: HostEvent) => void): () => void {
     this.listeners.add(listener)
-    return () => this.listeners.delete(listener)
+    return () => {
+      this.listeners.delete(listener)
+    }
   }
 
-  snapshot(): HostEvent[] {
-    return [
-      { type: "messages", messages: this.messages() },
-      { type: "running", running: this.running },
-    ]
+  /** The current state, for a client that connects after the run started. */
+  snapshot(): HostEvent {
+    return { type: "session.snapshot", snapshot: selectSnapshot(this.state) }
   }
 
   getProvider(): ProviderConfig | null {
@@ -101,100 +53,110 @@ export class AgentHost {
     const config = parseProvider(JSON.parse(raw) as unknown)
     if (!config) return
     this.config = config
-    this.recreate()
+    await this.recreate()
   }
 
   async setProvider(input: unknown): Promise<string | null> {
     const config = parseProvider(input)
     if (!config) return "Fill in the provider, base URL, API key, and model."
     await writeFile(this.file, JSON.stringify(config), { mode: 0o600 })
-    const wasRunning = this.running
     this.config = config
-    this.notice = null
-    this.recreate()
-    if (wasRunning) this.emit({ type: "running", running: false })
-    this.emitMessages()
+    await this.recreate()
     return null
   }
 
   async prompt(text: string): Promise<void> {
     const trimmed = text.trim()
     if (!trimmed) return
-    if (!this.agent || !this.config) {
-      this.notice = "Save a provider before sending."
-      this.emitMessages()
+    if (!this.session) {
+      this.setNotice("Save a provider before sending.")
       return
     }
-    this.notice = null
+    this.setNotice(null)
     try {
-      await this.agent.prompt(trimmed)
+      await this.session.prompt(trimmed)
     } catch (error) {
-      this.notice = errorText(error)
-      this.running = false
-      this.emit({ type: "running", running: false })
-      this.emitMessages()
+      this.setNotice(errorText(error))
     }
   }
 
   abort(): void {
-    this.agent?.abort()
+    this.session?.interrupt()
   }
 
-  private messages() {
-    const state = this.agent?.state
-    return serializeMessages(
-      state?.messages ?? [],
-      state?.streamingMessage ?? null,
-      this.running,
-      this.notice,
-    )
+  /** Answers an approval prompt the agent raised. */
+  respondToPermission(id: string, decision: PermissionDecision): void {
+    this.session?.respondToPermission(id, decision)
   }
 
-  private emit(event: HostEvent): void {
+  /** Applies an event to the mirror and forwards it to every listener. */
+  private handle(event: AgentEvent): void {
+    this.state = reduce(this.state, event)
     for (const listener of this.listeners) listener(event)
   }
 
-  private emitMessages(): void {
-    this.emit({ type: "messages", messages: this.messages() })
+  /** A notice is an assistant message with an error part; clearing removes it. */
+  private setNotice(text: string | null): void {
+    if (!text) {
+      if (!this.state.messages.some((message) => message.id === NOTICE_ID)) return
+      this.handle({ type: "message.removed", messageID: NOTICE_ID })
+      return
+    }
+    this.handle({
+      type: "message.started",
+      message: { id: NOTICE_ID, role: "assistant", parts: [] },
+    })
+    this.handle({
+      type: "message.part",
+      messageID: NOTICE_ID,
+      part: { id: `${NOTICE_ID}:error`, type: "error", message: text },
+    })
   }
 
-  private recreate(): void {
-    if (!this.config) return
-    this.agent?.abort()
-    this.unsubscribe?.()
-    this.running = false
-
+  private async recreate(): Promise<void> {
+    const generation = ++this.generation
     const config = this.config
-    const agent = new Agent({
-      initialState: {
-        systemPrompt: SYSTEM_PROMPT,
-        model: createModel(config),
-        thinkingLevel: "off",
-        tools: [
-          asTool(createReadToolDefinition(this.cwd)),
-          asTool(createBashToolDefinition(this.cwd)),
-          asTool(createEditToolDefinition(this.cwd)),
-          asTool(createWriteToolDefinition(this.cwd)),
-        ],
+    if (!config) {
+      this.session?.close()
+      this.session = null
+      return
+    }
+
+    // The session is created through the protocol factory, so the host never
+    // depends on which adapter it drives.
+    const session = await createPiSession({
+      model: {
+        provider: config.provider,
+        baseUrl: config.baseUrl,
+        apiKey: config.apiKey,
+        model: config.model,
       },
-      getApiKey: () => this.config?.apiKey,
+      cwd: this.cwd,
+      // This app is the test host for the whole chain, approvals included.
+      askPermission: true,
     })
 
-    this.unsubscribe = agent.subscribe((event) => {
-      if (event.type === "message_start" || event.type === "message_update" || event.type === "message_end") {
-        this.emitMessages()
-      } else if (event.type === "agent_start") {
-        this.running = true
-        this.emit({ type: "running", running: true })
-      } else if (event.type === "agent_end") {
-        this.running = false
-        this.emit({ type: "running", running: false })
-        this.emitMessages()
-      }
+    // A newer recreation won while this one was waiting.
+    if (generation !== this.generation) {
+      session.close()
+      return
+    }
+
+    const previous = this.session
+    this.session = session
+    previous?.close()
+
+    this.session.subscribe((event) => {
+      this.handle(event)
     })
 
-    this.agent = agent
+    // A new session starts with an empty transcript.
+    this.handle({ type: "session.snapshot", snapshot: selectSnapshot(initialState) })
   }
+}
+
+function errorText(error: unknown): string {
+  return isErr(error) && error.message ? error.message : "The request failed."
 }
 
 export function parseProvider(input: unknown): ProviderConfig | null {

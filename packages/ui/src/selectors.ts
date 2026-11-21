@@ -1,3 +1,4 @@
+import type { AgentSnapshot } from "popola-protocol"
 import type { PopolaState } from "./state"
 
 /** Pure state readers; memoisation is the renderer's job. */
@@ -15,4 +16,21 @@ export const selectCanStop = selectIsBusy
 
 export function selectError(state: PopolaState): string | undefined {
   return state.error
+}
+
+/**
+ * The agent state as the protocol describes it. A host sends this to a client
+ * that joins after a run started, so it replaces everything except the composer.
+ */
+export function selectSnapshot(state: PopolaState): AgentSnapshot {
+  return {
+    status: state.status,
+    messages: state.messages,
+    permissions: state.permissions,
+    error: state.error,
+    usage: state.usage,
+    plan: state.plan,
+    model: state.model,
+    modeID: state.modeID,
+  }
 }

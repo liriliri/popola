@@ -1,27 +1,26 @@
-import type {
-  Attachment,
-  Message,
-  Part,
-  PermissionRequest,
-  PopolaState,
-  PopolaStatus,
-} from "./state"
+import type { AgentEvent } from "popola-protocol"
+import type { Attachment, PopolaState } from "./state"
 
-/** Closed event set; the reducer is a pure function over it. */
-export type PopolaEvent =
-  | { type: "message.started"; message: Message }
-  /** Upserts a part by id inside the message, so streaming text can replace its own part. */
-  | { type: "message.part"; messageID: string; part: Part }
-  | { type: "message.removed"; messageID: string }
-  | { type: "permission.requested"; request: PermissionRequest }
-  | { type: "permission.resolved"; id: string }
+/**
+ * Events that belong to the UI, not to the agent contract.
+ *
+ * The composer is local to the renderer; an agent never touches it.
+ */
+export type PopolaUiEvent =
   | { type: "composer.text"; text: string }
   | { type: "composer.attachmentAdded"; attachment: Attachment }
   | { type: "composer.attachmentRemoved"; id: string }
   | { type: "composer.cleared" }
-  | { type: "status"; status: PopolaStatus }
-  | { type: "failed"; message: string }
   | { type: "reset" }
+
+/**
+ * Closed event set; the reducer is a pure function over it.
+ *
+ * `AgentEvent` carries everything an agent adapter produces. `PopolaUiEvent`
+ * adds the composer. The run status is derived from the turn lifecycle rather
+ * than set on its own, so there is exactly one source of truth for it.
+ */
+export type PopolaEvent = AgentEvent | PopolaUiEvent
 
 export const initialState: PopolaState = {
   status: "idle",
@@ -36,6 +35,44 @@ export const initialState: PopolaState = {
  */
 export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
   switch (event.type) {
+    case "session.snapshot": {
+      const { snapshot } = event
+      return {
+        ...state,
+        status: snapshot.status,
+        messages: snapshot.messages,
+        permissions: snapshot.permissions,
+        error: snapshot.error,
+        usage: snapshot.usage,
+        plan: snapshot.plan,
+        model: snapshot.model,
+        modeID: snapshot.modeID,
+      }
+    }
+
+    case "session.started": {
+      return state
+    }
+
+    case "turn.started": {
+      if (state.status === "busy") return state
+      return { ...state, status: "busy" }
+    }
+
+    case "turn.completed": {
+      if (state.status === "idle") return state
+      return { ...state, status: "idle", error: undefined }
+    }
+
+    case "turn.canceled": {
+      if (state.status === "idle") return state
+      return { ...state, status: "idle" }
+    }
+
+    case "turn.failed": {
+      return { ...state, status: "error", error: event.error }
+    }
+
     case "message.started": {
       if (state.messages.some((message) => message.id === event.message.id)) return state
       return { ...state, messages: [...state.messages, event.message] }
@@ -79,6 +116,24 @@ export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
       return { ...state, permissions }
     }
 
+    case "usage": {
+      return { ...state, usage: event.usage }
+    }
+
+    case "plan": {
+      return { ...state, plan: event.entries }
+    }
+
+    case "model.changed": {
+      if (state.model === event.model) return state
+      return { ...state, model: event.model }
+    }
+
+    case "mode.changed": {
+      if (state.modeID === event.modeID) return state
+      return { ...state, modeID: event.modeID }
+    }
+
     case "composer.text": {
       if (state.composer.text === event.text) return state
       return { ...state, composer: { ...state.composer, text: event.text } }
@@ -101,15 +156,6 @@ export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
     case "composer.cleared": {
       if (state.composer.text === "" && state.composer.attachments.length === 0) return state
       return { ...state, composer: { text: "", attachments: [] } }
-    }
-
-    case "status": {
-      if (state.status === event.status) return state
-      return { ...state, status: event.status }
-    }
-
-    case "failed": {
-      return { ...state, status: "error", error: event.message }
     }
 
     case "reset": {

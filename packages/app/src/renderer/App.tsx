@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 import isErr from "licia/isErr"
 import { createStore, popolaClass } from "popola-ui"
+import { isAgentEvent } from "popola-protocol"
 import type { ProviderConfig } from "../shared/types"
 import { PopolaProvider, PopolaShell } from "popola-ui-react"
 import { bridge } from "./bridge"
 import { ProviderForm } from "./ProviderForm"
-import { applySnapshot } from "./snapshot"
 
 type Screen = "loading" | "provider" | "chat"
 
@@ -28,10 +28,9 @@ export function App() {
         setSaved(provider)
         setScreen(provider ? "chat" : "provider")
         unsubscribe = api.onEvent((event) => {
-          if (event.type === "messages") applySnapshot(store, event.messages)
-          if (event.type === "running") {
-            store.dispatch({ type: "status", status: event.running ? "busy" : "idle" })
-          }
+          // The main process is the source, but the payload still crosses a
+          // process boundary: validate it before it reaches the reducer.
+          if (isAgentEvent(event)) store.dispatch(event)
         })
       } catch (error) {
         if (cancelled) return
@@ -100,6 +99,9 @@ export function App() {
       }}
       onStop={() => {
         void bridge().abort()
+      }}
+      onPermissionReply={(id, decision) => {
+        void bridge().respondToPermission(id, decision)
       }}
     >
       <PopolaShell slots={slots}>

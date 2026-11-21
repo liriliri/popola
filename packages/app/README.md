@@ -19,6 +19,15 @@ First launch asks for an OpenAI-compatible endpoint (`provider`, `baseUrl`,
 `apiKey`, `model`), saved to `<userData>/provider.json` (mode `0600`). Saving
 starts a new session; the header's **Provider** button reopens the form.
 
+## Approvals
+
+Every tool call raises an approval prompt before it runs, because this app is
+the test host for the whole chain. The prompt offers **Allow once**,
+**Always allow** and **Reject**. "Always allow" is remembered for the rest of
+the session, but only for the exact tool and resource that were shown — a grant
+for `ls -la` does not cover `rm -rf build`, and a grant for one file does not
+cover another.
+
 ## Commands
 
 ```bash
@@ -34,13 +43,13 @@ npm run clean       # dist, tsbuildinfo, .data
 src/
   main/
     index.ts      window, IPC handlers, dev/prod loading
-    host.ts       AgentHost: lifecycle, events, provider config
-    serialize.ts  pi messages → popola Message/Part
+    host.ts       AgentHost: session lifecycle, state mirror, event fan-out
+    adapters/
+      pi.ts            pi agent → popola-protocol events
   preload.cjs     contextBridge exposing window.popola
   renderer/
     App.tsx       provider form + PopolaProvider + PopolaShell
     bridge.ts     typed wrapper around window.popola
-    snapshot.ts   applies a messages snapshot into the store
   shared/types.ts main/renderer wire contract (HostEvent, ProviderConfig)
 ```
 
@@ -53,11 +62,20 @@ through `window.popola`:
 | `provider:set` | invoke | config → `{ ok } \| { ok: false, error }` |
 | `prompt` | invoke | text |
 | `abort` | invoke | — |
-| `host:listen` | send | triggers `snapshot()` replay |
-| `host-event` | push | `messages` or `running` |
+| `permission:reply` | invoke | id + decision → — |
+| `host:listen` | send | triggers the `session.snapshot` replay |
+| `host-event` | push | one `popola-protocol` `AgentEvent` |
 
-A `messages` event is a full transcript; `applySnapshot` diffs it and dispatches
-only changes, keeping message/part identities.
+`host-event` carries protocol events only. `adapters/pi.ts` maps pi's own event
+vocabulary onto `AgentEvent`, the host mirrors them through the state core, and
+the renderer dispatches them straight into the store — no diffing in the
+renderer. A renderer that connects mid-run is handed a `session.snapshot`
+instead of the whole event history.
+
+The host never names a concrete adapter: it asks the protocol's
+`AgentSessionFactory` for a session (`adapters/pi.ts` exports
+`createPiSession`), so a second adapter can be registered beside pi without
+touching the host.
 
 ## Security
 

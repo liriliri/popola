@@ -12,6 +12,7 @@ export default defineConfig({
     alias: [
       { find: /^popola-ui-react$/, replacement: path.resolve(here, "../ui-react/src/index.ts") },
       { find: /^popola-ui$/, replacement: path.resolve(here, "../ui/src/index.ts") },
+      { find: /^popola-protocol$/, replacement: path.resolve(here, "../protocol/src/index.ts") },
     ],
   },
   server: {

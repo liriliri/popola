@@ -84,7 +84,7 @@ function Stage(props: { store: PopolaStore }) {
         })
       }}
       onStop={() => {
-        props.store.dispatch({ type: "status", status: "idle" })
+        props.store.dispatch({ type: "turn.completed", turnID: "story" })
       }}
     >
       <PopolaShell title="popola" />

@@ -1,0 +1,29 @@
+{
+  "name": "popola-protocol",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Transport-neutral contract between an agent runtime and the popola UI layer.",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "module": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -b && tsc -p tsconfig.cjs.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.13",
+    "typescript": "7.0.2"
+  }
+}

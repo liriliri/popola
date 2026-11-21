@@ -1,8 +1,9 @@
 # popola
 
 Embed a coding agent's UI into any Electron or React app. `popola-ui` is a
-framework-agnostic state core; `popola-ui-react` renders it with React. Bring
-your own store and agent transport.
+framework-agnostic state core; `popola-ui-react` renders it with React;
+`popola-protocol` is the transport-neutral contract between an agent runtime
+and the UI. Bring your own store and agent transport.
 
 ## Install
 
@@ -45,16 +46,55 @@ import { PopolaMarkdown } from "popola-ui-react/markdown"
 ## Feeding the store
 
 ```ts
-store.dispatch({ type: "status", status: "busy" })
+store.dispatch({ type: "turn.started", turnID: "t1" })
 store.dispatch({ type: "message.started", message })
 store.dispatch({ type: "message.part", messageID: message.id, part })
-store.dispatch({ type: "status", status: "idle" })
+store.dispatch({ type: "turn.completed", turnID: "t1" })
 ```
 
 The reducer is pure and returns the same state object on a no-op, so renderers
-only re-render on real changes. Events and shapes:
-[`packages/ui/src`](./packages/ui/src) (`state.ts`, `reducer.ts`,
-`message/index.ts`).
+only re-render on real changes. The run status is derived from the turn
+lifecycle, so there is no separate status event to keep in sync.
+
+Events and shapes:
+[`packages/protocol/src`](./packages/protocol/src) (the agent contract) and
+[`packages/ui/src`](./packages/ui/src) (the state core).
+
+## The agent contract
+
+`popola-protocol` is the contract between an agent runtime and this UI layer.
+An adapter implements `AgentSession` and emits `AgentEvent`; the reducer
+consumes those events, so the UI never learns which agent is running.
+
+```ts
+import type { AgentEvent, AgentSession } from "popola-protocol"
+
+const session: AgentSession = {
+  provider: "my-agent",
+  async prompt(text) { /* run a turn */ },
+  interrupt() {},
+  respondToPermission(id, decision) {},
+  subscribe(listener) { /* push AgentEvents */ return () => {} },
+  close() {},
+}
+```
+
+The contract carries no platform API, so the same session can be implemented by
+a Node host that spawns a CLI and by a browser host that talks to a model API.
+`popola-protocol` is isomorphic: no DOM and no Node APIs.
+
+A host creates sessions through `AgentSessionFactory`, so it names the contract
+rather than one adapter:
+
+```ts
+import type { AgentSessionFactory } from "popola-protocol"
+
+const createSession: AgentSessionFactory<MyConfig> = (config) => new MySession(config)
+```
+
+Approval prompts are answered with `"once"`, `"always"` or `"reject"`. Give
+`"always"` a real meaning in your adapter — the pi adapter remembers the grant
+for the exact tool and resource that were shown, and stops asking for that one.
 
 ## The card
 
@@ -101,6 +141,7 @@ npm run dev             # Electron window, provider form on first launch
 
 ## Docs
 
+- [`popola-protocol`](./packages/protocol/README.md) — the agent contract
 - [`popola-ui`](./packages/ui/README.md) — state core, slots, stylesheet
 - [`popola-ui-react`](./packages/ui-react/README.md) — components, Markdown, streaming
 - [`popola-app`](./packages/app/README.md) — Electron test host (`pi` agent)

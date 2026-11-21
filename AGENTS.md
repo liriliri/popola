@@ -28,6 +28,14 @@ private test app wiring a real agent to them.
 
 ```
 packages/
+  protocol/    popola-protocol  transport-neutral agent contract (published)
+    src/
+      index.ts               public re-exports
+      message.ts             message/part/tool shapes
+      permission.ts          permission request + decision
+      events.ts              AgentEvent, AgentSnapshot, usage, plan
+      session.ts             AgentSession interface
+      guard.ts               isAgentEvent, for trust boundaries
   ui/          popola-ui       framework-agnostic core (published)
     src/
       index.ts               public re-exports
@@ -39,9 +47,10 @@ packages/
     src/                     mirrors the domain dirs
     stories/ .storybook/     dev only, never published
   app/         popola-app     Electron test host (private)
-    src/main/                window, IPC, AgentHost, pi transcript → popola
+    src/main/                window, IPC, AgentHost, pi agent → protocol events
+    src/main/adapters/       agent adapters (pi.ts)
     src/preload.cjs          contextBridge exposing window.popola
-    src/renderer/            provider form, bridge, store snapshot
+    src/renderer/            provider form, bridge, store binding
     src/shared/types.ts      main/renderer wire contract
     vite.config.ts vite.main.ts
     .data/                   dev userData (gitignored)
@@ -57,18 +66,47 @@ map, one class map.
 
 ## Packages
 
+- **`popola-protocol`** (`0.1.0`, MIT) — the contract between an agent runtime and
+  the UI layer: `AgentEvent` (the closed event set), `AgentSession` (what an
+  adapter implements), the shared data shapes, and `isAgentEvent` for validating
+  untrusted input. Isomorphic by design: no DOM and no Node APIs, so a browser
+  host and a Node host can both depend on it. Zero runtime dependencies.
 - **`popola-ui`** (`0.1.0`, MIT) — no React/DOM; usable in an Electron main
   process. Pure reducer over a closed event set, minimal store
   (`getState`/`subscribe`/`dispatch`), plain selectors, slots, class names, CSS.
   Reducer returns the *same* state object on a no-op, so renderers skip work by
   identity. Exports `.` (dual ESM/CJS) and `./style.css` (authored CSS, not
-  built). `sideEffects: ["*.css"]`.
+  built). `sideEffects: ["*.css"]`. Re-exports the protocol types, so a host
+  needs one dependency to render and to drive an agent.
 - **`popola-ui-react`** (`0.1.0`, MIT) — binds the core with
   `useSyncExternalStore`. Exports `.` + subpaths `./shell`, `./conversation`,
   `./composer`, `./permission`, `./markdown`. React/ReactDOM peers; `licia`,
   `markdown-it`, `popola-ui` runtime deps. `sideEffects: false`.
 - **`popola-app`** (`0.0.0`, private) — Electron host running a `pi` agent.
   See [packages/app/README.md](./packages/app/README.md).
+
+## The agent contract
+
+- An adapter implements `AgentSession` and emits `AgentEvent`. The state core
+  consumes those events; the renderer never learns which agent is running.
+- `message.part` upserts by part id, so a streaming text part replaces its own
+  earlier version.
+- The run status is **derived** from the turn lifecycle (`turn.started` →
+  busy, `turn.completed`/`turn.canceled` → idle, `turn.failed` → error). There
+  is no separate "status" event, so there is one source of truth.
+- `session.snapshot` carries the whole state for a client that joins mid-run.
+- `AgentSession` carries no platform API: `cwd`, `spawn` and `process.env`
+  belong to the factory. Cancellation goes through `interrupt()`, not an
+  `AbortSignal`, so the contract stays free of ambient globals that differ
+  between the DOM and Node type libraries.
+- A host creates a session through `AgentSessionFactory`, so it names the
+  contract, not a concrete adapter. `packages/app` exports `createPiSession`
+  and its `AgentHost` holds an `AgentSession`, not a `PiSession`.
+- `PermissionDecision` is `"once" | "always" | "reject"`. An adapter must give
+  `"always"` a real meaning: the pi adapter remembers the grant for the exact
+  tool and resource that were shown, and stops asking for that one.
+- Tool calls carry a `ToolCallDetail` classified by meaning (`shell`, `read`,
+  `edit`, `write`, `search`, `fetch`), never by vendor.
 
 ## Build system
 
@@ -81,15 +119,15 @@ map, one class map.
   `dist/` is gitignored.
 - `popola-app`: `tsc -b` only checks main/shared into `dist/types`; Vite bundles
   main (`vite.main.ts`) and renderer (`vite.config.ts`) into `dist/main` and
-  `dist/renderer`. Vite aliases both libs to `src/index.ts`, so dev needs no
-  prior build.
+  `dist/renderer`. Vite aliases the workspace libs to `src/index.ts`, so dev
+  needs no prior build — keep the alias list in step with the packages.
 - Storybook type-checks separately (`tsc -p stories`), never published.
 
 ## Commands
 
 ```bash
 # root
-npm run build           # ui + ui-react (ESM + CJS)
+npm run build           # protocol + ui + ui-react (ESM + CJS)
 npm run typecheck       # tsc -b across references
 npm run clean           # dist, tsbuildinfo, storybook-static
 
@@ -113,6 +151,8 @@ npm run typecheck       # main + renderer
 - Class names are a public contract: stylesheet targets names only, never DOM
   shape/nesting; renaming is breaking for hosts.
 - State core stays framework-agnostic: plain data, pure reducer, no I/O/clocks.
+- The protocol package stays platform-free: no DOM lib, no `node:` imports, no
+  ambient globals that differ between the DOM and Node type libraries.
 - Slots resolve by scope before specificity (component > provider; exact >
   family base). Tool slots: `conversation.tool.<toolName>` → `conversation.tool`.
 - Raw HTML in messages is shown as text, never parsed.

@@ -13,6 +13,6 @@
     "jsx": "react-jsx",
     "lib": ["es2023", "DOM", "DOM.Iterable"]
   },
-  "references": [],
+  "references": [{ "path": "../../protocol" }, { "path": "../../ui" }],
   "include": ["**/*.ts", "**/*.tsx"]
 }

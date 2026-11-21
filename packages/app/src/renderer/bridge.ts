@@ -1,10 +1,11 @@
-import type { HostEvent, ProviderConfig, ProviderResult } from "../shared/types"
+import type { HostEvent, PermissionDecision, ProviderConfig, ProviderResult } from "../shared/types"
 
 export type PopolaBridge = {
   getProvider(): Promise<ProviderConfig | null>
   setProvider(config: ProviderConfig): Promise<ProviderResult>
   prompt(text: string): Promise<void>
   abort(): Promise<void>
+  respondToPermission(id: string, decision: PermissionDecision): Promise<void>
   onEvent(listener: (event: HostEvent) => void): () => void
 }
 

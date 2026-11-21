@@ -26,6 +26,9 @@
     "build": "tsc -b && tsc -p tsconfig.cjs.json",
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
+  "dependencies": {
+    "popola-protocol": "^0.1.0"
+  },
   "devDependencies": {
     "@types/node": "22.18.13",
     "typescript": "7.0.2"

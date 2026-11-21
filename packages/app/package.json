@@ -16,6 +16,7 @@
     "@earendil-works/pi-ai": "^0.80.6",
     "@earendil-works/pi-coding-agent": "^0.80.6",
     "licia": "^1.49.0",
+    "popola-protocol": "^0.1.0",
     "popola-ui": "^0.1.0",
     "popola-ui-react": "^0.1.0",
     "react": "^19.2.0",

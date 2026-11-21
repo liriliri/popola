@@ -8,12 +8,15 @@ import { createStore } from "popola-ui"
 import "popola-ui/style.css"
 
 const store = createStore()
-store.dispatch({ type: "status", status: "busy" })
+store.dispatch({ type: "turn.started", turnID: "t1" })
 ```
 
 - `require("popola-ui")` → CommonJS; `module` condition → ESM.
 - `popola-ui/style.css` is the authored stylesheet (not built); it targets
   `popolaClass` names and reads visual values from tokens.
+- The agent event set lives in [`popola-protocol`](../protocol/README.md) and
+  is re-exported here, so a host needs one dependency to render and to drive an
+  agent.
 
 ```
 src/

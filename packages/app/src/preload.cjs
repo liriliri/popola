@@ -13,6 +13,9 @@ contextBridge.exposeInMainWorld("popola", {
   abort() {
     return ipcRenderer.invoke("abort")
   },
+  respondToPermission(id, decision) {
+    return ipcRenderer.invoke("permission:reply", id, decision)
+  },
   onEvent(listener) {
     const handler = (_event, payload) => listener(payload)
     ipcRenderer.on("host-event", handler)

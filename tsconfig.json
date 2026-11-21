@@ -31,6 +31,9 @@
   "include": [],
   "references": [
     {
+      "path": "packages/protocol"
+    },
+    {
       "path": "packages/ui"
     },
     {

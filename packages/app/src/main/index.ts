@@ -66,8 +66,13 @@ app.whenReady().then(async () => {
   ipcMain.handle("abort", () => {
     host.abort()
   })
+  ipcMain.handle("permission:reply", (_event, id: unknown, decision: unknown) => {
+    if (typeof id !== "string") return
+    if (decision !== "once" && decision !== "always" && decision !== "reject") return
+    host.respondToPermission(id, decision)
+  })
   ipcMain.on("host:listen", (event) => {
-    for (const snapshot of host.snapshot()) event.sender.send("host-event", snapshot)
+    event.sender.send("host-event", host.snapshot())
   })
 
   attach(createWindow())
