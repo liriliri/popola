@@ -13,6 +13,12 @@
   align-items: flex-end;
 }
 
+/* Assistant messages stay on the left; the modifier makes that explicit for hosts. */
+.popola-message--assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
 .popola-message__role {
   font-size: var(--popola-text-size-sm);
   color: var(--popola-text-faint);
@@ -132,6 +138,15 @@
 
 .popola-tool-call__label--running {
   animation: popola-pulse 1.4s ease-in-out infinite;
+}
+
+/* Status modifiers tint the row so the collapsible summary reads at a glance. */
+.popola-tool-call--running {
+  color: var(--popola-text-accent);
+}
+
+.popola-tool-call--completed {
+  color: var(--popola-success-base);
 }
 
 .popola-tool-call--error {

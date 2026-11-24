@@ -1,9 +1,4 @@
-/**
- * Class names for settings layouts. See `popolaClass` for the style contract.
- *
- * These are presentational building blocks — no store state, no slots. A host
- * composes them into a settings page; the agent never drives them.
- */
+/** Class names for settings layouts. Purely presentational; hosts compose them. */
 export const settingsClass = {
   /** Detail column: padded content inside the layout's main pane. */
   settings: "popola-settings",
@@ -62,7 +57,7 @@ export const settingsClass = {
   settingsSelect: "popola-settings__select",
   settingsInput: "popola-settings__input",
 
-  /** Theme picker grid (paseo-style tiles with CSS-variable previews). */
+  /** Theme picker grid (tiles with CSS-variable previews). */
   settingsTheme: "popola-settings-theme",
   settingsThemeTile: "popola-settings-theme__tile",
   settingsThemeTileSelected: "popola-settings-theme__tile--selected",

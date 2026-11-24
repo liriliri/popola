@@ -1,11 +1,7 @@
 import type { AgentEvent } from "popola-protocol"
 import type { Attachment, PopolaState } from "./state"
 
-/**
- * Events that belong to the UI, not to the agent contract.
- *
- * The composer is local to the renderer; an agent never touches it.
- */
+/** Composer events, local to the renderer; agents never produce them. */
 export type PopolaUiEvent =
   | { type: "composer.text"; text: string }
   | { type: "composer.attachmentAdded"; attachment: Attachment }
@@ -13,13 +9,7 @@ export type PopolaUiEvent =
   | { type: "composer.cleared" }
   | { type: "reset" }
 
-/**
- * Closed event set; the reducer is a pure function over it.
- *
- * `AgentEvent` carries everything an agent adapter produces. `PopolaUiEvent`
- * adds the composer. The run status is derived from the turn lifecycle rather
- * than set on its own, so there is exactly one source of truth for it.
- */
+/** Agent events plus the composer. Status is derived from the turn lifecycle. */
 export type PopolaEvent = AgentEvent | PopolaUiEvent
 
 export const initialState: PopolaState = {
@@ -29,10 +19,7 @@ export const initialState: PopolaState = {
   composer: { text: "", attachments: [] },
 }
 
-/**
- * Pure: no mutation, I/O or clocks. Returns the same object on a no-op event,
- * so renderers can skip work by comparing snapshots by identity.
- */
+/** Pure; returns the same object on a no-op so renderers can skip by identity. */
 export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
   switch (event.type) {
     case "session.snapshot": {
@@ -70,6 +57,7 @@ export function reduce(state: PopolaState, event: PopolaEvent): PopolaState {
     }
 
     case "turn.failed": {
+      if (state.status === "error" && state.error === event.error) return state
       return { ...state, status: "error", error: event.error }
     }
 

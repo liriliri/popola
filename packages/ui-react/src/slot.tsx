@@ -2,10 +2,7 @@ import type { ReactNode } from "react"
 import { resolveSlot, type SlotName, type SlotPropsFor } from "popola-ui"
 import { usePopola, type PopolaSlots } from "./context"
 
-/**
- * Renders one slot using `resolveSlot` (local → global → built-in fallback).
- * `base` names the slot family for a broader override.
- */
+/** Renders one slot via `resolveSlot`; `base` allows a family-wide override. */
 export function Slot<Name extends SlotName>(props: {
   name: Name
   base?: SlotName

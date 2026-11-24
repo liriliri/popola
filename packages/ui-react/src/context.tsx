@@ -73,10 +73,8 @@ export function usePopola(): PopolaContextValue {
 }
 
 /**
- * Resolves `system` against the OS preference and keeps following it.
- *
- * Returns a concrete scheme name for `data-popola-theme`. Host-defined names
- * pass through unchanged.
+ * Resolves `system` against the OS (and follows changes); other names pass
+ * through unchanged. Returns a concrete name for `data-popola-theme`.
  */
 export function useResolvedTheme(theme: PopolaTheme): string {
   const [system, setSystem] = useState<PopolaThemeName>(() => {

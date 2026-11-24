@@ -6,11 +6,8 @@ import { Slot } from "../slot"
 import type { PopolaSlots } from "../context"
 
 /**
- * Approval prompts.
- *
- * The agent never renders its own dialogs — it raises a request and the host
- * decides what the user sees. This component is the default rendering; replace
- * the `permission.dialog` slot to put the prompt somewhere else entirely.
+ * Default approval prompt. Agents only raise requests; replace the
+ * `permission.dialog` slot to put the prompt elsewhere.
  */
 export function PopolaPermissions(props: { slots?: PopolaSlots; className?: string }) {
   const { onPermissionReply } = usePopola()

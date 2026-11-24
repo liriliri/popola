@@ -18,10 +18,7 @@ export function selectError(state: PopolaState): string | undefined {
   return state.error
 }
 
-/**
- * The agent state as the protocol describes it. A host sends this to a client
- * that joins after a run started, so it replaces everything except the composer.
- */
+/** Agent state for a client joining mid-run; the composer is excluded. */
 export function selectSnapshot(state: PopolaState): AgentSnapshot {
   return {
     status: state.status,

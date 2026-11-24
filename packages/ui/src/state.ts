@@ -29,12 +29,8 @@ export type PopolaState = {
   readonly permissions: PermissionRequest[]
   readonly composer: ComposerState
   readonly error?: string
-  /** Latest counters reported by the agent. */
   readonly usage?: AgentUsage
-  /** Latest task plan reported by the agent. */
   readonly plan?: PlanEntry[]
-  /** Model the agent is running, when it reports one. */
   readonly model?: string
-  /** Session mode the agent is in, when it reports one. */
   readonly modeID?: string | null
 }

@@ -17,10 +17,10 @@ import {
 } from "popola-ui-react"
 import type { ProviderConfig } from "../shared/types"
 import { LANGUAGE_OPTIONS, useAppLanguage, type AppLanguage } from "./i18n"
-
-type LanguageSelectOption = { value: AppLanguage; label: string }
 import { TitlebarChrome } from "./TitlebarChrome"
 import { APP_THEME_OPTIONS } from "./themes"
+
+type LanguageSelectOption = { value: AppLanguage; label: string }
 
 const empty: ProviderConfig = {
   provider: "",

@@ -3,21 +3,17 @@ import type { Token } from "markdown-it"
 import { popolaClass } from "popola-ui"
 import className from "licia/className"
 
-/** Renders a Markdown token stream as React elements. */
-
-/** Extra state the renderer needs beyond the tokens themselves. */
+/** Extra state the block walkers need beyond the tokens themselves. */
 export type RenderContext = {
   /** Last text token, revealed word by word while the agent writes. */
   readonly reveal?: Token
   /** Task marker to strip from the list item, and the checkbox replacing it. */
   readonly strip?: {
-    /** The inline token the marker opens. */
+    /** Inline token the marker opens. */
     readonly parent: Token
-    /** The text token the marker sits in. */
+    /** Text token the marker sits in. */
     readonly first: Token
-    /** The marker itself. */
     readonly text: string
-    /** Whether the checkbox is ticked. */
     readonly checked: boolean
   }
 }
@@ -25,7 +21,7 @@ export type RenderContext = {
 /** `- [ ] todo` / `- [x] done`; an item with only a marker still counts. */
 const TASK_MARKER = /^\[([ xX])\](?:[ \t]+|$)/
 
-/** Renders the blocks of a parsed document. */
+/** Renders a parsed document's blocks. */
 export function renderBlocks(tokens: Token[], ctx: RenderContext = {}): ReactNode[] {
   return renderRange(tokens, 0, tokens.length, ctx)
 }
@@ -65,8 +61,7 @@ function renderRange(tokens: Token[], from: number, to: number, ctx: RenderConte
       if (token.type === "list_item_open") {
         out.push(renderListItem(tokens, index, close, ctx, index))
       } else if (token.hidden) {
-        // A tight list hides the paragraph around an item. The text still
-        // shows, it just does not sit in a block of its own.
+        // Tight lists hide the item's paragraph; render its content inline.
         out.push(
           <Fragment key={index}>{renderRange(tokens, index + 1, close, ctx)}</Fragment>,
         )
@@ -97,7 +92,6 @@ function renderRange(tokens: Token[], from: number, to: number, ctx: RenderConte
   return out
 }
 
-/** The index of the token that closes the one at `open`. */
 function findClose(tokens: Token[], open: number, to: number): number {
   let level = 0
 
@@ -111,7 +105,6 @@ function findClose(tokens: Token[], open: number, to: number): number {
   return to
 }
 
-/** The element that wraps the content of a container token. */
 function renderContainer(token: Token, inner: ReactNode[], key: number): ReactNode {
   switch (token.type) {
     case "paragraph_open":
@@ -220,12 +213,12 @@ function renderContainer(token: Token, inner: ReactNode[], key: number): ReactNo
       )
 
     default:
-      // A container the renderer has no element for. Its content still shows.
+      // Unknown container: still render its content.
       return <Fragment key={key}>{inner}</Fragment>
   }
 }
 
-/** A task item gets a checkbox and drops its marker from the text. */
+/** Renders a task item's checkbox and strips its marker from the text. */
 function renderListItem(
   tokens: Token[],
   open: number,
@@ -258,7 +251,7 @@ function renderListItem(
   )
 }
 
-/** The checkbox that replaces a task marker, in front of the text it marked. */
+/** The checkbox that replaces a task marker. */
 function renderTaskBox(token: Token, ctx: RenderContext): ReactNode {
   const strip = ctx.strip
   if (!strip || strip.parent !== token) return null
@@ -275,7 +268,6 @@ function renderTaskBox(token: Token, ctx: RenderContext): ReactNode {
   )
 }
 
-/** The inline token of a list item. */
 function findInline(tokens: Token[], from: number, to: number): Token | undefined {
   for (let index = from; index < to; index++) {
     const token = tokens[index]!
@@ -284,7 +276,6 @@ function findInline(tokens: Token[], from: number, to: number): Token | undefine
   return undefined
 }
 
-/** A token that stands on its own. */
 function renderLeaf(token: Token, ctx: RenderContext, key: number): ReactNode {
   switch (token.type) {
     case "text":
@@ -320,7 +311,7 @@ function renderLeaf(token: Token, ctx: RenderContext, key: number): ReactNode {
       )
 
     case "softbreak":
-      // Markdown soft-wraps a paragraph: the line break is a space.
+      // `white-space: normal` folds this newline into a space.
       return <Fragment key={key}>{"\n"}</Fragment>
 
     case "hardbreak":
@@ -328,7 +319,7 @@ function renderLeaf(token: Token, ctx: RenderContext, key: number): ReactNode {
 
     case "html_block":
     case "html_inline":
-      // Raw HTML is shown as text, never parsed into a styled element.
+      // See parser.ts: raw HTML is shown as text, never parsed.
       return <Fragment key={key}>{token.content}</Fragment>
 
     default:
@@ -336,7 +327,6 @@ function renderLeaf(token: Token, ctx: RenderContext, key: number): ReactNode {
   }
 }
 
-/** A run of plain text. */
 function renderText(token: Token, ctx: RenderContext, key: number): ReactNode {
   const content = ctx.strip?.first === token ? token.content.slice(ctx.strip.text.length) : token.content
 
@@ -344,7 +334,7 @@ function renderText(token: Token, ctx: RenderContext, key: number): ReactNode {
   return <Fragment key={key}>{revealWords(content)}</Fragment>
 }
 
-/** Words fade in; the last two keep the accent colour, followed by a cursor. */
+/** Fades words in; the last two keep the accent colour, then a cursor. */
 function revealWords(content: string): ReactNode {
   const words = content.split(" ")
 
@@ -366,7 +356,6 @@ function revealWords(content: string): ReactNode {
   )
 }
 
-/** The heading class for a level. */
 const HEADING_CLASS = [
   popolaClass.markdownHeading1,
   popolaClass.markdownHeading2,

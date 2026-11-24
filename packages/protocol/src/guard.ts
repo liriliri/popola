@@ -16,10 +16,8 @@ function list(value: unknown): value is unknown[] {
 }
 
 /**
- * True when the value looks like an `AgentEvent`.
- *
- * This is a boundary check, not a schema: it rejects the wrong shape and
- * leaves deep payload validation to the reducer that consumes the event.
+ * Boundary check, not a schema: rejects the wrong shape and leaves deep
+ * payload validation to the reducer.
  */
 export function isAgentEvent(value: unknown): value is AgentEvent {
   const event = record(value)

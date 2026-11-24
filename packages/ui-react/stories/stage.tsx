@@ -4,10 +4,7 @@ import { PopolaProvider, usePopola, useResolvedTheme, type PopolaContextValue } 
 
 type Handlers = Pick<PopolaContextValue, "onSend" | "onStop" | "onPermissionReply">
 
-/**
- * Theme and type for a story that renders one component, not the whole shell.
- * The shell stories bring their own frame.
- */
+/** Frame for a single-component story; shell stories bring their own frame. */
 export function Stage(props: Handlers & { store?: PopolaStore; children: ReactNode }) {
   return (
     <PopolaProvider

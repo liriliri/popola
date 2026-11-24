@@ -5,11 +5,7 @@ import { Slot } from "../slot"
 import { PopolaCard } from "../message/index"
 import type { PopolaSlots } from "../context"
 
-/**
- * The conversation area: one column of messages, newest at the bottom.
- *
- * It needs nothing but the store, so it works on its own — no shell required.
- */
+/** Conversation column, newest at the bottom. Needs only the store — no shell. */
 export function PopolaConversation(props: { slots?: PopolaSlots; className?: string }) {
   const messages = usePopolaState(selectMessages)
   const busy = usePopolaState(selectIsBusy)
@@ -34,7 +30,6 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
                 key={message.id}
                 message={message}
                 slots={props.slots}
-                // Only the assistant message still being written can stream.
                 streaming={busy && message.role === "assistant" && index === messages.length - 1}
               />
             ))

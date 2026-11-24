@@ -32,7 +32,14 @@ export class WorkspaceStore {
       this.data = empty
       return
     }
-    this.data = parse(JSON.parse(raw) as unknown) ?? empty
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      this.data = empty
+      return
+    }
+    this.data = parse(parsed) ?? empty
   }
 
   async setCwd(cwd: string): Promise<WorkspaceStoreData> {

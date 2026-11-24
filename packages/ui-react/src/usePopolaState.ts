@@ -3,9 +3,8 @@ import type { PopolaState } from "popola-ui"
 import { usePopola } from "./context"
 
 /**
- * Reads a slice of state; re-renders only when that slice changes.
- * Selectors must return primitives or stable references — a fresh object each
- * call defeats the comparison and re-renders on every store change.
+ * Reads a slice of state. Selectors must return stable references — a fresh
+ * object each call re-renders on every store change.
  */
 export function usePopolaState<T>(selector: (state: PopolaState) => T): T {
   const store = usePopola().store

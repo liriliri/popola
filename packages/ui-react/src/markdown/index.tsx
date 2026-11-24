@@ -7,15 +7,11 @@ import { parseMarkdown } from "./parser"
 import { findRevealTarget, renderBlocks } from "./renderer"
 import { splitStreamingTokens } from "./streaming"
 
-/** The tail of a document that is not being written. */
 const NO_TAIL: Token[] = []
 
-/**
- * Renders Markdown; finished blocks are cached while the last block streams.
- */
+/** Renders Markdown; finished blocks are cached while the last block streams. */
 export function PopolaMarkdown(props: {
   text: string
-  /** The text is still arriving. */
   streaming?: boolean
   className?: string
 }) {
@@ -32,7 +28,6 @@ export function PopolaMarkdown(props: {
     [text, tokens, streaming],
   )
 
-  // The reveal belongs to the text that is still arriving.
   const reveal = useMemo(
     () => (streaming ? findRevealTarget(split.tail) : undefined),
     [split.tail, streaming],
@@ -41,7 +36,7 @@ export function PopolaMarkdown(props: {
   const head = useClosedBlocks(split.head, split.headSource)
   const tail = useMemo(() => renderBlocks(split.tail, { reveal }), [split.tail, reveal])
 
-  // Nothing has arrived yet — the dots hold the place until the first word.
+  // Hold the place with dots until the first word arrives.
   if (streaming && text.length === 0) {
     return (
       <div className={className(popolaClass.markdown, props.className)}>

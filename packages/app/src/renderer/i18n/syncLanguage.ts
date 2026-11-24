@@ -5,7 +5,7 @@ interface I18nLanguageController {
   changeLanguage: (language: SupportedLocale) => Promise<unknown>
 }
 
-/** Keep i18n's active language in sync before children render (paseo). */
+/** Keep i18n's active language in sync before children render. */
 export function ensureI18nLanguageForRender(
   locale: SupportedLocale,
   i18n: I18nLanguageController,

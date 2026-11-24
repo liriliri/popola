@@ -1,9 +1,4 @@
-/**
- * Class names for the host sidebar (directory / chat list). See `popolaClass`.
- *
- * Layout mirrors paseo's left rail: quiet nav rows, a hairline separator, then
- * muted section labels over compact list rows. Presentational only.
- */
+/** Class names for the host sidebar (nav rows, separator, labelled list rows). */
 export const sidebarClass = {
   sidebar: "popola-sidebar",
 

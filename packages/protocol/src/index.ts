@@ -1,9 +1,6 @@
 /**
- * popola-protocol — the transport-neutral contract between an agent runtime and
- * the popola UI layer.
- *
- * Isomorphic by design: no DOM and no Node APIs, so a browser host and a Node
- * host can both depend on it.
+ * popola-protocol: the transport-neutral contract between an agent runtime and
+ * the UI. Isomorphic — no DOM or Node APIs, so either host can depend on it.
  */
 
 export type {

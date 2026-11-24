@@ -5,11 +5,8 @@ export type PopolaRole = "user" | "assistant" | "system"
 export type ToolStatus = "pending" | "running" | "completed" | "error"
 
 /**
- * What a tool call actually did, classified by meaning rather than by vendor.
- *
- * Transports fill this in when they can tell. `ToolCall.input` always carries
- * the raw arguments, so a detail is a convenience for rendering, never the only
- * source of truth.
+ * What a tool call did, classified by meaning rather than vendor. `input` is
+ * always the source of truth; a detail is only a rendering convenience.
  */
 export type ToolCallDetail =
   | { type: "shell"; command: string; cwd?: string }

@@ -5,12 +5,7 @@ import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import type { PopolaSlots } from "../context"
 
-/**
- * The input area.
- *
- * Sending stays available while the agent runs — that is how steering works.
- * Stopping only appears while a run is in flight.
- */
+/** The input area. Stop appears only while a run is in flight. */
 export function PopolaComposer(props: { slots?: PopolaSlots; className?: string }) {
   const { store, onSend, onStop } = usePopola()
 
@@ -20,8 +15,7 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
   const canStop = usePopolaState(selectCanStop)
 
   const submit = () => {
-    // Without a handler there is nowhere to send, so the text stays put rather
-    // than being cleared into nowhere.
+    // Keep the text when there is no handler to send it to.
     if (!canSend || !onSend) return
     onSend({ text, attachments })
     store.dispatch({ type: "composer.cleared" })

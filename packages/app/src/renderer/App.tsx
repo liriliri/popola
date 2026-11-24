@@ -54,11 +54,7 @@ export function App() {
   const [workspaceError, setWorkspaceError] = useState<string | null>(null)
   const [workspaceBusy, setWorkspaceBusy] = useState(false)
 
-  /**
-   * Slot remounts when the component *type* changes. Keep one stable type and
-   * feed it the latest props through a ref so workspace updates don't reset
-   * sidebar scroll/focus.
-   */
+  /** Stable slot type: a changing *type* would remount and reset sidebar scroll. */
   const sidebarPropsRef = useRef<SidebarProps | null>(null)
   const ChatSidebar = useMemo(
     () =>

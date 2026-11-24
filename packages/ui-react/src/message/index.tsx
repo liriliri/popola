@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { popolaClass, type Message, type Part, type ToolCall } from "popola-ui"
 import className from "licia/className"
+import stringify from "licia/stringify"
 import { Slot } from "../slot"
 import { PopolaMarkdown } from "../markdown"
 import { PopolaTypingIndicator } from "./streaming"
@@ -56,11 +57,8 @@ function summarizeInput(input: Record<string, unknown> | undefined): string {
 
 function formatInput(input: Record<string, unknown> | undefined): string {
   if (!input) return ""
-  try {
-    return JSON.stringify(input, null, 2)
-  } catch {
-    return ""
-  }
+  // stringify handles circular refs / functions, so the request always shows.
+  return stringify(input, 2)
 }
 
 /** A collapsible tool row: summary always visible, request/result in a panel. */

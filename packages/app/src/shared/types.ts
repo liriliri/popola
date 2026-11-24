@@ -1,6 +1,6 @@
 import type { AgentEvent, PermissionDecision } from "popola-protocol"
 
-/** What the temporary form collects. There is no Tinker provider list to read. */
+/** Provider fields the setup form collects. */
 export type ProviderConfig = {
   provider: string
   baseUrl: string
@@ -29,16 +29,8 @@ export type WorkspaceState = {
 
 export type WorkspaceResult = { ok: true; workspace: WorkspaceState } | { ok: false; error: string }
 
-/**
- * Everything the renderer receives from the main process.
- *
- * The wire carries protocol events only, so the renderer never learns which
- * agent produced them.
- */
+/** Everything the renderer receives from the main process: protocol events only. */
 export type HostEvent = AgentEvent
 
-/**
- * The answer the renderer sends back for an approval prompt. It travels in the
- * other direction, so it is named apart from `HostEvent`.
- */
+/** The renderer's reply to an approval prompt, named apart from `HostEvent`. */
 export type { PermissionDecision }

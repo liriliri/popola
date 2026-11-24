@@ -8,9 +8,8 @@ import { shellClass } from "./shell"
 import { sidebarClass } from "./sidebar"
 
 /**
- * Class names are the public style contract: the stylesheet targets these
- * strings only, never DOM shape, so any renderer can nest freely. Renaming one
- * is a breaking change for hosts that styled around it.
+ * Public style contract: the stylesheet targets these strings only, never DOM
+ * shape. Renaming one is a breaking change for hosts.
  */
 export const popolaClass = {
   ...shellClass,

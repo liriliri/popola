@@ -1,4 +1,4 @@
-/** Class names for rendered Markdown. See `popolaClass` for the style contract. */
+/** Class names for rendered Markdown. */
 export const markdownClass = {
   /** The container every Markdown block renders inside. */
   markdown: "popola-markdown",

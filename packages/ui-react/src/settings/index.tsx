@@ -9,16 +9,11 @@ import className from "licia/className"
 import { POPOLA_THEME_OPTIONS, type PopolaTheme, type PopolaThemeOption } from "../context"
 
 /**
- * Settings building blocks — iOS-style grouped lists and a desktop sidebar
- * split, matching the paseo settings primitives. Presentational only: no
- * store, no agent events.
+ * Settings building blocks: iOS-style grouped lists and a desktop sidebar split.
+ * Purely presentational — no store, no agent events.
  */
 
-/**
- * Desktop split: sidebar on the left, detail pane on the right. Put a
- * {@link SettingsSidebar} in `sidebar` and a {@link SettingsPage} (or any
- * detail content) as children.
- */
+/** Desktop split: {@link SettingsSidebar} in `sidebar`, detail content as children. */
 export function SettingsLayout(props: {
   sidebar: ReactNode
   children?: ReactNode
@@ -145,10 +140,7 @@ export function SettingsSection(props: {
   )
 }
 
-/**
- * Bordered card that stacks rows. Separators are applied by class on each
- * child wrapper — never by DOM nesting in the stylesheet.
- */
+/** Bordered card; separators come from a class on each child, not DOM nesting. */
 export function SettingsCard(props: { children?: ReactNode; className?: string }) {
   return (
     <div className={className(popolaClass.settingsCard, props.className)}>
@@ -333,9 +325,7 @@ export function SettingsAction(
   )
 }
 
-/**
- * A pressable row that opens a detail. Label, optional summary, trailing chevron.
- */
+/** Pressable row opening a detail, with an optional summary and chevron. */
 export function SettingsDetailRow(props: {
   label: string
   hint?: string
@@ -416,9 +406,8 @@ export function SettingsAddRow(props: {
 }
 
 /**
- * Theme tiles with mini previews painted from `data-popola-theme` CSS tokens
- * (paseo ThemePicker). Four columns fill the card; System shows light | dark.
- * Pass `options` to include host schemes defined outside `popola-ui`.
+ * Theme tiles with previews painted from `data-popola-theme` tokens. Pass
+ * `options` to add host schemes; System shows light | dark.
  */
 export function SettingsThemePicker(props: {
   value: PopolaTheme

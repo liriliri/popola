@@ -30,11 +30,7 @@ export const messageClass = {
 
   reasoning: "popola-reasoning",
 
-  /**
-   * A tool call. A collapsible row: icon, label, argument summary, status.
-   * The summary line is always visible; the panel below holds the request
-   * and the result.
-   */
+  /** Collapsible tool row: always-visible summary, expandable request/result. */
   toolCall: "popola-tool-call",
   toolCallTrigger: "popola-tool-call__trigger",
   toolCallIcon: "popola-tool-call__icon",

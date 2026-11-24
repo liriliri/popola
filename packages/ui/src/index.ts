@@ -16,8 +16,7 @@ export type {
   ToolStatus,
 } from "./state"
 
-// The agent contract lives in popola-protocol and is re-exported here so a
-// host only needs one dependency to render and to drive an agent.
+// Re-exported so a host needs one dependency to render and drive an agent.
 export type {
   AgentEvent,
   AgentSession,

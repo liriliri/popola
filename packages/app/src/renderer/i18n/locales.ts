@@ -17,10 +17,7 @@ export const LANGUAGE_OPTIONS: LanguageOption[] = [
   { value: "zh", labelKey: "language.options.zh" },
 ]
 
-/**
- * Resolve a preference against the OS locale list. Unsupported system languages
- * fall back to English.
- */
+/** Resolve a preference against OS locales; unsupported ones fall back to English. */
 export function resolveSupportedLocale(
   language: AppLanguage,
   systemLocales: readonly string[],

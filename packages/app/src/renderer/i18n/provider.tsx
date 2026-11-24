@@ -30,10 +30,7 @@ function readSystemLocales(): string[] {
   return [navigator.language || DEFAULT_LOCALE]
 }
 
-/**
- * Owns the language preference, resolves `system` against the OS, and syncs
- * i18next before children render (paseo `I18nProvider`).
- */
+/** Owns the language preference, resolves `system`, and syncs i18next before render. */
 export function I18nProvider(props: { children?: ReactNode }) {
   const [language, setLanguage] = useState<AppLanguage>("system")
   const [systemLocales, setSystemLocales] = useState(readSystemLocales)

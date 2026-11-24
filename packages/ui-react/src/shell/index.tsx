@@ -8,10 +8,8 @@ import { PopolaComposer } from "../composer/index"
 import { PopolaPermissions } from "../permission/index"
 
 /**
- * The full shell: header, optional sidebar, and the conversation area.
- *
- * Pass children to lay the body out yourself. Leave them out and you get the
- * default column — conversation, composer and approval prompts.
+ * Full shell: header, optional sidebar, conversation area. Pass children to
+ * replace the default column (conversation, composer, approval prompts).
  */
 export function PopolaShell(props: {
   title?: string

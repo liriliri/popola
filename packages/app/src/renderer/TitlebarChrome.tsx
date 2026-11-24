@@ -1,8 +1,4 @@
-/**
- * Traffic-light clearance + window drag strip (paseo / VS Code pattern).
- * Place as the first child of a sidebar (or full-bleed main) that reaches the
- * window top. The strip itself is the drag region — no nested overlay needed.
- */
+/** Traffic-light clearance + drag strip; place first in a top-reaching sidebar. */
 export function TitlebarChrome() {
   return (
     <div className="app-titlebar">

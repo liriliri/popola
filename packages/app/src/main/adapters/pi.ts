@@ -100,10 +100,7 @@ function argString(args: Record<string, unknown>, key: string): string | undefin
   return typeof value === "string" ? value : undefined
 }
 
-/**
- * Classify a tool call by meaning, so the UI can render it without knowing
- * which agent produced it.
- */
+/** Classify a tool call by meaning, not by vendor. */
 function deriveDetail(name: string, args: Record<string, unknown>): ToolCallDetail | undefined {
   switch (name) {
     case "bash": {
@@ -139,12 +136,7 @@ function deriveDetail(name: string, args: Record<string, unknown>): ToolCallDeta
   }
 }
 
-/**
- * A pi coding agent behind the popola protocol.
- *
- * pi speaks its own event vocabulary; this maps it onto `AgentEvent` so the
- * state core and the renderer never learn that pi is running.
- */
+/** Maps pi's event vocabulary onto `AgentEvent`. */
 export class PiSession implements AgentSession {
   readonly provider = "pi"
 
@@ -201,9 +193,9 @@ export class PiSession implements AgentSession {
     return this.sessions.getSessionFile()
   }
 
-  /** Popola snapshot of the already-persisted transcript, for mid-join clients. */
+  /** Snapshot of the persisted transcript, for clients joining mid-run. */
   initialSnapshot(): AgentSnapshot {
-    // `agent.state.messages` is the same transcript loaded in the constructor —
+    // `agent.state.messages` is the transcript loaded in the constructor —
     // don't call `buildSessionContext()` again.
     return {
       status: "idle",
@@ -358,11 +350,7 @@ export class PiSession implements AgentSession {
     this.emit({ type: "message.started", message: popola })
   }
 
-  /**
-   * Only one assistant message streams at a time, so its id is tracked rather
-   * than derived from a timestamp — two messages created in the same
-   * millisecond would otherwise collide and the reply would be dropped.
-   */
+  /** Track the streaming id: timestamps could collide within one millisecond. */
   private startAssistantMessage(message: PiMessage): void {
     const id = `assistant-${this.counter++}`
     this.assistantID = id
@@ -383,55 +371,28 @@ export class PiSession implements AgentSession {
     }
   }
 
-  /** Emits a part only when it actually changed, so the reducer can skip it. */
+  /** Skip unchanged parts: the reducer replaces by identity, so equal parts still re-render. */
   private emitPart(messageID: string, part: Part): void {
-    const previous = this.emittedParts.get(part.id)
-    if (samePart(previous, part)) return
+    if (isEqual(this.emittedParts.get(part.id), part)) return
     this.emittedParts.set(part.id, part)
     this.emit({ type: "message.part", messageID, part })
   }
 
   private assistantParts(message: PiMessage, messageID: string): Part[] {
     const assistant = message as AssistantMessage
-    const parts: Part[] = []
-    for (const [index, block] of assistant.content.entries()) {
-      if (block.type === "text") {
-        if (!block.text) continue
-        parts.push({ id: `${messageID}:text:${index}`, type: "text", text: block.text })
-      } else if (block.type === "thinking") {
-        if (!block.thinking) continue
-        parts.push({
-          id: `${messageID}:think:${index}`,
-          type: "reasoning",
-          text: block.thinking,
-        })
-      } else if (block.type === "toolCall") {
-        const previous = this.toolCalls.get(block.id)
-        const call: ToolCall = {
-          ...previous?.call,
-          id: block.id,
-          name: block.name,
-          status: previous?.call.status ?? "pending",
-          input: block.arguments,
-          detail: deriveDetail(block.name, block.arguments),
-        }
-        this.toolCalls.set(block.id, { messageID, call })
-        parts.push({ id: `${messageID}:tool:${block.id}`, type: "tool", call })
+    return mapAssistantBlocks(assistant, messageID, (block) => {
+      const previous = this.toolCalls.get(block.id)?.call
+      const call: ToolCall = {
+        ...previous,
+        id: block.id,
+        name: block.name,
+        status: previous?.status ?? "pending",
+        input: block.arguments,
+        detail: deriveDetail(block.name, block.arguments),
       }
-    }
-    // A failed or aborted run carries its reason on the message, not in the
-    // content blocks, so it needs an explicit part or the UI shows nothing.
-    if (
-      (assistant.stopReason === "error" || assistant.stopReason === "aborted") &&
-      assistant.errorMessage
-    ) {
-      parts.push({
-        id: `${messageID}:error`,
-        type: "error",
-        message: assistant.errorMessage,
-      })
-    }
-    return parts
+      this.toolCalls.set(block.id, { messageID, call })
+      return call
+    })
   }
 
   private emitUsage(message: PiMessage): void {
@@ -492,10 +453,49 @@ export class PiSession implements AgentSession {
   }
 }
 
+type PiToolBlock = { id: string; name: string; arguments: Record<string, unknown> }
+
 /**
- * Maps a Pi transcript onto popola messages so an opened session paints
- * before the next turn starts.
+ * Maps an assistant message's blocks onto parts, shared by the live stream and
+ * the loaded transcript (so part ids stay identical). `resolveToolCall` builds
+ * and records each tool call; `index` is the part's position in the result.
  */
+function mapAssistantBlocks(
+  assistant: AssistantMessage,
+  messageID: string,
+  resolveToolCall: (block: PiToolBlock, index: number) => ToolCall,
+): Part[] {
+  const parts: Part[] = []
+  for (const [index, block] of assistant.content.entries()) {
+    if (block.type === "text") {
+      if (!block.text) continue
+      parts.push({ id: `${messageID}:text:${index}`, type: "text", text: block.text })
+    } else if (block.type === "thinking") {
+      if (!block.thinking) continue
+      parts.push({ id: `${messageID}:think:${index}`, type: "reasoning", text: block.thinking })
+    } else if (block.type === "toolCall") {
+      parts.push({
+        id: `${messageID}:tool:${block.id}`,
+        type: "tool",
+        call: resolveToolCall(block, parts.length),
+      })
+    }
+  }
+  // A failed/aborted run carries its reason on the message, not in the blocks.
+  if (
+    (assistant.stopReason === "error" || assistant.stopReason === "aborted") &&
+    assistant.errorMessage
+  ) {
+    parts.push({
+      id: `${messageID}:error`,
+      type: "error",
+      message: assistant.errorMessage,
+    })
+  }
+  return parts
+}
+
+/** Maps a Pi transcript onto messages so an opened session paints immediately. */
 function convertHistory(messages: readonly AgentMessage[]): Message[] {
   const result: Message[] = []
   const toolOwners = new Map<string, { messageID: string; index: number }>()
@@ -517,32 +517,17 @@ function convertHistory(messages: readonly AgentMessage[]): Message[] {
     if (message.role === "assistant") {
       const id = `assistant-${counter++}`
       const assistant = message as AssistantMessage
-      const parts: Part[] = []
-      for (const [index, block] of assistant.content.entries()) {
-        if (block.type === "text") {
-          if (!block.text) continue
-          parts.push({ id: `${id}:text:${index}`, type: "text", text: block.text })
-        } else if (block.type === "thinking") {
-          if (!block.thinking) continue
-          parts.push({ id: `${id}:think:${index}`, type: "reasoning", text: block.thinking })
-        } else if (block.type === "toolCall") {
-          const call: ToolCall = {
-            id: block.id,
-            name: block.name,
-            status: "completed",
-            input: block.arguments,
-            detail: deriveDetail(block.name, block.arguments),
-          }
-          parts.push({ id: `${id}:tool:${block.id}`, type: "tool", call })
-          toolOwners.set(block.id, { messageID: id, index: parts.length - 1 })
+      const parts = mapAssistantBlocks(assistant, id, (block, index) => {
+        const call: ToolCall = {
+          id: block.id,
+          name: block.name,
+          status: "completed",
+          input: block.arguments,
+          detail: deriveDetail(block.name, block.arguments),
         }
-      }
-      if (
-        (assistant.stopReason === "error" || assistant.stopReason === "aborted") &&
-        assistant.errorMessage
-      ) {
-        parts.push({ id: `${id}:error`, type: "error", message: assistant.errorMessage })
-      }
+        toolOwners.set(block.id, { messageID: id, index })
+        return call
+      })
       result.push({
         id,
         role: "assistant",
@@ -579,64 +564,17 @@ function convertHistory(messages: readonly AgentMessage[]): Message[] {
   return result
 }
 
-/**
- * Creates a pi session.
- *
- * Returns the concrete `PiSession` so the private Electron host can read the
- * JSONL path / initial snapshot. Callers that only need the protocol surface
- * can still treat it as an `AgentSession`.
- */
+/** Returns a concrete `PiSession` so the host can read its JSONL path / snapshot. */
 export function createPiSession(config: PiSessionConfig): PiSession {
   return new PiSession(config)
 }
 
-/** The last assistant message of a run, which carries the outcome. */
 function lastAssistant(messages: readonly PiMessage[]): AssistantMessage | undefined {
   for (let index = messages.length - 1; index >= 0; index--) {
     const message = messages[index]
     if (message?.role === "assistant") return message as AssistantMessage
   }
   return undefined
-}
-
-/**
- * Value comparison for parts, so an unchanged part is not re-sent. The reducer
- * compares by identity, so re-sending an equal part would still replace it.
- */
-function samePart(left: Part | undefined, right: Part): boolean {
-  if (!left || left.type !== right.type) return false
-  switch (left.type) {
-    case "text":
-      return right.type === "text" && left.text === right.text
-    case "reasoning":
-      return right.type === "reasoning" && left.text === right.text
-    case "error":
-      return right.type === "error" && left.message === right.message
-    case "attachment":
-      return (
-        right.type === "attachment" &&
-        left.attachment.id === right.attachment.id &&
-        left.attachment.name === right.attachment.name &&
-        left.attachment.mimeType === right.attachment.mimeType &&
-        left.attachment.size === right.attachment.size &&
-        left.attachment.url === right.attachment.url
-      )
-    case "tool": {
-      if (right.type !== "tool") return false
-      const previous = left.call
-      const next = right.call
-      return (
-        previous.id === next.id &&
-        previous.name === next.name &&
-        previous.status === next.status &&
-        previous.title === next.title &&
-        previous.output === next.output &&
-        previous.error === next.error &&
-        isEqual(previous.input, next.input) &&
-        isEqual(previous.detail, next.detail)
-      )
-    }
-  }
 }
 
 function describeDetail(detail: ToolCallDetail): string {
@@ -654,11 +592,7 @@ function describeDetail(detail: ToolCallDetail): string {
   }
 }
 
-/**
- * The grant a permanent approval covers: the tool and the one thing it touches,
- * exactly as the dialog showed it. A grant for one command does not cover a
- * different command, and a grant for one file does not cover another.
- */
+/** An "always" grant covers exactly this tool + resource, as shown in the dialog. */
 function permissionKey(toolName: string, detail: ToolCallDetail | undefined): string {
   return detail ? `${toolName}:${describeDetail(detail)}` : toolName
 }

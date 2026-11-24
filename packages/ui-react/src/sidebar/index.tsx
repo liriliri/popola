@@ -3,13 +3,8 @@ import { popolaClass } from "popola-ui"
 import className from "licia/className"
 
 /**
- * Host sidebar building blocks — directory / chat lists that fill
- * `shell.sidebar`. Presentational only: no store, no agent events.
- *
- * Typical layout (paseo-like):
- *   SidebarNav → SidebarItem rows (New chat, folder)
- *   SidebarSeparator
- *   SidebarSection title="Chats" → SidebarList / SidebarItem
+ * Host sidebar building blocks for `shell.sidebar`. Purely presentational.
+ * Typical layout: SidebarNav → Separator → SidebarSection("Chats") → SidebarList.
  */
 
 export function Sidebar(props: {
@@ -31,7 +26,6 @@ export function SidebarNav(props: { children?: ReactNode; className?: string }) 
   return <div className={className(popolaClass.sidebarNav, props.className)}>{props.children}</div>
 }
 
-/** Pinned to the bottom of the sidebar (settings, account, etc.). */
 export function SidebarFooter(props: { children?: ReactNode; className?: string }) {
   return (
     <div className={className(popolaClass.sidebarFooter, props.className)}>{props.children}</div>

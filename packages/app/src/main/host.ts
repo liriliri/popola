@@ -16,13 +16,11 @@ import type {
 const NOTICE_ID = "host-notice"
 
 /**
- * Owns the agent session and mirrors its state.
+ * Owns the agent session and mirrors its state, so a renderer joining mid-run
+ * gets a `session.snapshot` instead of the whole event history.
  *
- * The mirror exists so a renderer that joins mid-run can be handed a
- * `session.snapshot` instead of the whole event history.
- *
- * Holds a `PiSession` (not bare `AgentSession`) because this private host
- * needs the Pi JSONL path and initial snapshot when opening chats.
+ * Holds a concrete `PiSession`, not `AgentSession`: this private host needs the
+ * Pi JSONL path and initial snapshot when opening chats.
  */
 export class AgentHost {
   private session: PiSession | null = null

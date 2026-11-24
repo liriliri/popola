@@ -1,18 +1,10 @@
-/** The contract an agent adapter fulfils. */
-
 import type { AgentEvent } from "./events"
 import type { PermissionDecision } from "./permission"
 
 /**
- * A live agent session.
- *
- * Deliberately free of any platform API. `cwd`, `spawn` and `process.env`
- * belong to the factory, so the same contract can be implemented by a Node
- * host that spawns a CLI and by a browser host that talks to a model API.
- *
- * Cancellation goes through {@link AgentSession.interrupt} rather than an
- * `AbortSignal`, so the contract stays free of ambient globals that differ
- * between the DOM and Node type libraries.
+ * A live agent session. Platform-free: `cwd`, `spawn` and `process.env` belong
+ * to the factory, and cancellation goes through `interrupt` rather than an
+ * `AbortSignal` (which differs between DOM and Node type libraries).
  */
 export interface AgentSession {
   readonly provider: string
@@ -27,10 +19,7 @@ export interface AgentSession {
   close(): void
 }
 
-/**
- * Creates a session. Host-specific: a Node host spawns a child process, a
- * browser host calls a model API. The host owns the choice.
- */
+/** Creates a session; the host owns how (spawn a CLI, call a model API, ...). */
 export type AgentSessionFactory<TConfig = unknown> = (
   config: TConfig,
 ) => AgentSession | Promise<AgentSession>
