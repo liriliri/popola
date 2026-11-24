@@ -41,6 +41,13 @@ import { PopolaConversation } from "popola-ui-react/conversation"
 import { PopolaComposer } from "popola-ui-react/composer"
 import { PopolaPermissions } from "popola-ui-react/permission"
 import { PopolaMarkdown } from "popola-ui-react/markdown"
+import {
+  SettingsLayout,
+  SettingsSidebar,
+  SettingsPage,
+  SettingsSection,
+  SettingsCard,
+} from "popola-ui-react/settings"
 ```
 
 ## Feeding the store

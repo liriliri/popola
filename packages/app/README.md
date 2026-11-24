@@ -17,7 +17,8 @@ loads that URL and keeps data in `packages/app/.data`; otherwise the window load
 
 First launch asks for an OpenAI-compatible endpoint (`provider`, `baseUrl`,
 `apiKey`, `model`), saved to `<userData>/provider.json` (mode `0600`). Saving
-starts a new session; the header's **Provider** button reopens the form.
+starts a new session; the header's **Settings** button opens appearance and
+provider settings.
 
 ## Approvals
 
@@ -48,8 +49,9 @@ src/
       pi.ts            pi agent → popola-protocol events
   preload.cjs     contextBridge exposing window.popola
   renderer/
-    App.tsx       provider form + PopolaProvider + PopolaShell
-    bridge.ts     typed wrapper around window.popola
+    App.tsx          settings / chat screens + PopolaProvider + PopolaShell
+    SettingsPage.tsx sidebar settings (appearance / provider) via popola-ui-react
+    bridge.ts        typed wrapper around window.popola
   shared/types.ts main/renderer wire contract (HostEvent, ProviderConfig)
 ```
 

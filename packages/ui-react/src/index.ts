@@ -15,3 +15,22 @@ export { PopolaCard, DefaultPart, DefaultToolCall } from "./message/index"
 export { PopolaTypingIndicator } from "./message/streaming"
 
 export { PopolaMarkdown } from "./markdown"
+
+export {
+  SettingsLayout,
+  SettingsSidebar,
+  SettingsSidebarGroup,
+  SettingsSidebarItem,
+  SettingsPage,
+  SettingsGroup,
+  SettingsSection,
+  SettingsCard,
+  SettingsRow,
+  SettingsSwitch,
+  SettingsSelect,
+  SettingsInput,
+  SettingsAction,
+  SettingsDetailRow,
+  SettingsAddRow,
+} from "./settings/index"
+export type { SettingsRowProps, SettingsSelectOption } from "./settings/index"

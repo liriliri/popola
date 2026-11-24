@@ -42,6 +42,12 @@
       "module": "./dist/esm/markdown/index.js",
       "require": "./dist/cjs/markdown/index.js",
       "default": "./dist/cjs/markdown/index.js"
+    },
+    "./settings": {
+      "types": "./dist/esm/settings/index.d.ts",
+      "module": "./dist/esm/settings/index.js",
+      "require": "./dist/cjs/settings/index.js",
+      "default": "./dist/cjs/settings/index.js"
     }
   },
   "files": [

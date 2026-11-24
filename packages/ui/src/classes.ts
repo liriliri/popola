@@ -3,6 +3,7 @@ import { conversationClass } from "./conversation"
 import { markdownClass } from "./markdown"
 import { messageClass } from "./message"
 import { permissionClass } from "./permission"
+import { settingsClass } from "./settings"
 import { shellClass } from "./shell"
 
 /**
@@ -17,11 +18,13 @@ export const popolaClass = {
   ...composerClass,
   ...permissionClass,
   ...markdownClass,
+  ...settingsClass,
 } as typeof shellClass &
   typeof conversationClass &
   typeof messageClass &
   typeof composerClass &
   typeof permissionClass &
-  typeof markdownClass
+  typeof markdownClass &
+  typeof settingsClass
 
 export type PopolaClassName = (typeof popolaClass)[keyof typeof popolaClass]

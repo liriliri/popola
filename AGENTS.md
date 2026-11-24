@@ -40,7 +40,7 @@ packages/
     src/
       index.ts               public re-exports
       state.ts reducer.ts store.ts selectors.ts slots.ts classes.ts style.css
-      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/
+      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/ settings/
         index.ts             data shapes, selectors, slot/class contracts for that domain
         style.css           authored CSS, @imported by root style.css
   ui-react/    popola-ui-react React renderer (published)

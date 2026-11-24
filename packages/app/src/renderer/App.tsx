@@ -3,11 +3,11 @@ import isErr from "licia/isErr"
 import { createStore, popolaClass } from "popola-ui"
 import { isAgentEvent } from "popola-protocol"
 import type { ProviderConfig } from "../shared/types"
-import { PopolaProvider, PopolaShell } from "popola-ui-react"
+import { PopolaProvider, PopolaShell, type PopolaTheme } from "popola-ui-react"
 import { bridge } from "./bridge"
-import { ProviderForm } from "./ProviderForm"
+import { ProviderSetup, SettingsPage } from "./SettingsPage"
 
-type Screen = "loading" | "provider" | "chat"
+type Screen = "loading" | "provider" | "chat" | "settings"
 
 export function App() {
   const store = useMemo(() => createStore(), [])
@@ -15,6 +15,7 @@ export function App() {
   const [saved, setSaved] = useState<ProviderConfig | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [theme, setTheme] = useState<PopolaTheme>("system")
 
   useEffect(() => {
     let unsubscribe = () => {}
@@ -78,10 +79,10 @@ export function App() {
                 className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
                 onClick={() => {
                   setFormError(null)
-                  setScreen("provider")
+                  setScreen("settings")
                 }}
               >
-                Provider
+                Settings
               </button>
             ) : null}
           </div>
@@ -94,6 +95,7 @@ export function App() {
   return (
     <PopolaProvider
       store={store}
+      theme={theme}
       onSend={(payload) => {
         void bridge().prompt(payload.text)
       }}
@@ -106,13 +108,24 @@ export function App() {
     >
       <PopolaShell slots={slots}>
         {screen === "provider" ? (
-          <ProviderForm
+          <ProviderSetup
             key={saved?.model ?? "empty"}
             initial={saved}
             error={formError}
             saving={saving}
-            canCancel={saved !== null}
-            onCancel={() => setScreen("chat")}
+            onSave={(config) => {
+              void save(config)
+            }}
+          />
+        ) : screen === "settings" && saved ? (
+          <SettingsPage
+            key={`${saved.provider}:${saved.model}`}
+            initial={saved}
+            theme={theme}
+            error={formError}
+            saving={saving}
+            onThemeChange={setTheme}
+            onBack={() => setScreen("chat")}
             onSave={(config) => {
               void save(config)
             }}
