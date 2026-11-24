@@ -55,6 +55,15 @@ export const settingsClass = {
   settingsSwitchThumbChecked: "popola-settings__switch-thumb--checked",
 
   settingsSelect: "popola-settings__select",
+  settingsSelectTrigger: "popola-settings__select-trigger",
+  settingsSelectTriggerOpen: "popola-settings__select-trigger--open",
+  settingsSelectValue: "popola-settings__select-value",
+  settingsSelectChevron: "popola-settings__select-chevron",
+  settingsSelectChevronOpen: "popola-settings__select-chevron--open",
+  settingsSelectMenu: "popola-settings__select-menu",
+  settingsSelectOption: "popola-settings__select-option",
+  settingsSelectOptionActive: "popola-settings__select-option--active",
+  settingsSelectOptionSelected: "popola-settings__select-option--selected",
   settingsInput: "popola-settings__input",
 
   /** Theme picker grid (tiles with CSS-variable previews). */

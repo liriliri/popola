@@ -31,6 +31,7 @@ export function DefaultPermission(props: {
   requests: PermissionRequest[]
   onReply: (id: string, decision: PermissionDecision) => void
 }) {
+  const { labels } = usePopola()
   return (
     <div className={popolaClass.permissionLayer}>
       {props.requests.map((request) => (
@@ -42,16 +43,16 @@ export function DefaultPermission(props: {
               className={className(popolaClass.button, popolaClass.buttonPrimary)}
               onClick={() => props.onReply(request.id, "once")}
             >
-              Allow once
+              {labels.permissionAllowOnce}
             </button>
             <button className={popolaClass.button} onClick={() => props.onReply(request.id, "always")}>
-              Always allow
+              {labels.permissionAlwaysAllow}
             </button>
             <button
               className={className(popolaClass.button, popolaClass.buttonGhost)}
               onClick={() => props.onReply(request.id, "reject")}
             >
-              Reject
+              {labels.permissionReject}
             </button>
           </div>
         </div>

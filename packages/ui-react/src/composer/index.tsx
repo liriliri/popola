@@ -1,3 +1,4 @@
+import { ArrowUp, Square } from "lucide-react"
 import { popolaClass, selectCanSend, selectCanStop, type Attachment } from "popola-ui"
 import className from "licia/className"
 import { usePopola } from "../context"
@@ -7,7 +8,7 @@ import type { PopolaSlots } from "../context"
 
 /** The input area. Stop appears only while a run is in flight. */
 export function PopolaComposer(props: { slots?: PopolaSlots; className?: string }) {
-  const { store, onSend, onStop } = usePopola()
+  const { store, onSend, onStop, labels } = usePopola()
 
   const text = usePopolaState((state) => state.composer.text)
   const attachments = usePopolaState((state) => state.composer.attachments)
@@ -52,58 +53,68 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
         }
       />
 
-      <Slot
-        name="composer.input"
-        slotProps={{
-          value: text,
-          onChange: (value: string) => store.dispatch({ type: "composer.text", text: value }),
-          onSubmit: submit,
-        }}
-        local={props.slots}
-        fallback={
-          <textarea
-            className={popolaClass.composerInput}
-            value={text}
-            placeholder="Ask anything"
-            onChange={(event) => store.dispatch({ type: "composer.text", text: event.target.value })}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault()
-                submit()
-              }
-            }}
-          />
-        }
-      />
-
-      <div className={popolaClass.composerActions}>
+      <div className={popolaClass.composerField}>
         <Slot
-          name="composer.send"
-          slotProps={{ canSend, onClick: submit }}
+          name="composer.input"
+          slotProps={{
+            value: text,
+            onChange: (value: string) => store.dispatch({ type: "composer.text", text: value }),
+            onSubmit: submit,
+          }}
           local={props.slots}
           fallback={
-            <button
-              className={className(popolaClass.composerButton, popolaClass.composerSend)}
-              disabled={!canSend || !onSend}
-              onClick={submit}
-            >
-              Send
-            </button>
+            <textarea
+              className={popolaClass.composerInput}
+              value={text}
+              placeholder={labels.composerPlaceholder}
+              rows={1}
+              onChange={(event) => store.dispatch({ type: "composer.text", text: event.target.value })}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault()
+                  submit()
+                }
+              }}
+            />
           }
         />
 
-        {canStop ? (
+        <div className={popolaClass.composerActions}>
+          {canStop ? (
+            <Slot
+              name="composer.stop"
+              slotProps={{ onClick: () => onStop?.() }}
+              local={props.slots}
+              fallback={
+                <button
+                  type="button"
+                  className={className(popolaClass.composerButton, popolaClass.composerStop)}
+                  aria-label={labels.composerStop}
+                  onClick={() => onStop?.()}
+                >
+                  <Square size={10} fill="currentColor" aria-hidden />
+                </button>
+              }
+            />
+          ) : null}
+
           <Slot
-            name="composer.stop"
-            slotProps={{ onClick: () => onStop?.() }}
+            name="composer.send"
+            slotProps={{ canSend, onClick: submit }}
             local={props.slots}
             fallback={
-              <button className={className(popolaClass.composerButton, popolaClass.composerStop)} onClick={() => onStop?.()}>
-                Stop
+              <button
+                type="button"
+                className={className(popolaClass.composerButton, popolaClass.composerSend)}
+                disabled={!canSend || !onSend}
+                aria-label={labels.composerSend}
+                onClick={submit}
+              >
+                <ArrowUp size={14} strokeWidth={2.5} aria-hidden />
               </button>
             }
           />
-        ) : null}
+        </div>
       </div>
     </div>
   )

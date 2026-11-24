@@ -11,15 +11,15 @@
   --popola-text-base: #14171e;
   --popola-text-muted: #6b7280;
   --popola-text-faint: #9ca3af;
-  --popola-text-accent: #2f6f5e;
+  --popola-text-accent: #b04147;
 
   /* Borders */
   --popola-border-base: #e6e6e2;
   --popola-border-strong: #d2d2cb;
 
   /* Accent */
-  --popola-accent-base: #2f6f5e;
-  --popola-accent-hover: #275c4e;
+  --popola-accent-base: #b04147;
+  --popola-accent-hover: #96373c;
   --popola-accent-fg: #ffffff;
 
   /* Status */
@@ -29,9 +29,9 @@
   --popola-success-base: #3f7d52;
 
   /* Shape */
-  --popola-radius-sm: 4px;
-  --popola-radius-md: 8px;
-  --popola-radius-lg: 12px;
+  --popola-radius-sm: 2px;
+  --popola-radius-md: 4px;
+  --popola-radius-lg: 6px;
   --popola-radius-pill: 999px;
 
   /* Space */
@@ -70,13 +70,13 @@
   --popola-text-base: #14171e;
   --popola-text-muted: #6b7280;
   --popola-text-faint: #9ca3af;
-  --popola-text-accent: #2f6f5e;
+  --popola-text-accent: #b04147;
 
   --popola-border-base: #e6e6e2;
   --popola-border-strong: #d2d2cb;
 
-  --popola-accent-base: #2f6f5e;
-  --popola-accent-hover: #275c4e;
+  --popola-accent-base: #b04147;
+  --popola-accent-hover: #96373c;
   --popola-accent-fg: #ffffff;
 
   --popola-danger-base: #b06367;
@@ -96,14 +96,14 @@
   --popola-text-base: #e8e9ec;
   --popola-text-muted: #9aa0ab;
   --popola-text-faint: #6b7280;
-  --popola-text-accent: #6fbf9f;
+  --popola-text-accent: #d97075;
 
   --popola-border-base: #2b2f38;
   --popola-border-strong: #3a3f4a;
 
-  --popola-accent-base: #3f8f78;
-  --popola-accent-hover: #4aa78c;
-  --popola-accent-fg: #0d1114;
+  --popola-accent-base: #b04147;
+  --popola-accent-hover: #c4555b;
+  --popola-accent-fg: #ffffff;
 
   --popola-danger-base: #d98a8e;
   --popola-danger-surface: #2a1c1e;

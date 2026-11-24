@@ -55,3 +55,6 @@ export type {
 
 export { popolaClass } from "./classes"
 export type { PopolaClassName } from "./classes"
+
+export { DEFAULT_POPOLA_LABELS, resolvePopolaLabels } from "./labels"
+export type { PopolaLabels } from "./labels"

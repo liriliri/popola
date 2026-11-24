@@ -1,8 +1,9 @@
 export const zh = {
   nav: {
+    preferences: "偏好",
+    agent: "智能体",
     appearance: "外观",
     provider: "供应商",
-    app: "应用",
     back: "← 返回",
   },
   section: {
@@ -43,5 +44,24 @@ export const zh = {
     emptyNoFolder: "该文件夹下的 Pi 会话会显示在这里。",
     emptyNoSessions: "此文件夹还没有 Pi 会话。",
     settings: "设置",
+    resize: "调整侧边栏宽度",
+  },
+  ui: {
+    composerPlaceholder: "问点什么…",
+    composerSend: "发送",
+    composerStop: "停止",
+    conversationEmpty: "还没有消息。",
+    permissionAllowOnce: "允许一次",
+    permissionAlwaysAllow: "始终允许",
+    permissionReject: "拒绝",
+    toolCallRequest: "请求",
+    toolCallResult: "结果",
+    settingsNav: "设置",
+    themePicker: "主题",
+  },
+  theme: {
+    system: "跟随系统",
+    light: "浅色",
+    dark: "深色",
   },
 } as const

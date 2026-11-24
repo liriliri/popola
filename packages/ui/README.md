@@ -11,7 +11,7 @@ const store = createStore()
 store.dispatch({ type: "turn.started", turnID: "t1" })
 ```
 
-- `require("popola-ui")` → CommonJS; `module` condition → ESM.
+- ESM-only (`"type": "module"`).
 - `popola-ui/style.css` is the authored stylesheet (not built); it targets
   `popolaClass` names and reads visual values from tokens.
 - The agent event set lives in [`popola-protocol`](../protocol/README.md) and

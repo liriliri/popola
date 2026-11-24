@@ -3,60 +3,6 @@
  * same token names so previews and the shell pick them up via data-popola-theme.
  */
 
-/* Zinc — neutral gray. */
-[data-popola-theme="zinc"] {
-  color-scheme: dark;
-
-  --popola-surface-base: #18181b;
-  --popola-surface-raised: #1f1f22;
-  --popola-surface-sunken: #131316;
-  --popola-surface-overlay: #27272a;
-
-  --popola-text-base: #fafafa;
-  --popola-text-muted: #a1a1aa;
-  --popola-text-faint: #71717a;
-  --popola-text-accent: #e4e4e7;
-
-  --popola-border-base: #27272a;
-  --popola-border-strong: #303036;
-
-  --popola-accent-base: #e4e4e7;
-  --popola-accent-hover: #fafafa;
-  --popola-accent-fg: #18181b;
-
-  --popola-danger-base: #c44a4a;
-  --popola-danger-surface: #2a1c1e;
-  --popola-warning-base: #d4a44a;
-  --popola-success-base: #5dba80;
-}
-
-/* Midnight — blue tint. */
-[data-popola-theme="midnight"] {
-  color-scheme: dark;
-
-  --popola-surface-base: #161820;
-  --popola-surface-raised: #1c1e27;
-  --popola-surface-sunken: #121420;
-  --popola-surface-overlay: #252731;
-
-  --popola-text-base: #fafafa;
-  --popola-text-muted: #9a9db0;
-  --popola-text-faint: #6b6e82;
-  --popola-text-accent: #7eaaeb;
-
-  --popola-border-base: #242636;
-  --popola-border-strong: #2e3040;
-
-  --popola-accent-base: #3b6fcf;
-  --popola-accent-hover: #4a7dd9;
-  --popola-accent-fg: #ffffff;
-
-  --popola-danger-base: #c44a52;
-  --popola-danger-surface: #2a1c1e;
-  --popola-warning-base: #d4a44a;
-  --popola-success-base: #5dba80;
-}
-
 /* Claude — warm orange. */
 [data-popola-theme="claude"] {
   color-scheme: dark;
@@ -84,55 +30,109 @@
   --popola-success-base: #5dba80;
 }
 
-/* Ghostty — slate blue. */
-[data-popola-theme="ghostty"] {
+/* Cursor — charcoal with blue accent. */
+[data-popola-theme="cursor"] {
   color-scheme: dark;
 
-  --popola-surface-base: #282c34;
-  --popola-surface-raised: #2f333d;
-  --popola-surface-sunken: #21252d;
-  --popola-surface-overlay: #383c48;
+  --popola-surface-base: #141414;
+  --popola-surface-raised: #1c1c1c;
+  --popola-surface-sunken: #0f0f0f;
+  --popola-surface-overlay: #262626;
 
-  --popola-text-base: #fafafa;
-  --popola-text-muted: #c8ccd8;
-  --popola-text-faint: #a0a4b2;
-  --popola-text-accent: #b4d0fc;
+  --popola-text-base: #ececec;
+  --popola-text-muted: #a0a0a0;
+  --popola-text-faint: #6e6e6e;
+  --popola-text-accent: #8babf0;
 
-  --popola-border-base: #353a47;
-  --popola-border-strong: #3f4454;
+  --popola-border-base: #2a2a2a;
+  --popola-border-strong: #363636;
 
-  --popola-accent-base: #3570e0;
-  --popola-accent-hover: #4a82e8;
+  --popola-accent-base: #4d7cff;
+  --popola-accent-hover: #6b91ff;
   --popola-accent-fg: #ffffff;
 
-  --popola-danger-base: #c44a55;
+  --popola-danger-base: #e5484d;
   --popola-danger-surface: #2a1c1e;
   --popola-warning-base: #d4a44a;
   --popola-success-base: #5dba80;
 }
 
-/* Pure black — zero-luminance base. */
-[data-popola-theme="pure-black"] {
+/* DeepSeek — navy with electric blue. */
+[data-popola-theme="deepseek"] {
   color-scheme: dark;
 
-  --popola-surface-base: #000000;
-  --popola-surface-raised: #0a0a0a;
-  --popola-surface-sunken: #000000;
-  --popola-surface-overlay: #181818;
+  --popola-surface-base: #0f1629;
+  --popola-surface-raised: #161e35;
+  --popola-surface-sunken: #0a1020;
+  --popola-surface-overlay: #1e2842;
 
-  --popola-text-base: #fafafa;
-  --popola-text-muted: #a1a1aa;
-  --popola-text-faint: #71717a;
-  --popola-text-accent: #7ccba0;
+  --popola-text-base: #eef2ff;
+  --popola-text-muted: #9aa8c7;
+  --popola-text-faint: #6b7a9b;
+  --popola-text-accent: #8ba3ff;
 
-  --popola-border-base: #1c1c1c;
-  --popola-border-strong: #242424;
+  --popola-border-base: #1e2a45;
+  --popola-border-strong: #2a3858;
 
-  --popola-accent-base: #20744a;
-  --popola-accent-hover: #278556;
+  --popola-accent-base: #4d6bfe;
+  --popola-accent-hover: #6380ff;
   --popola-accent-fg: #ffffff;
 
-  --popola-danger-base: #c44a4a;
+  --popola-danger-base: #e5484d;
+  --popola-danger-surface: #2a1c1e;
+  --popola-warning-base: #d4a44a;
+  --popola-success-base: #5dba80;
+}
+
+/* Gemini — soft violet. */
+[data-popola-theme="gemini"] {
+  color-scheme: dark;
+
+  --popola-surface-base: #131314;
+  --popola-surface-raised: #1b1b1d;
+  --popola-surface-sunken: #0e0e0f;
+  --popola-surface-overlay: #262629;
+
+  --popola-text-base: #e8eaed;
+  --popola-text-muted: #9aa0a6;
+  --popola-text-faint: #6b7077;
+  --popola-text-accent: #b4a7ff;
+
+  --popola-border-base: #2a2a2e;
+  --popola-border-strong: #36363b;
+
+  --popola-accent-base: #8b7cf6;
+  --popola-accent-hover: #9d90f8;
+  --popola-accent-fg: #ffffff;
+
+  --popola-danger-base: #e5484d;
+  --popola-danger-surface: #2a1c1e;
+  --popola-warning-base: #d4a44a;
+  --popola-success-base: #5dba80;
+}
+
+/* ChatGPT — OpenAI green. */
+[data-popola-theme="chatgpt"] {
+  color-scheme: dark;
+
+  --popola-surface-base: #212121;
+  --popola-surface-raised: #2f2f2f;
+  --popola-surface-sunken: #1a1a1a;
+  --popola-surface-overlay: #3a3a3a;
+
+  --popola-text-base: #ececec;
+  --popola-text-muted: #b4b4b4;
+  --popola-text-faint: #8f8f8f;
+  --popola-text-accent: #6fcfba;
+
+  --popola-border-base: #333333;
+  --popola-border-strong: #444444;
+
+  --popola-accent-base: #10a37f;
+  --popola-accent-hover: #1aaf8a;
+  --popola-accent-fg: #ffffff;
+
+  --popola-danger-base: #e5484d;
   --popola-danger-surface: #2a1c1e;
   --popola-warning-base: #d4a44a;
   --popola-success-base: #5dba80;

@@ -14,6 +14,7 @@ export function selectCanSend(state: PopolaState): boolean {
 export const composerClass = {
   composer: "popola-composer",
   composerContext: "popola-composer__context",
+  composerField: "popola-composer__field",
   composerInput: "popola-composer__input",
   composerActions: "popola-composer__actions",
   composerButton: "popola-composer__button",

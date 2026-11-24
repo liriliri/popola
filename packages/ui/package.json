@@ -3,15 +3,14 @@
   "version": "0.1.0",
   "license": "MIT",
   "description": "Framework-agnostic core of the popola UI layer: state, slots, tokens, class contract.",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "module": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./style.css": "./src/style.css"
   },
@@ -23,7 +22,7 @@
     "*.css"
   ],
   "scripts": {
-    "build": "tsc -b && tsc -p tsconfig.cjs.json",
+    "build": "tsc -b",
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "dependencies": {

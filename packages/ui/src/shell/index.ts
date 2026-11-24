@@ -10,9 +10,12 @@ export const shellClass = {
 export const shellSlot = {
   shellHeader: "shell.header",
   shellSidebar: "shell.sidebar",
+  shellMainLeading: "shell.main.leading",
 } as const
 
 export type ShellSlotProps = {
   "shell.header": { title?: string }
   "shell.sidebar": Record<string, never>
+  /** Optional chrome above the main column (e.g. a window drag strip). */
+  "shell.main.leading": Record<string, never>
 }

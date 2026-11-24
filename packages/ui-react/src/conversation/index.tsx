@@ -1,12 +1,13 @@
 import { popolaClass, selectIsBusy, selectMessages, type Message } from "popola-ui"
 import className from "licia/className"
+import { usePopola, type PopolaSlots } from "../context"
 import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import { PopolaCard } from "../message/index"
-import type { PopolaSlots } from "../context"
 
 /** Conversation column, newest at the bottom. Needs only the store — no shell. */
 export function PopolaConversation(props: { slots?: PopolaSlots; className?: string }) {
+  const { labels } = usePopola()
   const messages = usePopolaState(selectMessages)
   const busy = usePopolaState(selectIsBusy)
   const last = messages[messages.length - 1]
@@ -22,7 +23,7 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
               name="conversation.empty"
               slotProps={{}}
               local={props.slots}
-              fallback={<div className={popolaClass.conversationEmpty}>No messages yet.</div>}
+              fallback={<div className={popolaClass.conversationEmpty}>{labels.conversationEmpty}</div>}
             />
           ) : (
             messages.map((message, index) => (

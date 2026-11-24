@@ -7,8 +7,7 @@
   width: 100%;
   max-width: var(--popola-column);
   gap: var(--popola-space-2);
-  padding: var(--popola-space-3) var(--popola-space-4);
-  border-top: 1px solid var(--popola-border-base);
+  padding: var(--popola-space-3) var(--popola-space-4) var(--popola-space-4);
   background: var(--popola-surface-base);
 }
 
@@ -18,25 +17,37 @@
   gap: var(--popola-space-2);
 }
 
+/* Rounded field that wraps the textarea and the trailing icon actions. */
+.popola-composer__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-2);
+  width: 100%;
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-lg);
+  background: var(--popola-surface-base);
+  padding: var(--popola-space-3);
+  transition: border-color var(--popola-duration) var(--popola-easing);
+}
+
+.popola-composer__field:focus-within {
+  border-color: var(--popola-accent-base);
+}
+
 .popola-composer__input {
   width: 100%;
-  min-height: 60px;
+  min-height: 48px;
   max-height: 240px;
-  resize: vertical;
-  border: 1px solid var(--popola-border-base);
-  border-radius: var(--popola-radius-md);
-  background: var(--popola-surface-base);
+  resize: none;
+  border: none;
+  background: transparent;
   color: var(--popola-text-base);
   font-family: inherit;
   font-size: var(--popola-text-size-md);
   line-height: var(--popola-line-height);
-  padding: var(--popola-space-2) var(--popola-space-3);
+  padding: 0;
   outline: none;
-  transition: border-color var(--popola-duration) var(--popola-easing);
-}
-
-.popola-composer__input:focus {
-  border-color: var(--popola-accent-base);
+  field-sizing: content;
 }
 
 .popola-composer__input::placeholder {
@@ -49,41 +60,48 @@
   justify-content: flex-end;
   gap: var(--popola-space-2);
 }
+
+/* Icon disc — send / stop sit inside the field. */
 .popola-composer__button {
-  font-family: inherit;
-  font-size: var(--popola-text-size-md);
-  line-height: 1;
-  border-radius: var(--popola-radius-md);
-  border: 1px solid var(--popola-border-base);
-  background: var(--popola-surface-base);
-  color: var(--popola-text-base);
-  padding: var(--popola-space-2) var(--popola-space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--popola-radius-pill);
+  background: var(--popola-surface-sunken);
+  color: var(--popola-text-muted);
   cursor: pointer;
   transition: background var(--popola-duration) var(--popola-easing),
-    border-color var(--popola-duration) var(--popola-easing);
+    opacity var(--popola-duration) var(--popola-easing);
 }
 
 .popola-composer__button:hover:not(:disabled) {
-  background: var(--popola-surface-raised);
+  background: var(--popola-border-strong);
 }
 
 .popola-composer__button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .popola-composer__button--send {
   background: var(--popola-accent-base);
-  border-color: var(--popola-accent-base);
   color: var(--popola-accent-fg);
 }
 
 .popola-composer__button--send:hover:not(:disabled) {
   background: var(--popola-accent-hover);
-  border-color: var(--popola-accent-hover);
 }
 
 .popola-composer__button--stop {
-  color: var(--popola-danger-base);
-  border-color: var(--popola-border-strong);
+  background: var(--popola-danger-base);
+  color: var(--popola-accent-fg);
+}
+
+.popola-composer__button--stop:hover:not(:disabled) {
+  opacity: 0.9;
 }

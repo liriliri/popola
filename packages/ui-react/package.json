@@ -3,57 +3,49 @@
   "version": "0.1.0",
   "license": "MIT",
   "description": "React rendering of the popola UI layer.",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "module": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./shell": {
-      "types": "./dist/esm/shell/index.d.ts",
-      "module": "./dist/esm/shell/index.js",
-      "require": "./dist/cjs/shell/index.js",
-      "default": "./dist/cjs/shell/index.js"
+      "types": "./dist/shell/index.d.ts",
+      "import": "./dist/shell/index.js",
+      "default": "./dist/shell/index.js"
     },
     "./conversation": {
-      "types": "./dist/esm/conversation/index.d.ts",
-      "module": "./dist/esm/conversation/index.js",
-      "require": "./dist/cjs/conversation/index.js",
-      "default": "./dist/cjs/conversation/index.js"
+      "types": "./dist/conversation/index.d.ts",
+      "import": "./dist/conversation/index.js",
+      "default": "./dist/conversation/index.js"
     },
     "./composer": {
-      "types": "./dist/esm/composer/index.d.ts",
-      "module": "./dist/esm/composer/index.js",
-      "require": "./dist/cjs/composer/index.js",
-      "default": "./dist/cjs/composer/index.js"
+      "types": "./dist/composer/index.d.ts",
+      "import": "./dist/composer/index.js",
+      "default": "./dist/composer/index.js"
     },
     "./permission": {
-      "types": "./dist/esm/permission/index.d.ts",
-      "module": "./dist/esm/permission/index.js",
-      "require": "./dist/cjs/permission/index.js",
-      "default": "./dist/cjs/permission/index.js"
+      "types": "./dist/permission/index.d.ts",
+      "import": "./dist/permission/index.js",
+      "default": "./dist/permission/index.js"
     },
     "./markdown": {
-      "types": "./dist/esm/markdown/index.d.ts",
-      "module": "./dist/esm/markdown/index.js",
-      "require": "./dist/cjs/markdown/index.js",
-      "default": "./dist/cjs/markdown/index.js"
+      "types": "./dist/markdown/index.d.ts",
+      "import": "./dist/markdown/index.js",
+      "default": "./dist/markdown/index.js"
     },
     "./settings": {
-      "types": "./dist/esm/settings/index.d.ts",
-      "module": "./dist/esm/settings/index.js",
-      "require": "./dist/cjs/settings/index.js",
-      "default": "./dist/cjs/settings/index.js"
+      "types": "./dist/settings/index.d.ts",
+      "import": "./dist/settings/index.js",
+      "default": "./dist/settings/index.js"
     },
     "./sidebar": {
-      "types": "./dist/esm/sidebar/index.d.ts",
-      "module": "./dist/esm/sidebar/index.js",
-      "require": "./dist/cjs/sidebar/index.js",
-      "default": "./dist/cjs/sidebar/index.js"
+      "types": "./dist/sidebar/index.d.ts",
+      "import": "./dist/sidebar/index.js",
+      "default": "./dist/sidebar/index.js"
     }
   },
   "files": [
@@ -61,7 +53,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -b && tsc -p tsconfig.cjs.json",
+    "build": "tsc -b",
     "typecheck": "tsc -p stories",
     "dev": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -69,6 +61,7 @@
   },
   "dependencies": {
     "licia": "^1.49.0",
+    "lucide-react": "^1.79.0",
     "markdown-it": "^14.3.3",
     "popola-ui": "^0.1.0"
   },

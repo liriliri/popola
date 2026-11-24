@@ -1,4 +1,4 @@
-/** Traffic-light clearance + drag strip; place first in a top-reaching sidebar. */
+/** Traffic-light clearance + drag strip; place first in any top-reaching pane. */
 export function TitlebarChrome() {
   return (
     <div className="app-titlebar">

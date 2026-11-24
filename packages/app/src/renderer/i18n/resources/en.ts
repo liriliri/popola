@@ -1,8 +1,9 @@
 export const en = {
   nav: {
+    preferences: "Preferences",
+    agent: "Agent",
     appearance: "Appearance",
     provider: "Provider",
-    app: "App",
     back: "← Back",
   },
   section: {
@@ -43,5 +44,24 @@ export const en = {
     emptyNoFolder: "Pi sessions for the folder show up here.",
     emptyNoSessions: "No Pi sessions in this folder yet.",
     settings: "Settings",
+    resize: "Resize sidebar",
+  },
+  ui: {
+    composerPlaceholder: "Ask anything",
+    composerSend: "Send",
+    composerStop: "Stop",
+    conversationEmpty: "No messages yet.",
+    permissionAllowOnce: "Allow once",
+    permissionAlwaysAllow: "Always allow",
+    permissionReject: "Reject",
+    toolCallRequest: "Request",
+    toolCallResult: "Result",
+    settingsNav: "Settings",
+    themePicker: "Theme",
+  },
+  theme: {
+    system: "System",
+    light: "Light",
+    dark: "Dark",
   },
 } as const

@@ -7,7 +7,44 @@ body,
 
 /* Sidebar flush to the window top; traffic-light clearance is the drag strip. */
 .app-sidebar {
+  position: relative;
   padding-top: 0;
+}
+
+/* Host overrides the shell rail width; drag handle sits on the right edge. */
+.popola-shell__sidebar {
+  width: var(--app-sidebar-width, 260px);
+}
+
+.app-sidebar__resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  z-index: 2;
+  width: 6px;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: col-resize;
+  -webkit-app-region: no-drag;
+}
+
+.app-sidebar__resize::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background var(--popola-duration) var(--popola-easing);
+}
+
+.app-sidebar__resize:hover::after,
+.app-sidebar__resize[data-active="true"]::after {
+  background: var(--popola-accent-base);
 }
 
 /*
@@ -17,6 +54,8 @@ body,
 .app-titlebar {
   position: relative;
   flex: none;
+  align-self: stretch;
+  width: 100%;
   height: 38px;
   -webkit-app-region: drag;
   cursor: default;
@@ -32,15 +71,23 @@ body,
   -webkit-app-region: no-drag;
 }
 
-/* Let the drag strip bleed to the sidebar edges above the Back button. */
+/*
+ * Drag strip bleeds to the sidebar edges; back row keeps the same horizontal
+ * inset as sidebar items so the labels line up.
+ */
 .app-settings-sidebar .popola-settings-sidebar__header {
-  padding-top: 0;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0 var(--popola-space-2) var(--popola-space-2);
 }
 
-.app-settings-sidebar .popola-settings-sidebar__header > .popola-button {
-  margin: 0 var(--popola-space-2);
+/* Keep the main-pane drag strip pinned; only the settings body scrolls. */
+.app-settings-layout .popola-settings-layout__detail {
+  overflow: hidden;
+}
+
+.app-settings-layout .popola-settings-layout__detail > .popola-settings {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Provider setup lives in shell.main; conversation owns scroll there, so this page must. */

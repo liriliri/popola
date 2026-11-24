@@ -1,5 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react"
-import { createStore, type Attachment, type PermissionDecision, type PopolaStore, type SlotName } from "popola-ui"
+import {
+  createStore,
+  resolvePopolaLabels,
+  type Attachment,
+  type PermissionDecision,
+  type PopolaLabels,
+  type PopolaStore,
+  type SlotName,
+} from "popola-ui"
+
+export type { PopolaLabels } from "popola-ui"
+export { DEFAULT_POPOLA_LABELS } from "popola-ui"
 
 /** Slot implementations; prop types come from `SlotProps` in `popola-ui`. */
 export type PopolaSlots = Partial<Record<SlotName, React.ComponentType<any>>>
@@ -31,6 +42,7 @@ export type PopolaContextValue = {
   readonly store: PopolaStore
   readonly slots: PopolaSlots
   readonly theme: PopolaTheme
+  readonly labels: PopolaLabels
   readonly onSend?: (payload: PopolaSendPayload) => void
   readonly onStop?: () => void
   readonly onPermissionReply?: (id: string, decision: PermissionDecision) => void
@@ -44,23 +56,27 @@ export function PopolaProvider(props: {
   /** Slots available to every component under this provider. */
   slots?: PopolaSlots
   theme?: PopolaTheme
+  /** Override built-in chrome copy (placeholder, empty state, permission buttons, …). */
+  labels?: Partial<PopolaLabels>
   onSend?: (payload: PopolaSendPayload) => void
   onStop?: () => void
   onPermissionReply?: (id: string, decision: PermissionDecision) => void
   children?: ReactNode
 }) {
   const store = useMemo(() => props.store ?? createStore(), [props.store])
+  const labels = useMemo(() => resolvePopolaLabels(props.labels), [props.labels])
 
   const value = useMemo<PopolaContextValue>(
     () => ({
       store,
       slots: props.slots ?? {},
       theme: props.theme ?? "system",
+      labels,
       onSend: props.onSend,
       onStop: props.onStop,
       onPermissionReply: props.onPermissionReply,
     }),
-    [store, props.slots, props.theme, props.onSend, props.onStop, props.onPermissionReply],
+    [store, props.slots, props.theme, labels, props.onSend, props.onStop, props.onPermissionReply],
   )
 
   return <PopolaContext.Provider value={value}>{props.children}</PopolaContext.Provider>

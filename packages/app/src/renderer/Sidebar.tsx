@@ -1,3 +1,7 @@
+import { useRef, type PointerEvent as ReactPointerEvent } from "react"
+import { observer } from "mobx-react-lite"
+import { Folder, Settings } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { popolaClass } from "popola-ui"
 import {
   Sidebar as SidebarFrame,
@@ -10,39 +14,13 @@ import {
   SidebarSection,
   SidebarSeparator,
 } from "popola-ui-react"
-import type { SessionSummary, WorkspaceState } from "../shared/types"
-import { useTranslation } from "react-i18next"
 import { TitlebarChrome } from "./TitlebarChrome"
+import { SIDEBAR_WIDTH_MAX, SIDEBAR_WIDTH_MIN } from "./sidebarWidth"
+import { appStore } from "./stores"
 
 function basename(cwd: string): string {
   const parts = cwd.replace(/\\/g, "/").split("/").filter(Boolean)
   return parts[parts.length - 1] ?? cwd
-}
-
-function FolderMark() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d="M2 4.5A1.5 1.5 0 0 1 3.5 3h3.1c.3 0 .6.1.8.3L8.6 4.5c.2.2.5.3.8.3H12.5A1.5 1.5 0 0 1 14 6v5.5A1.5 1.5 0 0 1 12.5 13h-9A1.5 1.5 0 0 1 2 11.5v-7Z"
-        stroke="currentColor"
-        strokeWidth="1.25"
-      />
-    </svg>
-  )
-}
-
-function SettingsMark() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path
-        d="M6.5 2.5h3l.4 1.4a4.5 4.5 0 0 1 1.1.6l1.4-.5 1.5 2.6-1.1 1a4.6 4.6 0 0 1 0 1.3l1.1 1-1.5 2.6-1.4-.5a4.5 4.5 0 0 1-1.1.6L9.5 13.5h-3l-.4-1.4a4.5 4.5 0 0 1-1.1-.6l-1.4.5L2.1 9.4l1.1-1a4.6 4.6 0 0 1 0-1.3l-1.1-1L3.6 3.5l1.4.5a4.5 4.5 0 0 1 1.1-.6L6.5 2.5Z"
-        stroke="currentColor"
-        strokeWidth="1.25"
-        strokeLinejoin="round"
-      />
-      <circle cx="8" cy="8" r="1.75" stroke="currentColor" strokeWidth="1.25" />
-    </svg>
-  )
 }
 
 function formatTime(ms: number): string {
@@ -58,24 +36,65 @@ function formatTime(ms: number): string {
   }
 }
 
-export function Sidebar(props: {
-  workspace: WorkspaceState
-  busy?: boolean
-  error: string | null
-  onPickDirectory: () => void
-  onSelectRecent: (cwd: string) => void
-  onNewChat: () => void
-  onOpenSession: (session: SessionSummary) => void
-  onRefresh: () => void
-  onSettings: () => void
-}) {
-  const { workspace } = props
+export const Sidebar = observer(function Sidebar() {
   const { t } = useTranslation()
-  const canChat = Boolean(workspace.cwd) && !props.busy
+  const {
+    workspace,
+    workspaceBusy,
+    workspaceError,
+    canChat,
+    sidebarWidth,
+    sidebarResizing,
+  } = appStore
+
+  const dragRef = useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null)
+
+  const onResizePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return
+    event.preventDefault()
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth: appStore.sidebarWidth,
+    }
+    appStore.setSidebarResizing(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const onResizePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag || event.pointerId !== drag.pointerId) return
+    appStore.setSidebarWidth(drag.startWidth + (event.clientX - drag.startX))
+  }
+
+  const endResize = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag || event.pointerId !== drag.pointerId) return
+    dragRef.current = null
+    appStore.setSidebarResizing(false)
+    appStore.commitSidebarWidth()
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
 
   return (
     <SidebarFrame className="app-sidebar">
       <TitlebarChrome />
+      <div
+        className="app-sidebar__resize"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label={t("sidebar.resize")}
+        aria-valuemin={SIDEBAR_WIDTH_MIN}
+        aria-valuemax={SIDEBAR_WIDTH_MAX}
+        aria-valuenow={sidebarWidth}
+        data-active={sidebarResizing ? "true" : undefined}
+        onPointerDown={onResizePointerDown}
+        onPointerMove={onResizePointerMove}
+        onPointerUp={endResize}
+        onPointerCancel={endResize}
+      />
       <SidebarNav>
         <SidebarList>
           <SidebarItem
@@ -85,16 +104,20 @@ export function Sidebar(props: {
             tooltip={
               workspace.cwd ? t("sidebar.newChatTooltip") : t("sidebar.chooseFolderFirst")
             }
-            onPress={props.onNewChat}
+            onPress={() => {
+              void appStore.newChat()
+            }}
           />
           <SidebarItem
-            leading={<FolderMark />}
+            leading={<Folder size={14} strokeWidth={1.75} aria-hidden />}
             title={workspace.cwd ? basename(workspace.cwd) : t("sidebar.chooseFolder")}
             meta={workspace.cwd ?? undefined}
             tooltip={workspace.cwd ?? t("sidebar.chooseFolderTooltip")}
             muted={!workspace.cwd}
-            disabled={props.busy}
-            onPress={props.onPickDirectory}
+            disabled={workspaceBusy}
+            onPress={() => {
+              void appStore.pickDirectory()
+            }}
           />
         </SidebarList>
       </SidebarNav>
@@ -113,8 +136,10 @@ export function Sidebar(props: {
                     title={basename(cwd)}
                     meta={cwd}
                     tooltip={cwd}
-                    disabled={props.busy}
-                    onPress={() => props.onSelectRecent(cwd)}
+                    disabled={workspaceBusy}
+                    onPress={() => {
+                      void appStore.selectRecent(cwd)
+                    }}
                   />
                 ))}
             </SidebarList>
@@ -130,8 +155,10 @@ export function Sidebar(props: {
           <button
             type="button"
             className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
-            disabled={!workspace.cwd || props.busy}
-            onClick={props.onRefresh}
+            disabled={!workspace.cwd || workspaceBusy}
+            onClick={() => {
+              void appStore.refreshWorkspace()
+            }}
             title={t("sidebar.refreshTooltip")}
           >
             {t("sidebar.refresh")}
@@ -152,27 +179,29 @@ export function Sidebar(props: {
                   session.messageCount > 0 ? ` · ${session.messageCount}` : ""
                 }`}
                 selected={session.path === workspace.sessionFile}
-                disabled={props.busy}
-                onPress={() => props.onOpenSession(session)}
+                disabled={workspaceBusy}
+                onPress={() => {
+                  void appStore.openSession(session)
+                }}
               />
             ))}
           </SidebarList>
         )}
       </SidebarSection>
 
-      {props.error ? <SidebarError>{props.error}</SidebarError> : null}
+      {workspaceError ? <SidebarError>{workspaceError}</SidebarError> : null}
 
       <SidebarSeparator />
 
       <SidebarFooter>
         <SidebarList>
           <SidebarItem
-            leading={<SettingsMark />}
+            leading={<Settings size={14} strokeWidth={1.75} aria-hidden />}
             title={t("sidebar.settings")}
-            onPress={props.onSettings}
+            onPress={appStore.openSettings}
           />
         </SidebarList>
       </SidebarFooter>
     </SidebarFrame>
   )
-}
+})

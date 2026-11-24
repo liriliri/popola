@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { popolaClass } from "popola-ui"
 import {
   SettingsAction,
   SettingsCard,
@@ -18,7 +17,7 @@ import {
 import type { ProviderConfig } from "../shared/types"
 import { LANGUAGE_OPTIONS, useAppLanguage, type AppLanguage } from "./i18n"
 import { TitlebarChrome } from "./TitlebarChrome"
-import { APP_THEME_OPTIONS } from "./themes"
+import { getAppThemeOptions } from "./themes"
 
 type LanguageSelectOption = { value: AppLanguage; label: string }
 
@@ -109,34 +108,33 @@ export function SettingsPage(props: {
     [t],
   )
 
+  const themeOptions = useMemo(() => getAppThemeOptions(t), [t])
+
   const update = (key: keyof ProviderConfig, value: string) => {
     setDraft((current) => ({ ...current, [key]: value }))
   }
 
   return (
     <SettingsLayout
+      className="app-settings-layout"
       sidebar={
         <SettingsSidebar
           className="app-settings-sidebar"
           header={
             <>
               <TitlebarChrome />
-              <button
-                type="button"
-                className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
-                onClick={props.onBack}
-              >
-                {t("nav.back")}
-              </button>
+              <SettingsSidebarItem label={t("nav.back")} onPress={props.onBack} />
             </>
           }
         >
-          <SettingsSidebarGroup label={t("nav.app")}>
+          <SettingsSidebarGroup label={t("nav.preferences")}>
             <SettingsSidebarItem
               label={t("nav.appearance")}
               selected={section === "appearance"}
               onPress={() => setSection("appearance")}
             />
+          </SettingsSidebarGroup>
+          <SettingsSidebarGroup label={t("nav.agent")}>
             <SettingsSidebarItem
               label={t("nav.provider")}
               selected={section === "provider"}
@@ -146,40 +144,43 @@ export function SettingsPage(props: {
         </SettingsSidebar>
       }
     >
-      <SettingsPageContent>
-        {section === "appearance" ? (
-          <>
-            <SettingsSection title={t("section.theme")}>
-              <SettingsCard>
-                <SettingsThemePicker
-                  value={props.theme}
-                  options={APP_THEME_OPTIONS}
-                  onValueChange={props.onThemeChange}
-                />
-              </SettingsCard>
-            </SettingsSection>
-            <SettingsSection title={t("section.language")}>
-              <SettingsCard>
-                <SettingsSelect
-                  label={t("language.label")}
-                  hint={t("language.hint")}
-                  value={language}
-                  options={languageOptions}
-                  onValueChange={setLanguage}
-                />
-              </SettingsCard>
-            </SettingsSection>
-          </>
-        ) : (
-          <ProviderFields
-            draft={draft}
-            error={props.error}
-            saving={props.saving}
-            onChange={update}
-            onSave={() => props.onSave(draft)}
-          />
-        )}
-      </SettingsPageContent>
+      <>
+        <TitlebarChrome />
+        <SettingsPageContent>
+          {section === "appearance" ? (
+            <>
+              <SettingsSection title={t("section.theme")}>
+                <SettingsCard>
+                  <SettingsThemePicker
+                    value={props.theme}
+                    options={themeOptions}
+                    onValueChange={props.onThemeChange}
+                  />
+                </SettingsCard>
+              </SettingsSection>
+              <SettingsSection title={t("section.language")}>
+                <SettingsCard>
+                  <SettingsSelect
+                    label={t("language.label")}
+                    hint={t("language.hint")}
+                    value={language}
+                    options={languageOptions}
+                    onValueChange={setLanguage}
+                  />
+                </SettingsCard>
+              </SettingsSection>
+            </>
+          ) : (
+            <ProviderFields
+              draft={draft}
+              error={props.error}
+              saving={props.saving}
+              onChange={update}
+              onSave={() => props.onSave(draft)}
+            />
+          )}
+        </SettingsPageContent>
+      </>
     </SettingsLayout>
   )
 }
@@ -198,18 +199,15 @@ export function ProviderSetup(props: {
   }
 
   return (
-    <>
-      <TitlebarChrome />
-      <SettingsPageContent>
-        <ProviderFields
-          draft={draft}
-          error={props.error}
-          saving={props.saving}
-          intro={t("provider.intro")}
-          onChange={update}
-          onSave={() => props.onSave(draft)}
-        />
-      </SettingsPageContent>
-    </>
+    <SettingsPageContent>
+      <ProviderFields
+        draft={draft}
+        error={props.error}
+        saving={props.saving}
+        intro={t("provider.intro")}
+        onChange={update}
+        onSave={() => props.onSave(draft)}
+      />
+    </SettingsPageContent>
   )
 }

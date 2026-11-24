@@ -1,47 +1,14 @@
 import type { ReactNode } from "react"
+import { Check, ChevronRight, LoaderCircle, X } from "lucide-react"
 import { popolaClass, type Message, type Part, type ToolCall } from "popola-ui"
 import className from "licia/className"
 import stringify from "licia/stringify"
+import { usePopola, type PopolaSlots } from "../context"
 import { Slot } from "../slot"
 import { PopolaMarkdown } from "../markdown"
 import { PopolaTypingIndicator } from "./streaming"
-import type { PopolaSlots } from "../context"
 
 /** Built-in renderings; hosts can reuse them or replace them via slots. */
-
-/* ── icons ────────────────────────────────────────────────────────────────── */
-
-function ChevronIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  )
-}
-
-function SpinnerIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={popolaClass.toolCallSpinner} aria-hidden="true">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
-  )
-}
-
-function CheckIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  )
-}
-
-function CrossIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M18 6 6 18M6 6l12 12" />
-    </svg>
-  )
-}
 
 /* ── tool call ────────────────────────────────────────────────────────────── */
 
@@ -64,6 +31,7 @@ function formatInput(input: Record<string, unknown> | undefined): string {
 /** A collapsible tool row: summary always visible, request/result in a panel. */
 export function DefaultToolCall(props: { call: ToolCall }) {
   const { call } = props
+  const { labels } = usePopola()
 
   const running = call.status === "running" || call.status === "pending"
   const failed = call.status === "error"
@@ -81,7 +49,13 @@ export function DefaultToolCall(props: { call: ToolCall }) {
       })}
     >
       <summary className={popolaClass.toolCallTrigger}>
-        <span className={popolaClass.toolCallIcon}>{running ? <SpinnerIcon /> : <ChevronIcon />}</span>
+        <span className={popolaClass.toolCallIcon}>
+          {running ? (
+            <LoaderCircle size={12} strokeWidth={2.5} className={popolaClass.toolCallSpinner} aria-hidden />
+          ) : (
+            <ChevronRight size={12} strokeWidth={2.5} aria-hidden />
+          )}
+        </span>
         <span
           className={className(popolaClass.toolCallLabel, {
             [popolaClass.toolCallLabelRunning]: running,
@@ -95,7 +69,11 @@ export function DefaultToolCall(props: { call: ToolCall }) {
             [popolaClass.toolCallStatusError]: failed,
           })}
         >
-          {running ? null : failed ? <CrossIcon /> : <CheckIcon />}
+          {running ? null : failed ? (
+            <X size={12} strokeWidth={3} aria-hidden />
+          ) : (
+            <Check size={12} strokeWidth={3} aria-hidden />
+          )}
         </span>
       </summary>
 
@@ -103,13 +81,13 @@ export function DefaultToolCall(props: { call: ToolCall }) {
         <div className={popolaClass.toolCallPanel}>
           {request ? (
             <section className={popolaClass.toolCallSection}>
-              <p className={popolaClass.toolCallSectionTitle}>Request</p>
+              <p className={popolaClass.toolCallSectionTitle}>{labels.toolCallRequest}</p>
               <pre className={popolaClass.toolCallSectionBody}>{request}</pre>
             </section>
           ) : null}
           {result ? (
             <section className={popolaClass.toolCallSection}>
-              <p className={popolaClass.toolCallSectionTitle}>Result</p>
+              <p className={popolaClass.toolCallSectionTitle}>{labels.toolCallResult}</p>
               <pre className={popolaClass.toolCallSectionBody}>{result}</pre>
             </section>
           ) : null}

@@ -1,12 +1,21 @@
 import {
   Children,
   isValidElement,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
   type InputHTMLAttributes,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react"
+import { createPortal } from "react-dom"
+import { ChevronDown } from "lucide-react"
 import { popolaClass } from "popola-ui"
 import className from "licia/className"
-import { POPOLA_THEME_OPTIONS, type PopolaTheme, type PopolaThemeOption } from "../context"
+import { POPOLA_THEME_OPTIONS, usePopola, type PopolaTheme, type PopolaThemeOption } from "../context"
 
 /**
  * Settings building blocks: iOS-style grouped lists and a desktop sidebar split.
@@ -33,10 +42,11 @@ export function SettingsSidebar(props: {
   className?: string
   "aria-label"?: string
 }) {
+  const { labels } = usePopola()
   return (
     <nav
       className={className(popolaClass.settingsSidebar, props.className)}
-      aria-label={props["aria-label"] ?? "Settings"}
+      aria-label={props["aria-label"] ?? labels.settingsNav}
     >
       {props.header ? (
         <div className={popolaClass.settingsSidebarHeader}>{props.header}</div>
@@ -244,6 +254,20 @@ export type SettingsSelectOption<Value extends string = string> = {
   value: Value
 }
 
+function SelectChevron(props: { open?: boolean }) {
+  return (
+    <ChevronDown
+      className={className(
+        popolaClass.settingsSelectChevron,
+        props.open ? popolaClass.settingsSelectChevronOpen : undefined,
+      )}
+      size={12}
+      strokeWidth={2.5}
+      aria-hidden
+    />
+  )
+}
+
 export function SettingsSelect<Value extends string = string>(
   props: SettingsRowProps & {
     value: Value
@@ -253,21 +277,200 @@ export function SettingsSelect<Value extends string = string>(
   },
 ) {
   const { value, options, onValueChange, disabled, ...row } = props
+  const listId = useId()
+  const [open, setOpen] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [portalTheme, setPortalTheme] = useState<string | null>(null)
+  const [menuStyle, setMenuStyle] = useState<CSSProperties | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+
+  const selectedIndex = options.findIndex((option) => option.value === value)
+  const selected = selectedIndex >= 0 ? options[selectedIndex] : options[0]
+
+  const close = () => setOpen(false)
+
+  const choose = (next: Value) => {
+    onValueChange(next)
+    close()
+    triggerRef.current?.focus()
+  }
+
+  const openMenu = () => {
+    if (disabled) return
+    const theme =
+      triggerRef.current?.closest("[data-popola-theme]")?.getAttribute("data-popola-theme") ?? null
+    setPortalTheme(theme)
+    setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0)
+    setOpen(true)
+  }
+
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return
+
+    const update = () => {
+      const rect = triggerRef.current!.getBoundingClientRect()
+      const gap = 4
+      const width = Math.max(rect.width, 160)
+      const spaceBelow = window.innerHeight - rect.bottom - gap
+      const spaceAbove = rect.top - gap
+      const preferBelow = spaceBelow >= 160 || spaceBelow >= spaceAbove
+      const maxHeight = Math.max(80, Math.min(240, preferBelow ? spaceBelow : spaceAbove))
+      const left = Math.min(Math.max(8, rect.right - width), window.innerWidth - width - 8)
+      const top = preferBelow
+        ? rect.bottom + gap
+        : Math.max(8, rect.top - gap - maxHeight)
+
+      setMenuStyle({
+        top,
+        left,
+        width,
+        maxHeight,
+      })
+    }
+
+    update()
+    window.addEventListener("resize", update)
+    window.addEventListener("scroll", update, true)
+    return () => {
+      window.removeEventListener("resize", update)
+      window.removeEventListener("scroll", update, true)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (rootRef.current?.contains(target) || listRef.current?.contains(target)) return
+      close()
+    }
+
+    document.addEventListener("pointerdown", onPointerDown)
+    return () => document.removeEventListener("pointerdown", onPointerDown)
+  }, [open])
+
+  useEffect(() => {
+    if (!open || !listRef.current) return
+    const active = listRef.current.querySelector<HTMLElement>('[data-active="true"]')
+    active?.scrollIntoView({ block: "nearest" })
+  }, [open, activeIndex])
+
+  const onTriggerKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (disabled) return
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      if (!open) {
+        openMenu()
+        return
+      }
+    }
+
+    if (!open) return
+
+    if (event.key === "Escape") {
+      event.preventDefault()
+      close()
+      return
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault()
+      setActiveIndex((index) => (index + 1) % options.length)
+      return
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault()
+      setActiveIndex((index) => (index - 1 + options.length) % options.length)
+      return
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault()
+      setActiveIndex(0)
+      return
+    }
+
+    if (event.key === "End") {
+      event.preventDefault()
+      setActiveIndex(options.length - 1)
+      return
+    }
+
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault()
+      const option = options[activeIndex]
+      if (option) choose(option.value)
+    }
+  }
+
+  const menu =
+    open && menuStyle
+      ? createPortal(
+          <div
+            ref={listRef}
+            id={listId}
+            role="listbox"
+            tabIndex={-1}
+            aria-label={row.label}
+            data-popola-theme={portalTheme ?? undefined}
+            className={popolaClass.settingsSelectMenu}
+            style={menuStyle}
+          >
+            {options.map((option, index) => {
+              const isSelected = option.value === value
+              const isActive = index === activeIndex
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  data-active={isActive ? "true" : undefined}
+                  className={className(
+                    popolaClass.settingsSelectOption,
+                    isActive ? popolaClass.settingsSelectOptionActive : undefined,
+                    isSelected ? popolaClass.settingsSelectOptionSelected : undefined,
+                  )}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => choose(option.value)}
+                >
+                  {option.label}
+                </button>
+              )
+            })}
+          </div>,
+          document.body,
+        )
+      : null
+
   return (
     <SettingsRow {...row}>
-      <select
-        className={popolaClass.settingsSelect}
-        value={value}
-        disabled={disabled}
-        aria-label={row.label}
-        onChange={(event) => onValueChange(event.target.value as Value)}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+      <div ref={rootRef} className={popolaClass.settingsSelect}>
+        <button
+          ref={triggerRef}
+          type="button"
+          className={className(
+            popolaClass.settingsSelectTrigger,
+            open ? popolaClass.settingsSelectTriggerOpen : undefined,
+          )}
+          disabled={disabled}
+          aria-label={row.label}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={open ? listId : undefined}
+          onClick={() => (open ? close() : openMenu())}
+          onKeyDown={onTriggerKeyDown}
+        >
+          <span className={popolaClass.settingsSelectValue}>{selected?.label ?? value}</span>
+          <SelectChevron open={open} />
+        </button>
+        {menu}
+      </div>
     </SettingsRow>
   )
 }
@@ -416,12 +619,13 @@ export function SettingsThemePicker(props: {
   className?: string
   "aria-label"?: string
 }) {
+  const { labels } = usePopola()
   const options = props.options ?? POPOLA_THEME_OPTIONS
   return (
     <div
       className={className(popolaClass.settingsTheme, props.className)}
       role="radiogroup"
-      aria-label={props["aria-label"] ?? "Theme"}
+      aria-label={props["aria-label"] ?? labels.themePicker}
     >
       {options.map((option) => (
         <button

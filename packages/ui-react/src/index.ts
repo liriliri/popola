@@ -1,6 +1,13 @@
-export { PopolaProvider, usePopola, useResolvedTheme, POPOLA_THEME_OPTIONS } from "./context"
+export {
+  PopolaProvider,
+  usePopola,
+  useResolvedTheme,
+  POPOLA_THEME_OPTIONS,
+  DEFAULT_POPOLA_LABELS,
+} from "./context"
 export type {
   PopolaContextValue,
+  PopolaLabels,
   PopolaSendPayload,
   PopolaSlots,
   PopolaTheme,

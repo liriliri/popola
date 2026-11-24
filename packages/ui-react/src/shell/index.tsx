@@ -43,6 +43,7 @@ export function PopolaShell(props: {
         />
 
         <div className={popolaClass.shellMain}>
+          <Slot name="shell.main.leading" slotProps={{}} local={props.slots} fallback={null} />
           {props.children ?? (
             <>
               <PopolaConversation slots={props.slots} />

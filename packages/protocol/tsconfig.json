@@ -5,7 +5,7 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "outDir": "./dist/esm",
+    "outDir": "./dist",
     "rootDir": "./src"
   },
   "include": ["src/**/*"]

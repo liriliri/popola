@@ -15,7 +15,7 @@ private test app wiring a real agent to them.
 | Language | TypeScript 7.0.2, `strict`, `moduleResolution: bundler`, ES2023 |
 | Runtime | Node >= 22; ESM everywhere |
 | Package manager | npm workspaces (`packages/*`) |
-| Build | `tsc -b` project references; second `tsc -p tsconfig.cjs.json` pass emits CommonJS |
+| Build | `tsc -b` project references; ESM-only emit into `dist/` |
 | React | 18 or 19 (peer); renderer uses `useSyncExternalStore` |
 | Markdown | `markdown-it` (raw HTML off) |
 | Utilities | `licia` (`className`, `Lru`, `isEqual`, `isErr`, `rtrim`) |
@@ -75,13 +75,16 @@ map, one class map.
   process. Pure reducer over a closed event set, minimal store
   (`getState`/`subscribe`/`dispatch`), plain selectors, slots, class names, CSS.
   Reducer returns the *same* state object on a no-op, so renderers skip work by
-  identity. Exports `.` (dual ESM/CJS) and `./style.css` (authored CSS, not
-  built). `sideEffects: ["*.css"]`. Re-exports the protocol types, so a host
-  needs one dependency to render and to drive an agent.
+  identity. Exports `.` (ESM) and `./style.css` (authored CSS, not built).
+  `sideEffects: ["*.css"]`. Owns the shared `PopolaLabels` chrome-copy contract.
+  Re-exports the protocol types, so a host needs one dependency to render and to
+  drive an agent.
 - **`popola-ui-react`** (`0.1.0`, MIT) — binds the core with
   `useSyncExternalStore`. Exports `.` + subpaths `./shell`, `./conversation`,
-  `./composer`, `./permission`, `./markdown`. React/ReactDOM peers; `licia`,
-  `markdown-it`, `popola-ui` runtime deps. `sideEffects: false`.
+  `./composer`, `./permission`, `./markdown`, `./settings`, `./sidebar`.
+  React/ReactDOM peers; `licia`, `lucide-react`, `markdown-it`, `popola-ui`
+  runtime deps. Hosts localize chrome copy via `PopolaProvider` `labels`
+  (types/defaults from `popola-ui`). `sideEffects: false`.
 - **`popola-app`** (`0.0.0`, private) — Electron host running a `pi` agent.
   See [packages/app/README.md](./packages/app/README.md).
 
@@ -114,9 +117,8 @@ map, one class map.
   one `references` per package; each package extends it with `composite`,
   `outDir`, `rootDir`. `tsc -b` resolves order from `references`; a dependent
   package also lists its dependency there.
-- Published packages emit twice: `dist/esm` (ESNext + declarations) and
-  `dist/cjs` (`module: commonjs`, `verbatimModuleSyntax` off). `src/` is truth;
-  `dist/` is gitignored.
+- Published packages emit once to `dist/` (ESNext + declarations). `src/` is
+  truth; `dist/` is gitignored. Packages set `"type": "module"`.
 - `popola-app`: `tsc -b` only checks main/shared into `dist/types`; Vite bundles
   main (`vite.main.ts`) and renderer (`vite.config.ts`) into `dist/main` and
   `dist/renderer`. Vite aliases the workspace libs to `src/index.ts`, so dev
@@ -127,7 +129,7 @@ map, one class map.
 
 ```bash
 # root
-npm run build           # protocol + ui + ui-react (ESM + CJS)
+npm run build           # protocol + ui + ui-react (ESM)
 npm run typecheck       # tsc -b across references
 npm run clean           # dist, tsbuildinfo, storybook-static
 
@@ -167,7 +169,7 @@ packages/agent/
 └── src/index.ts
 ```
 
-`package.json` (adapt `main`/`exports` if you emit CJS):
+`package.json`:
 
 ```json
 {
