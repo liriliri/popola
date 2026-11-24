@@ -9,7 +9,23 @@ export type PopolaSendPayload = {
   readonly attachments: Attachment[]
 }
 
-export type PopolaTheme = "light" | "dark" | "system"
+/** Schemes shipped by `popola-ui` (`data-popola-theme`). Hosts may add more in their CSS. */
+export type PopolaThemeName = "light" | "dark"
+
+/** Preference: built-in scheme, OS-following, or a host-defined scheme name. */
+export type PopolaTheme = PopolaThemeName | "system" | (string & {})
+
+export type PopolaThemeOption = {
+  value: PopolaTheme
+  label: string
+}
+
+/** Built-in picker entries — hosts append their own schemes beside these. */
+export const POPOLA_THEME_OPTIONS: readonly PopolaThemeOption[] = [
+  { value: "system", label: "System" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+] as const
 
 export type PopolaContextValue = {
   readonly store: PopolaStore
@@ -57,13 +73,13 @@ export function usePopola(): PopolaContextValue {
 }
 
 /**
- * Resolves "system" against the OS preference and keeps following it.
+ * Resolves `system` against the OS preference and keeps following it.
  *
- * Returns the concrete scheme, so the caller can put it on the DOM as
- * `data-popola-theme` and let the stylesheet switch.
+ * Returns a concrete scheme name for `data-popola-theme`. Host-defined names
+ * pass through unchanged.
  */
-export function useResolvedTheme(theme: PopolaTheme): "light" | "dark" {
-  const [system, setSystem] = useState<"light" | "dark">(() => {
+export function useResolvedTheme(theme: PopolaTheme): string {
+  const [system, setSystem] = useState<PopolaThemeName>(() => {
     if (typeof window === "undefined") return "light"
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   })
@@ -76,6 +92,6 @@ export function useResolvedTheme(theme: PopolaTheme): "light" | "dark" {
     return () => query.removeEventListener("change", update)
   }, [theme])
 
-  if (theme === "light" || theme === "dark") return theme
-  return system
+  if (theme === "system") return system
+  return theme
 }

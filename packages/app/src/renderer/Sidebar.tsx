@@ -11,6 +11,8 @@ import {
   SidebarSeparator,
 } from "popola-ui-react"
 import type { SessionSummary, WorkspaceState } from "../shared/types"
+import { useTranslation } from "react-i18next"
+import { TitlebarChrome } from "./TitlebarChrome"
 
 function basename(cwd: string): string {
   const parts = cwd.replace(/\\/g, "/").split("/").filter(Boolean)
@@ -68,24 +70,28 @@ export function Sidebar(props: {
   onSettings: () => void
 }) {
   const { workspace } = props
+  const { t } = useTranslation()
   const canChat = Boolean(workspace.cwd) && !props.busy
 
   return (
-    <SidebarFrame>
+    <SidebarFrame className="app-sidebar">
+      <TitlebarChrome />
       <SidebarNav>
         <SidebarList>
           <SidebarItem
             leading="+"
-            title="New chat"
+            title={t("sidebar.newChat")}
             disabled={!canChat}
-            tooltip={workspace.cwd ? "Start a new Pi session" : "Choose a folder first"}
+            tooltip={
+              workspace.cwd ? t("sidebar.newChatTooltip") : t("sidebar.chooseFolderFirst")
+            }
             onPress={props.onNewChat}
           />
           <SidebarItem
             leading={<FolderMark />}
-            title={workspace.cwd ? basename(workspace.cwd) : "Choose folder"}
+            title={workspace.cwd ? basename(workspace.cwd) : t("sidebar.chooseFolder")}
             meta={workspace.cwd ?? undefined}
-            tooltip={workspace.cwd ?? "Pick a folder before starting a chat"}
+            tooltip={workspace.cwd ?? t("sidebar.chooseFolderTooltip")}
             muted={!workspace.cwd}
             disabled={props.busy}
             onPress={props.onPickDirectory}
@@ -97,7 +103,7 @@ export function Sidebar(props: {
 
       {workspace.recent.length > 1 ? (
         <>
-          <SidebarSection title="Recent">
+          <SidebarSection title={t("sidebar.recent")}>
             <SidebarList>
               {workspace.recent
                 .filter((cwd) => cwd !== workspace.cwd)
@@ -118,7 +124,7 @@ export function Sidebar(props: {
       ) : null}
 
       <SidebarSection
-        title="Chats"
+        title={t("sidebar.chats")}
         grow
         trailing={
           <button
@@ -126,16 +132,16 @@ export function Sidebar(props: {
             className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
             disabled={!workspace.cwd || props.busy}
             onClick={props.onRefresh}
-            title="Refresh session list"
+            title={t("sidebar.refreshTooltip")}
           >
-            Refresh
+            {t("sidebar.refresh")}
           </button>
         }
       >
         {!workspace.cwd ? (
-          <SidebarHint>Pi sessions for the folder show up here.</SidebarHint>
+          <SidebarHint>{t("sidebar.emptyNoFolder")}</SidebarHint>
         ) : workspace.sessions.length === 0 ? (
-          <SidebarHint>No Pi sessions in this folder yet.</SidebarHint>
+          <SidebarHint>{t("sidebar.emptyNoSessions")}</SidebarHint>
         ) : (
           <SidebarList>
             {workspace.sessions.map((session) => (
@@ -162,7 +168,7 @@ export function Sidebar(props: {
         <SidebarList>
           <SidebarItem
             leading={<SettingsMark />}
-            title="Settings"
+            title={t("sidebar.settings")}
             onPress={props.onSettings}
           />
         </SidebarList>

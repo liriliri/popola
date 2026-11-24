@@ -1,5 +1,12 @@
-export { PopolaProvider, usePopola, useResolvedTheme } from "./context"
-export type { PopolaContextValue, PopolaSendPayload, PopolaSlots, PopolaTheme } from "./context"
+export { PopolaProvider, usePopola, useResolvedTheme, POPOLA_THEME_OPTIONS } from "./context"
+export type {
+  PopolaContextValue,
+  PopolaSendPayload,
+  PopolaSlots,
+  PopolaTheme,
+  PopolaThemeName,
+  PopolaThemeOption,
+} from "./context"
 
 export { usePopolaState } from "./usePopolaState"
 
@@ -32,6 +39,7 @@ export {
   SettingsAction,
   SettingsDetailRow,
   SettingsAddRow,
+  SettingsThemePicker,
 } from "./settings/index"
 export type { SettingsRowProps, SettingsSelectOption } from "./settings/index"
 

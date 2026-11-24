@@ -4,20 +4,60 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: 100%;
-  max-width: var(--popola-column);
+  /* shell.main centers children; stretch so the scrollbar reaches the pane edge. */
+  align-self: stretch;
   min-height: 0;
   min-width: 0;
 }
 
+/*
+ * Full-width scroll viewport so the scrollbar sits on the pane's right edge
+ * (paseo). Message column is centered inside via __column.
+ */
 .popola-conversation__scroll {
   flex: 1;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
-  padding: var(--popola-space-5) var(--popola-space-4);
+  overscroll-behavior-y: contain;
+
+  /* Firefox — thin custom colors, not the OS native bar. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--popola-text-faint) 40%, transparent) transparent;
+}
+
+.popola-conversation__scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+
+.popola-conversation__scroll::-webkit-scrollbar-track,
+.popola-conversation__scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.popola-conversation__scroll::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--popola-text-faint) 40%, transparent);
+  background-clip: content-box;
+}
+
+.popola-conversation__scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--popola-text-faint);
+  background-clip: content-box;
+}
+
+.popola-conversation__column {
   display: flex;
   flex-direction: column;
   gap: var(--popola-space-5);
+  width: 100%;
+  max-width: var(--popola-column);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: var(--popola-space-5) var(--popola-space-4);
 }
 
 .popola-conversation__empty {

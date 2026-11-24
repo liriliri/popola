@@ -1,0 +1,47 @@
+export const en = {
+  nav: {
+    appearance: "Appearance",
+    provider: "Provider",
+    app: "App",
+    back: "← Back",
+  },
+  section: {
+    theme: "Theme",
+    language: "Language",
+    provider: "Provider",
+  },
+  language: {
+    label: "Language",
+    hint: "Follows the system language when set to System. Unsupported languages use English.",
+    options: {
+      system: "System",
+      en: "English",
+      zh: "中文",
+    },
+  },
+  provider: {
+    intro: "Point the agent at an OpenAI-compatible endpoint. The key stays on this machine.",
+    provider: "Provider",
+    baseUrl: "Base URL",
+    apiKey: "API key",
+    model: "Model",
+    session: "Session",
+    sessionHint: "Saving starts a new session.",
+    save: "Save",
+    saving: "Saving…",
+  },
+  sidebar: {
+    newChat: "New chat",
+    newChatTooltip: "Start a new Pi session",
+    chooseFolderFirst: "Choose a folder first",
+    chooseFolder: "Choose folder",
+    chooseFolderTooltip: "Pick a folder before starting a chat",
+    recent: "Recent",
+    chats: "Chats",
+    refresh: "Refresh",
+    refreshTooltip: "Refresh session list",
+    emptyNoFolder: "Pi sessions for the folder show up here.",
+    emptyNoSessions: "No Pi sessions in this folder yet.",
+    settings: "Settings",
+  },
+} as const

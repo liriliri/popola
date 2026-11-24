@@ -8,6 +8,8 @@
   min-height: 0;
   padding: var(--popola-space-2) 0;
   gap: 0;
+  /* Chrome / nav rows are click targets, not copyable text (paseo). */
+  user-select: none;
 }
 
 .popola-sidebar__nav {

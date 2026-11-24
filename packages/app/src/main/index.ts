@@ -7,6 +7,30 @@ import { AgentHost } from "./host"
 const here = path.dirname(fileURLToPath(import.meta.url))
 const dev = process.env.POPOLA_DEV === "1"
 
+/** macOS traffic lights — matches paseo `MAC_TRAFFIC_LIGHT_POSITION`. */
+const MAC_TRAFFIC_LIGHT_POSITION = { x: 16, y: 14 } as const
+
+/**
+ * Hide the native title bar. macOS keeps traffic lights overlaid; Windows/Linux
+ * go frameless (paseo `getMainWindowChromeOptions`).
+ */
+function getMainWindowChromeOptions(): Pick<
+  Electron.BrowserWindowConstructorOptions,
+  "titleBarStyle" | "trafficLightPosition" | "frame" | "titleBarOverlay" | "autoHideMenuBar"
+> {
+  if (process.platform === "darwin") {
+    return {
+      titleBarStyle: "hidden",
+      titleBarOverlay: true,
+      trafficLightPosition: MAC_TRAFFIC_LIGHT_POSITION,
+    }
+  }
+  return {
+    frame: false,
+    autoHideMenuBar: true,
+  }
+}
+
 if (dev) {
   app.setPath("userData", path.resolve(here, "../../.data"))
 }
@@ -17,6 +41,7 @@ function createWindow(): BrowserWindow {
     height: 800,
     show: false,
     title: "popola",
+    ...getMainWindowChromeOptions(),
     webPreferences: {
       preload: path.resolve(here, "../../src/preload.cjs"),
       contextIsolation: true,

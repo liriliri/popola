@@ -16,12 +16,14 @@
     "@earendil-works/pi-agent-core": "^0.80.6",
     "@earendil-works/pi-ai": "^0.80.6",
     "@earendil-works/pi-coding-agent": "^0.80.6",
+    "i18next": "^27.2.6",
     "licia": "^1.49.0",
     "popola-protocol": "^0.1.0",
     "popola-ui": "^0.1.0",
     "popola-ui-react": "^0.1.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-i18next": "^18.0.3"
   },
   "devDependencies": {
     "@types/react": "19.3.0",

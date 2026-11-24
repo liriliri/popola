@@ -61,4 +61,23 @@ export const settingsClass = {
 
   settingsSelect: "popola-settings__select",
   settingsInput: "popola-settings__input",
+
+  /** Theme picker grid (paseo-style tiles with CSS-variable previews). */
+  settingsTheme: "popola-settings-theme",
+  settingsThemeTile: "popola-settings-theme__tile",
+  settingsThemeTileSelected: "popola-settings-theme__tile--selected",
+  settingsThemePreviewFrame: "popola-settings-theme__preview-frame",
+  settingsThemePreview: "popola-settings-theme__preview",
+  settingsThemePreviewSidebar: "popola-settings-theme__preview-sidebar",
+  settingsThemePreviewMain: "popola-settings-theme__preview-main",
+  settingsThemePreviewLine: "popola-settings-theme__preview-line",
+  settingsThemePreviewLineMuted: "popola-settings-theme__preview-line--muted",
+  settingsThemePreviewLineWide: "popola-settings-theme__preview-line--wide",
+  settingsThemePreviewLineMedium: "popola-settings-theme__preview-line--medium",
+  settingsThemePreviewLineNarrow: "popola-settings-theme__preview-line--narrow",
+  settingsThemePreviewTitle: "popola-settings-theme__preview-title",
+  settingsThemePreviewBubble: "popola-settings-theme__preview-bubble",
+  settingsThemePreviewSystemDark: "popola-settings-theme__preview-system-dark",
+  settingsThemePreviewSystemDarkInner: "popola-settings-theme__preview-system-dark-inner",
+  settingsThemeLabel: "popola-settings-theme__label",
 } as const

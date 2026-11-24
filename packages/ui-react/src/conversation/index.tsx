@@ -20,25 +20,27 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
   return (
     <div className={className(popolaClass.conversation, props.className)}>
       <div className={popolaClass.conversationScroll}>
-        {messages.length === 0 && !awaitingAssistant ? (
-          <Slot
-            name="conversation.empty"
-            slotProps={{}}
-            local={props.slots}
-            fallback={<div className={popolaClass.conversationEmpty}>No messages yet.</div>}
-          />
-        ) : (
-          messages.map((message, index) => (
-            <MessageRow
-              key={message.id}
-              message={message}
-              slots={props.slots}
-              // Only the assistant message still being written can stream.
-              streaming={busy && message.role === "assistant" && index === messages.length - 1}
+        <div className={popolaClass.conversationColumn}>
+          {messages.length === 0 && !awaitingAssistant ? (
+            <Slot
+              name="conversation.empty"
+              slotProps={{}}
+              local={props.slots}
+              fallback={<div className={popolaClass.conversationEmpty}>No messages yet.</div>}
             />
-          ))
-        )}
-        {awaitingAssistant ? <PendingReply /> : null}
+          ) : (
+            messages.map((message, index) => (
+              <MessageRow
+                key={message.id}
+                message={message}
+                slots={props.slots}
+                // Only the assistant message still being written can stream.
+                streaming={busy && message.role === "assistant" && index === messages.length - 1}
+              />
+            ))
+          )}
+          {awaitingAssistant ? <PendingReply /> : null}
+        </div>
       </div>
     </div>
   )

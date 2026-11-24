@@ -5,6 +5,52 @@ body,
   margin: 0;
 }
 
+/* Sidebar flush to the window top; traffic-light clearance is the drag strip. */
+.app-sidebar {
+  padding-top: 0;
+}
+
+/*
+ * Drag strip at the top of the sidebar (paseo-style). Clears macOS traffic
+ * lights; sidebar + main stay flush with the window top.
+ */
+.app-titlebar {
+  position: relative;
+  flex: none;
+  height: 38px;
+  -webkit-app-region: drag;
+  cursor: default;
+}
+
+/* Top-edge resizer for frameless Windows/Linux; must be a real node. */
+.app-titlebar__resizer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  -webkit-app-region: no-drag;
+}
+
+/* Let the drag strip bleed to the sidebar edges above the Back button. */
+.app-settings-sidebar .popola-settings-sidebar__header {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.app-settings-sidebar .popola-settings-sidebar__header > .popola-button {
+  margin: 0 var(--popola-space-2);
+}
+
+/* Provider setup lives in shell.main; conversation owns scroll there, so this page must. */
+.popola-shell__main > .popola-settings {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-self: center;
+}
+
 .app-settings__intro {
   margin: 0 0 var(--popola-space-3);
   color: var(--popola-text-muted);

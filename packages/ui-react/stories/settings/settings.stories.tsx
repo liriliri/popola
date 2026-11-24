@@ -16,6 +16,8 @@ import {
   SettingsSidebarGroup,
   SettingsSidebarItem,
   SettingsSwitch,
+  SettingsThemePicker,
+  type PopolaTheme,
 } from "popola-ui-react"
 import { Stage } from "../stage"
 
@@ -31,7 +33,7 @@ type Section = "appearance" | "provider" | "advanced"
 
 function SidebarDemo() {
   const [section, setSection] = useState<Section>("appearance")
-  const [theme, setTheme] = useState<"system" | "light" | "dark">("system")
+  const [theme, setTheme] = useState<PopolaTheme>("system")
   const [steering, setSteering] = useState(true)
   const [model, setModel] = useState("gpt-4o")
   const [provider, setProvider] = useState("openai")
@@ -68,27 +70,23 @@ function SidebarDemo() {
     >
       <SettingsPage>
         {section === "appearance" ? (
-          <SettingsSection title="Appearance">
-            <SettingsCard>
-              <SettingsSelect
-                label="Theme"
-                hint="Follows the system preference when set to System."
-                value={theme}
-                options={[
-                  { label: "System", value: "system" },
-                  { label: "Light", value: "light" },
-                  { label: "Dark", value: "dark" },
-                ]}
-                onValueChange={setTheme}
-              />
-              <SettingsSwitch
-                label="Steer while busy"
-                hint="Sending stays available while a run is in flight."
-                value={steering}
-                onValueChange={setSteering}
-              />
-            </SettingsCard>
-          </SettingsSection>
+          <>
+            <SettingsSection title="Theme">
+              <SettingsCard>
+                <SettingsThemePicker value={theme} onValueChange={setTheme} />
+              </SettingsCard>
+            </SettingsSection>
+            <SettingsSection title="Behavior">
+              <SettingsCard>
+                <SettingsSwitch
+                  label="Steer while busy"
+                  hint="Sending stays available while a run is in flight."
+                  value={steering}
+                  onValueChange={setSteering}
+                />
+              </SettingsCard>
+            </SettingsSection>
+          </>
         ) : null}
 
         {section === "provider" ? (

@@ -8,6 +8,7 @@ export function selectMessages(state: PopolaState): Message[] {
 export const conversationClass = {
   conversation: "popola-conversation",
   conversationScroll: "popola-conversation__scroll",
+  conversationColumn: "popola-conversation__column",
   conversationEmpty: "popola-conversation__empty",
 } as const
 

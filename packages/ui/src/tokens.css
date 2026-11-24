@@ -55,6 +55,36 @@
   --popola-easing: cubic-bezier(0.2, 0, 0.2, 1);
 }
 
+/*
+ * Explicit light scheme so a nested preview can force light tokens even when
+ * an ancestor is `data-popola-theme="dark"` (theme picker tiles).
+ */
+[data-popola-theme="light"] {
+  color-scheme: light;
+
+  --popola-surface-base: #ffffff;
+  --popola-surface-raised: #f7f7f5;
+  --popola-surface-sunken: #efefec;
+  --popola-surface-overlay: #ffffff;
+
+  --popola-text-base: #14171e;
+  --popola-text-muted: #6b7280;
+  --popola-text-faint: #9ca3af;
+  --popola-text-accent: #2f6f5e;
+
+  --popola-border-base: #e6e6e2;
+  --popola-border-strong: #d2d2cb;
+
+  --popola-accent-base: #2f6f5e;
+  --popola-accent-hover: #275c4e;
+  --popola-accent-fg: #ffffff;
+
+  --popola-danger-base: #b06367;
+  --popola-danger-surface: #fdf2f2;
+  --popola-warning-base: #c97b3f;
+  --popola-success-base: #3f7d52;
+}
+
 [data-popola-theme="dark"] {
   color-scheme: dark;
 

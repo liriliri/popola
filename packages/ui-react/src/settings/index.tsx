@@ -6,6 +6,7 @@ import {
 } from "react"
 import { popolaClass } from "popola-ui"
 import className from "licia/className"
+import { POPOLA_THEME_OPTIONS, type PopolaTheme, type PopolaThemeOption } from "../context"
 
 /**
  * Settings building blocks — iOS-style grouped lists and a desktop sidebar
@@ -411,5 +412,94 @@ export function SettingsAddRow(props: {
         {props.label}
       </span>
     </button>
+  )
+}
+
+/**
+ * Theme tiles with mini previews painted from `data-popola-theme` CSS tokens
+ * (paseo ThemePicker). Four columns fill the card; System shows light | dark.
+ * Pass `options` to include host schemes defined outside `popola-ui`.
+ */
+export function SettingsThemePicker(props: {
+  value: PopolaTheme
+  onValueChange: (value: PopolaTheme) => void
+  options?: readonly PopolaThemeOption[]
+  className?: string
+  "aria-label"?: string
+}) {
+  const options = props.options ?? POPOLA_THEME_OPTIONS
+  return (
+    <div
+      className={className(popolaClass.settingsTheme, props.className)}
+      role="radiogroup"
+      aria-label={props["aria-label"] ?? "Theme"}
+    >
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          role="radio"
+          aria-checked={props.value === option.value}
+          aria-label={option.label}
+          className={className(
+            popolaClass.settingsThemeTile,
+            props.value === option.value ? popolaClass.settingsThemeTileSelected : undefined,
+          )}
+          onClick={() => props.onValueChange(option.value)}
+        >
+          <div className={popolaClass.settingsThemePreviewFrame}>
+            {option.value === "system" ? (
+              <SystemThemePreview />
+            ) : (
+              <ThemePreview scheme={option.value} />
+            )}
+          </div>
+          <span className={popolaClass.settingsThemeLabel}>{option.label}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ThemePreview(props: { scheme: string }) {
+  const line = (width: "wide" | "medium" | "narrow") =>
+    className(
+      popolaClass.settingsThemePreviewLine,
+      popolaClass.settingsThemePreviewLineMuted,
+      width === "wide"
+        ? popolaClass.settingsThemePreviewLineWide
+        : width === "medium"
+          ? popolaClass.settingsThemePreviewLineMedium
+          : popolaClass.settingsThemePreviewLineNarrow,
+    )
+
+  return (
+    <div className={popolaClass.settingsThemePreview} data-popola-theme={props.scheme}>
+      <div className={popolaClass.settingsThemePreviewSidebar} aria-hidden>
+        <div className={line("wide")} />
+        <div className={line("narrow")} />
+        <div className={line("medium")} />
+      </div>
+      <div className={popolaClass.settingsThemePreviewMain} aria-hidden>
+        <div className={popolaClass.settingsThemePreviewTitle} />
+        <div className={line("wide")} />
+        <div className={line("narrow")} />
+        <div className={popolaClass.settingsThemePreviewBubble} />
+      </div>
+    </div>
+  )
+}
+
+/** Light on the left half, dark on the right — matches OS “system” preference. */
+function SystemThemePreview() {
+  return (
+    <div className={popolaClass.settingsThemePreview}>
+      <ThemePreview scheme="light" />
+      <div className={popolaClass.settingsThemePreviewSystemDark} aria-hidden>
+        <div className={popolaClass.settingsThemePreviewSystemDarkInner}>
+          <ThemePreview scheme="dark" />
+        </div>
+      </div>
+    </div>
   )
 }

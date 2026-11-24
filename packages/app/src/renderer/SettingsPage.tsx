@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { popolaClass } from "popola-ui"
 import {
   SettingsAction,
@@ -11,9 +12,15 @@ import {
   SettingsSidebar,
   SettingsSidebarGroup,
   SettingsSidebarItem,
+  SettingsThemePicker,
   type PopolaTheme,
 } from "popola-ui-react"
 import type { ProviderConfig } from "../shared/types"
+import { LANGUAGE_OPTIONS, useAppLanguage, type AppLanguage } from "./i18n"
+
+type LanguageSelectOption = { value: AppLanguage; label: string }
+import { TitlebarChrome } from "./TitlebarChrome"
+import { APP_THEME_OPTIONS } from "./themes"
 
 const empty: ProviderConfig = {
   provider: "",
@@ -21,12 +28,6 @@ const empty: ProviderConfig = {
   apiKey: "",
   model: "",
 }
-
-const themeOptions = [
-  { label: "System", value: "system" },
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
-] as const
 
 type SettingsSectionId = "appearance" | "provider"
 
@@ -38,19 +39,20 @@ function ProviderFields(props: {
   onChange: (key: keyof ProviderConfig, value: string) => void
   onSave: () => void
 }) {
+  const { t } = useTranslation()
   return (
-    <SettingsSection title="Provider">
+    <SettingsSection title={t("section.provider")}>
       {props.intro ? <p className="app-settings__intro">{props.intro}</p> : null}
       <SettingsCard>
         <SettingsInput
-          label="Provider"
+          label={t("provider.provider")}
           value={props.draft.provider}
           placeholder="openai"
           autoComplete="off"
           onValueChange={(value) => props.onChange("provider", value)}
         />
         <SettingsInput
-          label="Base URL"
+          label={t("provider.baseUrl")}
           value={props.draft.baseUrl}
           placeholder="https://api.openai.com/v1"
           inputMode="url"
@@ -58,24 +60,24 @@ function ProviderFields(props: {
           onValueChange={(value) => props.onChange("baseUrl", value)}
         />
         <SettingsInput
-          label="API key"
+          label={t("provider.apiKey")}
           value={props.draft.apiKey}
           type="password"
           autoComplete="off"
           onValueChange={(value) => props.onChange("apiKey", value)}
         />
         <SettingsInput
-          label="Model"
+          label={t("provider.model")}
           value={props.draft.model}
           placeholder="gpt-4o"
           autoComplete="off"
           onValueChange={(value) => props.onChange("model", value)}
         />
         <SettingsAction
-          label="Session"
-          hint="Saving starts a new session."
+          label={t("provider.session")}
+          hint={t("provider.sessionHint")}
           error={props.error}
-          actionLabel={props.saving ? "Saving…" : "Save"}
+          actionLabel={props.saving ? t("provider.saving") : t("provider.save")}
           disabled={props.saving}
           onPress={props.onSave}
         />
@@ -93,8 +95,19 @@ export function SettingsPage(props: {
   onBack: () => void
   onSave: (config: ProviderConfig) => void
 }) {
+  const { t } = useTranslation()
+  const { language, setLanguage } = useAppLanguage()
   const [section, setSection] = useState<SettingsSectionId>("appearance")
   const [draft, setDraft] = useState<ProviderConfig>(props.initial)
+
+  const languageOptions = useMemo(
+    (): LanguageSelectOption[] =>
+      LANGUAGE_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(option.labelKey),
+      })),
+    [t],
+  )
 
   const update = (key: keyof ProviderConfig, value: string) => {
     setDraft((current) => ({ ...current, [key]: value }))
@@ -104,24 +117,28 @@ export function SettingsPage(props: {
     <SettingsLayout
       sidebar={
         <SettingsSidebar
+          className="app-settings-sidebar"
           header={
-            <button
-              type="button"
-              className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
-              onClick={props.onBack}
-            >
-              ← Back
-            </button>
+            <>
+              <TitlebarChrome />
+              <button
+                type="button"
+                className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
+                onClick={props.onBack}
+              >
+                {t("nav.back")}
+              </button>
+            </>
           }
         >
-          <SettingsSidebarGroup label="App">
+          <SettingsSidebarGroup label={t("nav.app")}>
             <SettingsSidebarItem
-              label="Appearance"
+              label={t("nav.appearance")}
               selected={section === "appearance"}
               onPress={() => setSection("appearance")}
             />
             <SettingsSidebarItem
-              label="Provider"
+              label={t("nav.provider")}
               selected={section === "provider"}
               onPress={() => setSection("provider")}
             />
@@ -131,17 +148,28 @@ export function SettingsPage(props: {
     >
       <SettingsPageContent>
         {section === "appearance" ? (
-          <SettingsSection title="Appearance">
-            <SettingsCard>
-              <SettingsSelect
-                label="Theme"
-                hint="Follows the system preference when set to System."
-                value={props.theme}
-                options={themeOptions}
-                onValueChange={props.onThemeChange}
-              />
-            </SettingsCard>
-          </SettingsSection>
+          <>
+            <SettingsSection title={t("section.theme")}>
+              <SettingsCard>
+                <SettingsThemePicker
+                  value={props.theme}
+                  options={APP_THEME_OPTIONS}
+                  onValueChange={props.onThemeChange}
+                />
+              </SettingsCard>
+            </SettingsSection>
+            <SettingsSection title={t("section.language")}>
+              <SettingsCard>
+                <SettingsSelect
+                  label={t("language.label")}
+                  hint={t("language.hint")}
+                  value={language}
+                  options={languageOptions}
+                  onValueChange={setLanguage}
+                />
+              </SettingsCard>
+            </SettingsSection>
+          </>
         ) : (
           <ProviderFields
             draft={draft}
@@ -162,6 +190,7 @@ export function ProviderSetup(props: {
   saving: boolean
   onSave: (config: ProviderConfig) => void
 }) {
+  const { t } = useTranslation()
   const [draft, setDraft] = useState<ProviderConfig>(props.initial ?? empty)
 
   const update = (key: keyof ProviderConfig, value: string) => {
@@ -169,15 +198,18 @@ export function ProviderSetup(props: {
   }
 
   return (
-    <SettingsPageContent>
-      <ProviderFields
-        draft={draft}
-        error={props.error}
-        saving={props.saving}
-        intro="Point the agent at an OpenAI-compatible endpoint. The key stays on this machine."
-        onChange={update}
-        onSave={() => props.onSave(draft)}
-      />
-    </SettingsPageContent>
+    <>
+      <TitlebarChrome />
+      <SettingsPageContent>
+        <ProviderFields
+          draft={draft}
+          error={props.error}
+          saving={props.saving}
+          intro={t("provider.intro")}
+          onChange={update}
+          onSave={() => props.onSave(draft)}
+        />
+      </SettingsPageContent>
+    </>
   )
 }

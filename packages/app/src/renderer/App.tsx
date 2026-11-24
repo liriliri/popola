@@ -18,6 +18,7 @@ import {
   type PopolaTheme,
 } from "popola-ui-react"
 import { bridge } from "./bridge"
+import { I18nProvider } from "./i18n"
 import { ProviderSetup, SettingsPage } from "./SettingsPage"
 import { Sidebar } from "./Sidebar"
 
@@ -170,49 +171,51 @@ export function App() {
   )
 
   return (
-    <PopolaProvider
-      store={store}
-      theme={theme}
-      onSend={(payload) => {
-        void bridge().prompt(payload.text)
-      }}
-      onStop={() => {
-        void bridge().abort()
-      }}
-      onPermissionReply={(id, decision) => {
-        void bridge().respondToPermission(id, decision)
-      }}
-    >
-      {screen === "settings" && saved ? (
-        <ThemedFrame>
-          <SettingsPage
-            key={`${saved.provider}:${saved.model}`}
-            initial={saved}
-            theme={theme}
-            error={formError}
-            saving={saving}
-            onThemeChange={setTheme}
-            onBack={() => setScreen("chat")}
-            onSave={(config) => {
-              void save(config)
-            }}
-          />
-        </ThemedFrame>
-      ) : (
-        <PopolaShell slots={slots}>
-          {screen === "provider" ? (
-            <ProviderSetup
-              key={saved?.model ?? "empty"}
+    <I18nProvider>
+      <PopolaProvider
+        store={store}
+        theme={theme}
+        onSend={(payload) => {
+          void bridge().prompt(payload.text)
+        }}
+        onStop={() => {
+          void bridge().abort()
+        }}
+        onPermissionReply={(id, decision) => {
+          void bridge().respondToPermission(id, decision)
+        }}
+      >
+        {screen === "settings" && saved ? (
+          <ThemedFrame>
+            <SettingsPage
+              key={`${saved.provider}:${saved.model}`}
               initial={saved}
+              theme={theme}
               error={formError}
               saving={saving}
+              onThemeChange={setTheme}
+              onBack={() => setScreen("chat")}
               onSave={(config) => {
                 void save(config)
               }}
             />
-          ) : screen === "loading" ? null : undefined}
-        </PopolaShell>
-      )}
-    </PopolaProvider>
+          </ThemedFrame>
+        ) : (
+          <PopolaShell slots={slots}>
+            {screen === "provider" ? (
+              <ProviderSetup
+                key={saved?.model ?? "empty"}
+                initial={saved}
+                error={formError}
+                saving={saving}
+                onSave={(config) => {
+                  void save(config)
+                }}
+              />
+            ) : screen === "loading" ? null : undefined}
+          </PopolaShell>
+        )}
+      </PopolaProvider>
+    </I18nProvider>
   )
 }

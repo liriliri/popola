@@ -1,0 +1,47 @@
+export const zh = {
+  nav: {
+    appearance: "外观",
+    provider: "供应商",
+    app: "应用",
+    back: "← 返回",
+  },
+  section: {
+    theme: "主题",
+    language: "语言",
+    provider: "供应商",
+  },
+  language: {
+    label: "语言",
+    hint: "选择「跟随系统」时使用系统语言；不支持的语言会显示英文。",
+    options: {
+      system: "跟随系统",
+      en: "English",
+      zh: "中文",
+    },
+  },
+  provider: {
+    intro: "将代理指向 OpenAI 兼容接口。密钥仅保存在本机。",
+    provider: "供应商",
+    baseUrl: "接口地址",
+    apiKey: "API 密钥",
+    model: "模型",
+    session: "会话",
+    sessionHint: "保存后会开始新会话。",
+    save: "保存",
+    saving: "保存中…",
+  },
+  sidebar: {
+    newChat: "新对话",
+    newChatTooltip: "开始新的 Pi 会话",
+    chooseFolderFirst: "请先选择文件夹",
+    chooseFolder: "选择文件夹",
+    chooseFolderTooltip: "开始对话前请先选择文件夹",
+    recent: "最近",
+    chats: "对话",
+    refresh: "刷新",
+    refreshTooltip: "刷新会话列表",
+    emptyNoFolder: "该文件夹下的 Pi 会话会显示在这里。",
+    emptyNoSessions: "此文件夹还没有 Pi 会话。",
+    settings: "设置",
+  },
+} as const
