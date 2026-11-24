@@ -48,6 +48,7 @@ import {
   SettingsSection,
   SettingsCard,
 } from "popola-ui-react/settings"
+import { Sidebar, SidebarSection, SidebarItem } from "popola-ui-react/sidebar"
 ```
 
 ## Feeding the store
@@ -143,7 +144,8 @@ npm run dev             # Storybook on :6006
 npm run build-storybook
 
 # packages/app
-npm run dev             # Electron window, provider form on first launch
+npm run dev             # build main, then Vite on :5173
+npm run start           # Electron (POPOLA_DEV=1; waits for Vite)
 ```
 
 ## Docs

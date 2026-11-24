@@ -6,19 +6,22 @@ agent (read, bash, edit, write tools). Not published.
 ## Run
 
 ```bash
-# from the repo root
-npm run dev -w popola-app
+# from the repo root — two terminals
+npm run dev -w popola-app    # build main, start Vite on 127.0.0.1:5173
+npm run start -w popola-app  # Electron with POPOLA_DEV=1 (waits for Vite)
 ```
 
-Builds the main process, starts Vite on `127.0.0.1:5173`, then opens Electron.
-Vite aliases both libs to source, so no prior build is needed. `POPOLA_DEV=1`
-loads that URL and keeps data in `packages/app/.data`; otherwise the window loads
-`dist/renderer/index.html` with the normal Electron `userData`.
+Vite aliases both libs to source, so no prior package build is needed.
+`POPOLA_DEV=1` loads the Vite URL and keeps data in `packages/app/.data`;
+without it the window loads `dist/renderer/index.html` with the normal
+Electron `userData`.
 
 First launch asks for an OpenAI-compatible endpoint (`provider`, `baseUrl`,
-`apiKey`, `model`), saved to `<userData>/provider.json` (mode `0600`). Saving
-starts a new session; the header's **Settings** button opens appearance and
-provider settings.
+`apiKey`, `model`), saved to `<userData>/provider.json` (mode `0600`). After
+that, the sidebar requires a working directory before **New chat**. Chats are
+Pi JSONL sessions under `~/.pi/agent/sessions/` for that directory (same store
+as the Pi CLI). Sidebar **Settings** opens a full-screen appearance / provider
+page.
 
 ## Approvals
 
@@ -32,7 +35,8 @@ cover another.
 ## Commands
 
 ```bash
-npm run dev         # Vite + Electron
+npm run dev         # build main, then Vite on :5173
+npm run start       # Electron (POPOLA_DEV=1; waits for Vite)
 npm run build       # tsc + bundle main/renderer into dist/
 npm run typecheck   # main + renderer
 npm run clean       # dist, tsbuildinfo, .data
@@ -49,8 +53,9 @@ src/
       pi.ts            pi agent → popola-protocol events
   preload.cjs     contextBridge exposing window.popola
   renderer/
-    App.tsx          settings / chat screens + PopolaProvider + PopolaShell
-    SettingsPage.tsx sidebar settings (appearance / provider) via popola-ui-react
+    App.tsx          workspace sidebar + settings / chat + PopolaShell
+    Sidebar.tsx      directory picker + Pi session list
+    SettingsPage.tsx app settings (appearance / provider)
     bridge.ts        typed wrapper around window.popola
   shared/types.ts main/renderer wire contract (HostEvent, ProviderConfig)
 ```

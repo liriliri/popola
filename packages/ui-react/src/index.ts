@@ -34,3 +34,15 @@ export {
   SettingsAddRow,
 } from "./settings/index"
 export type { SettingsRowProps, SettingsSelectOption } from "./settings/index"
+
+export {
+  Sidebar,
+  SidebarNav,
+  SidebarFooter,
+  SidebarSeparator,
+  SidebarSection,
+  SidebarHint,
+  SidebarError,
+  SidebarList,
+  SidebarItem,
+} from "./sidebar/index"

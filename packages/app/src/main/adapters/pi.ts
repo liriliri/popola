@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto"
-import type { AgentTool } from "@earendil-works/pi-agent-core"
+import type { AgentMessage, AgentTool } from "@earendil-works/pi-agent-core"
 import { Agent } from "@earendil-works/pi-agent-core"
 import type { AssistantMessage, Message as PiMessage, ToolResultMessage } from "@earendil-works/pi-ai"
 import type { Model } from "@earendil-works/pi-ai"
@@ -8,12 +8,13 @@ import {
   createEditToolDefinition,
   createReadToolDefinition,
   createWriteToolDefinition,
+  SessionManager,
 } from "@earendil-works/pi-coding-agent"
 import isEqual from "licia/isEqual"
 import type {
   AgentEvent,
   AgentSession,
-  AgentSessionFactory,
+  AgentSnapshot,
   Message,
   Part,
   PermissionDecision,
@@ -34,6 +35,8 @@ export type PiSessionConfig = {
   readonly model: PiModelConfig
   /** Working directory the tools are allowed to touch. */
   readonly cwd: string
+  /** Open an existing Pi JSONL session; omit to create a new one under cwd. */
+  readonly sessionFile?: string
   readonly systemPrompt?: string
   /** Ask the host before every tool call. Off by default. */
   readonly askPermission?: boolean
@@ -146,6 +149,7 @@ export class PiSession implements AgentSession {
   readonly provider = "pi"
 
   private readonly agent: Agent
+  private readonly sessions: SessionManager
   private readonly listeners = new Set<(event: AgentEvent) => void>()
   /** Tool call id → the message that owns it, and the call as last emitted. */
   private readonly toolCalls = new Map<string, { messageID: string; call: ToolCall }>()
@@ -162,11 +166,18 @@ export class PiSession implements AgentSession {
   private assistantID: string | null = null
 
   constructor(config: PiSessionConfig) {
+    this.sessions = config.sessionFile
+      ? SessionManager.open(config.sessionFile, undefined, config.cwd)
+      : SessionManager.create(config.cwd)
+
+    const history = this.sessions.buildSessionContext().messages
+
     this.agent = new Agent({
       initialState: {
         systemPrompt: config.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
         model: createModel(config.model),
         thinkingLevel: "off",
+        messages: history,
         tools: [
           asTool(createReadToolDefinition(config.cwd)),
           asTool(createBashToolDefinition(config.cwd)),
@@ -183,6 +194,23 @@ export class PiSession implements AgentSession {
     this.agent.subscribe((event) => {
       this.handlePiEvent(event)
     })
+  }
+
+  /** Absolute path of the Pi JSONL this session writes to. */
+  get sessionFile(): string | undefined {
+    return this.sessions.getSessionFile()
+  }
+
+  /** Popola snapshot of the already-persisted transcript, for mid-join clients. */
+  initialSnapshot(): AgentSnapshot {
+    // `agent.state.messages` is the same transcript loaded in the constructor —
+    // don't call `buildSessionContext()` again.
+    return {
+      status: "idle",
+      messages: convertHistory(this.agent.state.messages),
+      permissions: [],
+      model: this.agent.state.model?.id,
+    }
   }
 
   subscribe(listener: (event: AgentEvent) => void): () => void {
@@ -279,6 +307,7 @@ export class PiSession implements AgentSession {
       case "message_start": {
         const message = event["message"] as PiMessage
         if (message.role === "user") {
+          this.persistMessage(message)
           this.emitUserMessage(message)
         } else if (message.role === "assistant") {
           this.startAssistantMessage(message)
@@ -293,10 +322,12 @@ export class PiSession implements AgentSession {
       case "message_end": {
         const message = event["message"] as PiMessage
         if (message.role === "assistant") {
+          this.persistMessage(message)
           this.updateAssistantMessage(message)
           this.emitUsage(message)
           this.assistantID = null
         } else if (message.role === "toolResult") {
+          this.persistMessage(message)
           this.emitToolResult(message)
         }
         return
@@ -450,17 +481,114 @@ export class PiSession implements AgentSession {
       call,
     })
   }
+
+  /** Append to the Pi JSONL. History already on disk is not written again. */
+  private persistMessage(message: PiMessage): void {
+    try {
+      this.sessions.appendMessage(message)
+    } catch {
+      // A persistence failure must not kill the live turn.
+    }
+  }
+}
+
+/**
+ * Maps a Pi transcript onto popola messages so an opened session paints
+ * before the next turn starts.
+ */
+function convertHistory(messages: readonly AgentMessage[]): Message[] {
+  const result: Message[] = []
+  const toolOwners = new Map<string, { messageID: string; index: number }>()
+  let counter = 0
+
+  for (const message of messages) {
+    if (message.role === "user") {
+      const id = `user-${counter++}`
+      const text = textOf(message.content)
+      result.push({
+        id,
+        role: "user",
+        parts: text ? [{ id: `${id}:text`, type: "text", text }] : [],
+        createdAt: "timestamp" in message ? Number(message.timestamp) || undefined : undefined,
+      })
+      continue
+    }
+
+    if (message.role === "assistant") {
+      const id = `assistant-${counter++}`
+      const assistant = message as AssistantMessage
+      const parts: Part[] = []
+      for (const [index, block] of assistant.content.entries()) {
+        if (block.type === "text") {
+          if (!block.text) continue
+          parts.push({ id: `${id}:text:${index}`, type: "text", text: block.text })
+        } else if (block.type === "thinking") {
+          if (!block.thinking) continue
+          parts.push({ id: `${id}:think:${index}`, type: "reasoning", text: block.thinking })
+        } else if (block.type === "toolCall") {
+          const call: ToolCall = {
+            id: block.id,
+            name: block.name,
+            status: "completed",
+            input: block.arguments,
+            detail: deriveDetail(block.name, block.arguments),
+          }
+          parts.push({ id: `${id}:tool:${block.id}`, type: "tool", call })
+          toolOwners.set(block.id, { messageID: id, index: parts.length - 1 })
+        }
+      }
+      if (
+        (assistant.stopReason === "error" || assistant.stopReason === "aborted") &&
+        assistant.errorMessage
+      ) {
+        parts.push({ id: `${id}:error`, type: "error", message: assistant.errorMessage })
+      }
+      result.push({
+        id,
+        role: "assistant",
+        parts,
+        createdAt: assistant.timestamp,
+      })
+      continue
+    }
+
+    if (message.role === "toolResult") {
+      const tool = message as ToolResultMessage
+      const owner = toolOwners.get(tool.toolCallId)
+      if (!owner) continue
+      const target = result.find((entry) => entry.id === owner.messageID)
+      if (!target) continue
+      const part = target.parts[owner.index]
+      if (!part || part.type !== "tool") continue
+      const text = textOf(tool.content)
+      const call: ToolCall = {
+        ...part.call,
+        status: tool.isError ? "error" : "completed",
+        output: tool.isError ? undefined : text,
+        error: tool.isError ? text : undefined,
+      }
+      const parts = target.parts.slice()
+      parts[owner.index] = { id: part.id, type: "tool", call }
+      const replaced = result.findIndex((entry) => entry.id === owner.messageID)
+      if (replaced >= 0) {
+        result[replaced] = { ...target, parts }
+      }
+    }
+  }
+
+  return result
 }
 
 /**
  * Creates a pi session.
  *
- * Typed by the protocol's factory contract, so a host can hold adapters beside
- * each other and swap one for another without knowing how each is built. The
- * host decides the config; the adapter decides the rest.
+ * Returns the concrete `PiSession` so the private Electron host can read the
+ * JSONL path / initial snapshot. Callers that only need the protocol surface
+ * can still treat it as an `AgentSession`.
  */
-export const createPiSession: AgentSessionFactory<PiSessionConfig> = (config) =>
-  new PiSession(config)
+export function createPiSession(config: PiSessionConfig): PiSession {
+  return new PiSession(config)
+}
 
 /** The last assistant message of a run, which carries the outcome. */
 function lastAssistant(messages: readonly PiMessage[]): AssistantMessage | undefined {

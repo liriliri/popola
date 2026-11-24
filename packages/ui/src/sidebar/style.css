@@ -1,0 +1,188 @@
+/* ── sidebar — quiet rail, paseo-like density ──────────────────────────── */
+
+.popola-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  padding: var(--popola-space-2) 0;
+  gap: 0;
+}
+
+.popola-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  gap: 2px;
+  padding: 0 var(--popola-space-2);
+}
+
+.popola-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  gap: 2px;
+  margin-top: auto;
+  padding: 0 var(--popola-space-2);
+}
+
+.popola-sidebar__separator {
+  flex: none;
+  height: 1px;
+  margin: var(--popola-space-2) 0;
+  background: var(--popola-border-base);
+}
+
+.popola-sidebar__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-1);
+  min-height: 0;
+  padding: 0 var(--popola-space-2);
+}
+
+.popola-sidebar__section--grow {
+  flex: 1;
+  min-height: 0;
+}
+
+.popola-sidebar__section--grow .popola-sidebar__list {
+  flex: 1;
+}
+
+.popola-sidebar__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--popola-space-2);
+  min-height: 28px;
+  padding-left: var(--popola-space-2);
+  padding-right: var(--popola-space-1);
+  user-select: none;
+}
+
+.popola-sidebar__section-title {
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  font-weight: 400;
+}
+
+.popola-sidebar__section-trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--popola-space-1);
+}
+
+.popola-sidebar__section-trailing .popola-button {
+  min-height: 0;
+  padding: 2px var(--popola-space-2);
+  font-size: var(--popola-text-size-sm);
+  color: var(--popola-text-muted);
+}
+
+.popola-sidebar__hint {
+  margin: 0;
+  padding: var(--popola-space-1) var(--popola-space-2);
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  line-height: 1.4;
+}
+
+.popola-sidebar__error {
+  margin: 0;
+  padding: var(--popola-space-2);
+  color: var(--popola-danger-base);
+  font-size: var(--popola-text-size-sm);
+}
+
+.popola-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Shared row geometry for nav actions and list entries. */
+.popola-sidebar__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--popola-space-2);
+  width: 100%;
+  min-height: 32px;
+  padding: var(--popola-space-1) var(--popola-space-2);
+  border: none;
+  border-radius: var(--popola-radius-md);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--popola-duration) var(--popola-easing),
+    color var(--popola-duration) var(--popola-easing);
+}
+
+.popola-sidebar__item:hover:not(:disabled) {
+  background: var(--popola-surface-sunken);
+}
+
+.popola-sidebar__item--selected,
+.popola-sidebar__item--selected:hover:not(:disabled) {
+  background: var(--popola-surface-sunken);
+}
+
+.popola-sidebar__item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popola-sidebar__item-leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.1em;
+  color: var(--popola-text-faint);
+  font-size: var(--popola-text-size-md);
+  line-height: 1;
+}
+
+.popola-sidebar__item-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 1px;
+}
+
+.popola-sidebar__item-title {
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.popola-sidebar__item:hover:not(:disabled) .popola-sidebar__item-title,
+.popola-sidebar__item--selected .popola-sidebar__item-title {
+  color: var(--popola-text-base);
+}
+
+.popola-sidebar__item-title--muted {
+  color: var(--popola-text-muted);
+}
+
+.popola-sidebar__item-meta {
+  color: var(--popola-text-faint);
+  font-size: var(--popola-text-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

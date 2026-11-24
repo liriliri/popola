@@ -40,7 +40,7 @@ packages/
     src/
       index.ts               public re-exports
       state.ts reducer.ts store.ts selectors.ts slots.ts classes.ts style.css
-      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/ settings/
+      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/ settings/ sidebar/
         index.ts             data shapes, selectors, slot/class contracts for that domain
         style.css           authored CSS, @imported by root style.css
   ui-react/    popola-ui-react React renderer (published)
@@ -137,7 +137,8 @@ npm run build-storybook # static build
 npm run typecheck       # also checks stories
 
 # packages/app
-npm run dev             # Vite + Electron (POPOLA_DEV=1)
+npm run dev             # build main, then Vite on :5173
+npm run start           # Electron (POPOLA_DEV=1; waits for Vite)
 npm run build           # tsc + bundle main/renderer
 npm run typecheck       # main + renderer
 ```

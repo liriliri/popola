@@ -48,6 +48,12 @@
       "module": "./dist/esm/settings/index.js",
       "require": "./dist/cjs/settings/index.js",
       "default": "./dist/cjs/settings/index.js"
+    },
+    "./sidebar": {
+      "types": "./dist/esm/sidebar/index.d.ts",
+      "module": "./dist/esm/sidebar/index.js",
+      "require": "./dist/cjs/sidebar/index.js",
+      "default": "./dist/cjs/sidebar/index.js"
     }
   },
   "files": [

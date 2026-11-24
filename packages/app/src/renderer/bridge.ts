@@ -1,8 +1,20 @@
-import type { HostEvent, PermissionDecision, ProviderConfig, ProviderResult } from "../shared/types"
+import type {
+  HostEvent,
+  PermissionDecision,
+  ProviderConfig,
+  ProviderResult,
+  WorkspaceResult,
+  WorkspaceState,
+} from "../shared/types"
 
 export type PopolaBridge = {
   getProvider(): Promise<ProviderConfig | null>
   setProvider(config: ProviderConfig): Promise<ProviderResult>
+  getWorkspace(): Promise<WorkspaceState>
+  pickDirectory(): Promise<WorkspaceResult>
+  setCwd(cwd: string): Promise<WorkspaceResult>
+  newSession(): Promise<WorkspaceResult>
+  openSession(sessionFile: string): Promise<WorkspaceResult>
   prompt(text: string): Promise<void>
   abort(): Promise<void>
   respondToPermission(id: string, decision: PermissionDecision): Promise<void>

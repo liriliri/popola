@@ -5,10 +5,6 @@ body,
   margin: 0;
 }
 
-.app-header__spacer {
-  flex: 1;
-}
-
 .app-settings__intro {
   margin: 0 0 var(--popola-space-3);
   color: var(--popola-text-muted);

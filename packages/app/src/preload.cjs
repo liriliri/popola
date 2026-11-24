@@ -7,6 +7,21 @@ contextBridge.exposeInMainWorld("popola", {
   setProvider(config) {
     return ipcRenderer.invoke("provider:set", config)
   },
+  getWorkspace() {
+    return ipcRenderer.invoke("workspace:get")
+  },
+  pickDirectory() {
+    return ipcRenderer.invoke("workspace:pick")
+  },
+  setCwd(cwd) {
+    return ipcRenderer.invoke("workspace:set-cwd", cwd)
+  },
+  newSession() {
+    return ipcRenderer.invoke("session:new")
+  },
+  openSession(sessionFile) {
+    return ipcRenderer.invoke("session:open", sessionFile)
+  },
   prompt(text) {
     return ipcRenderer.invoke("prompt", text)
   },

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron"
+import { app, BrowserWindow, dialog, ipcMain, shell } from "electron"
 import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -6,7 +6,6 @@ import { AgentHost } from "./host"
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const dev = process.env.POPOLA_DEV === "1"
-const repoRoot = path.resolve(here, "../../../..")
 
 if (dev) {
   app.setPath("userData", path.resolve(here, "../../.data"))
@@ -44,8 +43,12 @@ function createWindow(): BrowserWindow {
 }
 
 app.whenReady().then(async () => {
-  await mkdir(app.getPath("userData"), { recursive: true })
-  const host = new AgentHost(repoRoot, path.join(app.getPath("userData"), "provider.json"))
+  const userData = app.getPath("userData")
+  await mkdir(userData, { recursive: true })
+  const host = new AgentHost(
+    path.join(userData, "workspace.json"),
+    path.join(userData, "provider.json"),
+  )
   await host.load()
 
   const attach = (win: BrowserWindow) => {
@@ -59,6 +62,36 @@ app.whenReady().then(async () => {
   ipcMain.handle("provider:set", async (_event, input: unknown) => {
     const error = await host.setProvider(input)
     return error ? { ok: false, error } : { ok: true }
+  })
+  ipcMain.handle("workspace:get", () => host.getWorkspace())
+  ipcMain.handle("workspace:pick", async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    const options = {
+      title: "Working directory",
+      properties: ["openDirectory", "createDirectory"] as Array<
+        "openDirectory" | "createDirectory"
+      >,
+    }
+    const result = win
+      ? await dialog.showOpenDialog(win, options)
+      : await dialog.showOpenDialog(options)
+    if (result.canceled || result.filePaths.length === 0) {
+      return { ok: true, workspace: await host.getWorkspace() }
+    }
+    return host.setCwd(result.filePaths[0]!)
+  })
+  ipcMain.handle("workspace:set-cwd", async (_event, cwd: unknown) => {
+    if (typeof cwd !== "string" || !cwd.trim()) {
+      return { ok: false, error: "Pick a working directory." }
+    }
+    return host.setCwd(cwd)
+  })
+  ipcMain.handle("session:new", () => host.newSession())
+  ipcMain.handle("session:open", (_event, sessionFile: unknown) => {
+    if (typeof sessionFile !== "string" || !sessionFile) {
+      return { ok: false, error: "Missing session path." }
+    }
+    return host.openSession(sessionFile)
   })
   ipcMain.handle("prompt", async (_event, text: unknown) => {
     await host.prompt(typeof text === "string" ? text : "")

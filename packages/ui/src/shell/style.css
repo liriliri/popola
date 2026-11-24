@@ -49,11 +49,14 @@
 }
 
 .popola-shell__sidebar {
+  display: flex;
+  flex-direction: column;
   flex: none;
   width: 260px;
+  min-height: 0;
   border-right: 1px solid var(--popola-border-base);
   background: var(--popola-surface-raised);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .popola-shell__footer {

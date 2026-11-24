@@ -1,13 +1,46 @@
-import { useEffect, useMemo, useState } from "react"
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from "react"
 import isErr from "licia/isErr"
 import { createStore, popolaClass } from "popola-ui"
 import { isAgentEvent } from "popola-protocol"
-import type { ProviderConfig } from "../shared/types"
-import { PopolaProvider, PopolaShell, type PopolaTheme } from "popola-ui-react"
+import type { ProviderConfig, WorkspaceResult, WorkspaceState } from "../shared/types"
+import {
+  PopolaProvider,
+  PopolaShell,
+  usePopola,
+  useResolvedTheme,
+  type PopolaTheme,
+} from "popola-ui-react"
 import { bridge } from "./bridge"
 import { ProviderSetup, SettingsPage } from "./SettingsPage"
+import { Sidebar } from "./Sidebar"
+
+/** Full-viewport chrome with theme tokens — used when settings replaces the shell. */
+function ThemedFrame(props: { children: ReactNode }) {
+  const context = usePopola()
+  const theme = useResolvedTheme(context.theme)
+  return (
+    <div className={popolaClass.shell} data-popola-theme={theme}>
+      {props.children}
+    </div>
+  )
+}
 
 type Screen = "loading" | "provider" | "chat" | "settings"
+type SidebarProps = ComponentProps<typeof Sidebar>
+
+const emptyWorkspace: WorkspaceState = {
+  cwd: null,
+  sessionFile: null,
+  recent: [],
+  sessions: [],
+}
 
 export function App() {
   const store = useMemo(() => createStore(), [])
@@ -16,6 +49,25 @@ export function App() {
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [theme, setTheme] = useState<PopolaTheme>("system")
+  const [workspace, setWorkspace] = useState<WorkspaceState>(emptyWorkspace)
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null)
+  const [workspaceBusy, setWorkspaceBusy] = useState(false)
+
+  /**
+   * Slot remounts when the component *type* changes. Keep one stable type and
+   * feed it the latest props through a ref so workspace updates don't reset
+   * sidebar scroll/focus.
+   */
+  const sidebarPropsRef = useRef<SidebarProps | null>(null)
+  const ChatSidebar = useMemo(
+    () =>
+      function ChatSidebar() {
+        const props = sidebarPropsRef.current
+        if (!props) return null
+        return <Sidebar {...props} />
+      },
+    [],
+  )
 
   useEffect(() => {
     let unsubscribe = () => {}
@@ -24,13 +76,12 @@ export function App() {
     void (async () => {
       try {
         const api = bridge()
-        const provider = await api.getProvider()
+        const [provider, nextWorkspace] = await Promise.all([api.getProvider(), api.getWorkspace()])
         if (cancelled) return
         setSaved(provider)
+        setWorkspace(nextWorkspace)
         setScreen(provider ? "chat" : "provider")
         unsubscribe = api.onEvent((event) => {
-          // The main process is the source, but the payload still crosses a
-          // process boundary: validate it before it reaches the reducer.
           if (isAgentEvent(event)) store.dispatch(event)
         })
       } catch (error) {
@@ -56,6 +107,7 @@ export function App() {
         return
       }
       setSaved(config)
+      setWorkspace(await bridge().getWorkspace())
       setScreen("chat")
     } catch (error) {
       setFormError(isErr(error) ? error.message : "Could not save the provider.")
@@ -64,32 +116,57 @@ export function App() {
     }
   }
 
-  // Keep the slot map stable so the header component is not remounted on
-  // every App render (a new component type would unmount the host's slot).
+  const runWorkspace = async (action: () => Promise<WorkspaceResult>) => {
+    setWorkspaceBusy(true)
+    setWorkspaceError(null)
+    try {
+      const result = await action()
+      if (!result.ok) {
+        setWorkspaceError(result.error)
+        return
+      }
+      setWorkspace(result.workspace)
+    } catch (error) {
+      setWorkspaceError(isErr(error) ? error.message : "Workspace action failed.")
+    } finally {
+      setWorkspaceBusy(false)
+    }
+  }
+
+  sidebarPropsRef.current = {
+    workspace,
+    busy: workspaceBusy,
+    error: workspaceError,
+    onPickDirectory: () => {
+      void runWorkspace(() => bridge().pickDirectory())
+    },
+    onSelectRecent: (cwd) => {
+      void runWorkspace(() => bridge().setCwd(cwd))
+    },
+    onNewChat: () => {
+      void runWorkspace(() => bridge().newSession())
+    },
+    onOpenSession: (session) => {
+      void runWorkspace(() => bridge().openSession(session.path))
+    },
+    onRefresh: () => {
+      void runWorkspace(async () => ({
+        ok: true,
+        workspace: await bridge().getWorkspace(),
+      }))
+    },
+    onSettings: () => {
+      setFormError(null)
+      setScreen("settings")
+    },
+  }
+
   const slots = useMemo(
     () => ({
-      "shell.header": function Header() {
-        return (
-          <div className={popolaClass.shellHeader}>
-            <span>popola</span>
-            <span className="app-header__spacer" />
-            {saved ? (
-              <button
-                type="button"
-                className={`${popolaClass.button} ${popolaClass.buttonGhost}`}
-                onClick={() => {
-                  setFormError(null)
-                  setScreen("settings")
-                }}
-              >
-                Settings
-              </button>
-            ) : null}
-          </div>
-        )
-      },
+      "shell.header": () => null,
+      "shell.sidebar": saved && screen === "chat" ? ChatSidebar : undefined,
     }),
-    [saved],
+    [saved, screen, ChatSidebar],
   )
 
   return (
@@ -106,18 +183,8 @@ export function App() {
         void bridge().respondToPermission(id, decision)
       }}
     >
-      <PopolaShell slots={slots}>
-        {screen === "provider" ? (
-          <ProviderSetup
-            key={saved?.model ?? "empty"}
-            initial={saved}
-            error={formError}
-            saving={saving}
-            onSave={(config) => {
-              void save(config)
-            }}
-          />
-        ) : screen === "settings" && saved ? (
+      {screen === "settings" && saved ? (
+        <ThemedFrame>
           <SettingsPage
             key={`${saved.provider}:${saved.model}`}
             initial={saved}
@@ -130,8 +197,22 @@ export function App() {
               void save(config)
             }}
           />
-        ) : screen === "loading" ? null : undefined}
-      </PopolaShell>
+        </ThemedFrame>
+      ) : (
+        <PopolaShell slots={slots}>
+          {screen === "provider" ? (
+            <ProviderSetup
+              key={saved?.model ?? "empty"}
+              initial={saved}
+              error={formError}
+              saving={saving}
+              onSave={(config) => {
+                void save(config)
+              }}
+            />
+          ) : screen === "loading" ? null : undefined}
+        </PopolaShell>
+      )}
     </PopolaProvider>
   )
 }

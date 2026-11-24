@@ -6,7 +6,8 @@
   "description": "Electron app for trying the popola UI against a pi coding agent.",
   "main": "./dist/main/index.js",
   "scripts": {
-    "dev": "vite build --config vite.main.ts && POPOLA_DEV=1 concurrently -k -n vite,app \"vite\" \"wait-on http://127.0.0.1:5173 && electron .\"",
+    "dev": "vite build --config vite.main.ts && vite",
+    "start": "wait-on http://127.0.0.1:5173 && POPOLA_DEV=1 electron .",
     "build": "tsc -b && vite build --config vite.main.ts && vite build",
     "typecheck": "tsc -b && tsc -p tsconfig.renderer.json",
     "clean": "rm -rf dist tsconfig.tsbuildinfo .data"
@@ -26,7 +27,6 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "^6.3.0",
-    "concurrently": "^9.2.1",
     "electron": "^39.2.2",
     "typescript": "7.0.2",
     "vite": "^8.3.8",

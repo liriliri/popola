@@ -5,6 +5,7 @@ import { messageClass } from "./message"
 import { permissionClass } from "./permission"
 import { settingsClass } from "./settings"
 import { shellClass } from "./shell"
+import { sidebarClass } from "./sidebar"
 
 /**
  * Class names are the public style contract: the stylesheet targets these
@@ -19,12 +20,14 @@ export const popolaClass = {
   ...permissionClass,
   ...markdownClass,
   ...settingsClass,
+  ...sidebarClass,
 } as typeof shellClass &
   typeof conversationClass &
   typeof messageClass &
   typeof composerClass &
   typeof permissionClass &
   typeof markdownClass &
-  typeof settingsClass
+  typeof settingsClass &
+  typeof sidebarClass
 
 export type PopolaClassName = (typeof popolaClass)[keyof typeof popolaClass]
