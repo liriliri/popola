@@ -102,7 +102,11 @@ export const Sidebar = observer(function Sidebar() {
             title={t("sidebar.newChat")}
             disabled={!canChat}
             tooltip={
-              workspace.cwd ? t("sidebar.newChatTooltip") : t("sidebar.chooseFolderFirst")
+              !appStore.provider
+                ? t("sidebar.configureProviderFirst")
+                : workspace.cwd
+                  ? t("sidebar.newChatTooltip")
+                  : t("sidebar.chooseFolderFirst")
             }
             onPress={() => {
               void appStore.newChat()

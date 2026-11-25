@@ -21,7 +21,6 @@ export const zh = {
     },
   },
   provider: {
-    intro: "将代理指向 OpenAI 兼容接口。密钥仅保存在本机。",
     provider: "供应商",
     baseUrl: "接口地址",
     apiKey: "API 密钥",
@@ -35,6 +34,7 @@ export const zh = {
     newChat: "新对话",
     newChatTooltip: "开始新的 Pi 会话",
     chooseFolderFirst: "请先选择文件夹",
+    configureProviderFirst: "请先在设置中配置提供商",
     chooseFolder: "选择文件夹",
     chooseFolderTooltip: "开始对话前请先选择文件夹",
     recent: "最近",
@@ -51,6 +51,7 @@ export const zh = {
     composerSend: "发送",
     composerStop: "停止",
     conversationEmpty: "还没有消息。",
+    conversationNoProvider: "尚未配置提供商。打开设置添加后即可使用。",
     permissionAllowOnce: "允许一次",
     permissionAlwaysAllow: "始终允许",
     permissionReject: "拒绝",

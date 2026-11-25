@@ -10,7 +10,7 @@
     "start": "wait-on http://127.0.0.1:5173 && POPOLA_DEV=1 electron .",
     "build": "tsc -b && vite build --config vite.main.ts && vite build",
     "typecheck": "tsc -b && tsc -p tsconfig.renderer.json",
-    "clean": "rm -rf dist tsconfig.tsbuildinfo .data"
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "i18next": "^27.2.6",

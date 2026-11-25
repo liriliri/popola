@@ -134,6 +134,10 @@ export class AgentHost {
   async prompt(text: string): Promise<void> {
     const trimmed = text.trim()
     if (!trimmed) return
+    if (!this.config) {
+      this.setNotice("No provider configured. Open Settings to add one.")
+      return
+    }
     if (!this.session) {
       this.setNotice(
         this.workspace.get().cwd

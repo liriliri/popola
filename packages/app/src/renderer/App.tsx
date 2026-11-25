@@ -11,7 +11,7 @@ import {
 } from "popola-ui-react"
 import { bridge } from "./bridge"
 import { I18nProvider } from "./i18n"
-import { ProviderSetup, SettingsPage } from "./SettingsPage"
+import { SettingsPage } from "./SettingsPage"
 import { Sidebar } from "./Sidebar"
 import { TitlebarChrome } from "./TitlebarChrome"
 import { appStore } from "./stores"
@@ -51,7 +51,9 @@ const AppShell = observer(function AppShell() {
       composerPlaceholder: t("ui.composerPlaceholder"),
       composerSend: t("ui.composerSend"),
       composerStop: t("ui.composerStop"),
-      conversationEmpty: t("ui.conversationEmpty"),
+      conversationEmpty: provider
+        ? t("ui.conversationEmpty")
+        : t("ui.conversationNoProvider"),
       permissionAllowOnce: t("ui.permissionAllowOnce"),
       permissionAlwaysAllow: t("ui.permissionAlwaysAllow"),
       permissionReject: t("ui.permissionReject"),
@@ -60,7 +62,7 @@ const AppShell = observer(function AppShell() {
       settingsNav: t("ui.settingsNav"),
       themePicker: t("ui.themePicker"),
     }),
-    [t],
+    [provider, t],
   )
 
   useEffect(() => {
@@ -73,9 +75,9 @@ const AppShell = observer(function AppShell() {
       "shell.header": () => null,
       "shell.main.leading": () => <TitlebarChrome />,
       // Module-stable `Sidebar` — a fresh component type would remount and reset scroll.
-      "shell.sidebar": provider && screen === "chat" ? Sidebar : undefined,
+      "shell.sidebar": screen === "chat" ? Sidebar : undefined,
     }),
-    [provider, screen],
+    [screen],
   )
 
   return (
@@ -93,10 +95,10 @@ const AppShell = observer(function AppShell() {
         void bridge().respondToPermission(id, decision)
       }}
     >
-      {screen === "settings" && provider ? (
+      {screen === "settings" ? (
         <ThemedFrame>
           <SettingsPage
-            key={`${provider.provider}:${provider.model}`}
+            key={provider ? `${provider.provider}:${provider.model}` : "empty"}
             initial={provider}
             theme={theme}
             error={formError}
@@ -108,20 +110,8 @@ const AppShell = observer(function AppShell() {
             }}
           />
         </ThemedFrame>
-      ) : (
-        <PopolaShell slots={slots}>
-          {screen === "provider" ? (
-            <ProviderSetup
-              key={provider?.model ?? "empty"}
-              initial={provider}
-              error={formError}
-              saving={saving}
-              onSave={(config) => {
-                void appStore.saveProvider(config)
-              }}
-            />
-          ) : screen === "loading" ? null : undefined}
-        </PopolaShell>
+      ) : screen === "loading" ? null : (
+        <PopolaShell slots={slots} />
       )}
     </PopolaProvider>
   )

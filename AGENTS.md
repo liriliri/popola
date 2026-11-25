@@ -51,10 +51,9 @@ packages/
   app/         popola-app     Electron test host (private)
     src/main/                window, IPC, AgentHost
     src/preload.cjs          contextBridge exposing window.popola
-    src/renderer/            provider form, bridge, store binding
+    src/renderer/            settings, sidebar, bridge, store binding
     src/shared/types.ts      main/renderer wire contract
     vite.config.ts vite.main.ts
-    .data/                   dev userData (gitignored)
 
 tsconfig.json               solution root + shared compiler options
 package.json                workspace root scripts

@@ -3,6 +3,7 @@ import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { AgentHost } from "./host"
+import { resolvePopolaHome } from "./popolaHome"
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const dev = process.env.POPOLA_DEV === "1"
@@ -26,10 +27,6 @@ function getMainWindowChromeOptions(): Pick<
     frame: false,
     autoHideMenuBar: true,
   }
-}
-
-if (dev) {
-  app.setPath("userData", path.resolve(here, "../../.data"))
 }
 
 function createWindow(): BrowserWindow {
@@ -65,11 +62,11 @@ function createWindow(): BrowserWindow {
 }
 
 app.whenReady().then(async () => {
-  const userData = app.getPath("userData")
-  await mkdir(userData, { recursive: true })
+  const home = resolvePopolaHome()
+  await mkdir(home, { recursive: true })
   const host = new AgentHost(
-    path.join(userData, "workspace.json"),
-    path.join(userData, "provider.json"),
+    path.join(home, "workspace.json"),
+    path.join(home, "provider.json"),
   )
   await host.load()
 

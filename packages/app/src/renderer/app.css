@@ -89,17 +89,3 @@ body,
   min-height: 0;
   overflow-y: auto;
 }
-
-/* Provider setup lives in shell.main; conversation owns scroll there, so this page must. */
-.popola-shell__main > .popola-settings {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  align-self: center;
-}
-
-.app-settings__intro {
-  margin: 0 0 var(--popola-space-3);
-  color: var(--popola-text-muted);
-  font-size: var(--popola-text-size-sm);
-}

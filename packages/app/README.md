@@ -13,16 +13,16 @@ npm run start -w popola-app  # Electron with POPOLA_DEV=1 (waits for Vite)
 
 Vite aliases workspace libs (`popola-pi`, `popola-ui`, `popola-protocol`, and
 the renderer’s `popola-ui-react`) to source, so no prior package build is needed.
-`POPOLA_DEV=1` loads the Vite URL and keeps data in `packages/app/.data`;
-without it the window loads `dist/renderer/index.html` with the normal
-Electron `userData`.
+`POPOLA_DEV=1` loads the Vite URL; without it the window loads
+`dist/renderer/index.html`.
 
-First launch asks for an OpenAI-compatible endpoint (`provider`, `baseUrl`,
-`apiKey`, `model`), saved to `<userData>/provider.json` (mode `0600`). After
-that, the sidebar requires a working directory before **New chat**. Chats are
-Pi JSONL sessions under `~/.pi/agent/sessions/` for that directory (same store
-as the Pi CLI). Sidebar **Settings** opens a full-screen appearance / provider
-page.
+App data lives under `~/.popola` (override with `POPOLA_HOME`):
+`provider.json` and `workspace.json` (mode `0600`). Without a provider the chat
+shell still opens and points you to **Settings** to add an OpenAI-compatible
+endpoint (`provider`, `baseUrl`, `apiKey`, `model`). The sidebar requires a
+working directory before **New chat**. Chats are Pi JSONL sessions under
+`~/.pi/agent/sessions/` for that directory (same store as the Pi CLI).
+
 
 ## Approvals
 
@@ -40,7 +40,7 @@ npm run dev         # build main, then Vite on :5173
 npm run start       # Electron (POPOLA_DEV=1; waits for Vite)
 npm run build       # tsc + bundle main/renderer into dist/
 npm run typecheck   # main + renderer
-npm run clean       # dist, tsbuildinfo, .data
+npm run clean       # dist, tsbuildinfo
 ```
 
 ## Layout

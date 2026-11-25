@@ -12,7 +12,7 @@ import {
   writeSidebarWidth,
 } from "../sidebarWidth"
 
-export type AppScreen = "loading" | "provider" | "chat" | "settings"
+export type AppScreen = "loading" | "chat" | "settings"
 
 const emptyWorkspace: WorkspaceState = {
   cwd: null,
@@ -48,7 +48,7 @@ export class AppStore {
   }
 
   get canChat(): boolean {
-    return Boolean(this.workspace.cwd) && !this.workspaceBusy
+    return Boolean(this.provider && this.workspace.cwd) && !this.workspaceBusy
   }
 
   setTheme(theme: PopolaTheme): void {
@@ -89,7 +89,7 @@ export class AppStore {
       runInAction(() => {
         this.provider = provider
         this.workspace = workspace
-        this.screen = provider ? "chat" : "provider"
+        this.screen = "chat"
         this.formError = null
       })
       this.unsubscribeHost = api.onEvent((event) => {
@@ -99,7 +99,7 @@ export class AppStore {
       if (gen !== this.bootstrapGen) return
       runInAction(() => {
         this.formError = isErr(error) ? error.message : "The app bridge is missing."
-        this.screen = "provider"
+        this.screen = "chat"
       })
     }
   }

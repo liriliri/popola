@@ -34,14 +34,12 @@ function ProviderFields(props: {
   draft: ProviderConfig
   error: string | null
   saving: boolean
-  intro?: string
   onChange: (key: keyof ProviderConfig, value: string) => void
   onSave: () => void
 }) {
   const { t } = useTranslation()
   return (
     <SettingsSection title={t("section.provider")}>
-      {props.intro ? <p className="app-settings__intro">{props.intro}</p> : null}
       <SettingsCard>
         <SettingsInput
           label={t("provider.provider")}
@@ -86,7 +84,7 @@ function ProviderFields(props: {
 }
 
 export function SettingsPage(props: {
-  initial: ProviderConfig
+  initial: ProviderConfig | null
   theme: PopolaTheme
   error: string | null
   saving: boolean
@@ -96,8 +94,10 @@ export function SettingsPage(props: {
 }) {
   const { t } = useTranslation()
   const { language, setLanguage } = useAppLanguage()
-  const [section, setSection] = useState<SettingsSectionId>("appearance")
-  const [draft, setDraft] = useState<ProviderConfig>(props.initial)
+  const [section, setSection] = useState<SettingsSectionId>(
+    props.initial ? "appearance" : "provider",
+  )
+  const [draft, setDraft] = useState<ProviderConfig>(props.initial ?? empty)
 
   const languageOptions = useMemo(
     (): LanguageSelectOption[] =>
@@ -182,32 +182,5 @@ export function SettingsPage(props: {
         </SettingsPageContent>
       </>
     </SettingsLayout>
-  )
-}
-
-export function ProviderSetup(props: {
-  initial: ProviderConfig | null
-  error: string | null
-  saving: boolean
-  onSave: (config: ProviderConfig) => void
-}) {
-  const { t } = useTranslation()
-  const [draft, setDraft] = useState<ProviderConfig>(props.initial ?? empty)
-
-  const update = (key: keyof ProviderConfig, value: string) => {
-    setDraft((current) => ({ ...current, [key]: value }))
-  }
-
-  return (
-    <SettingsPageContent>
-      <ProviderFields
-        draft={draft}
-        error={props.error}
-        saving={props.saving}
-        intro={t("provider.intro")}
-        onChange={update}
-        onSave={() => props.onSave(draft)}
-      />
-    </SettingsPageContent>
   )
 }

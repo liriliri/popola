@@ -21,7 +21,6 @@ export const en = {
     },
   },
   provider: {
-    intro: "Point the agent at an OpenAI-compatible endpoint. The key stays on this machine.",
     provider: "Provider",
     baseUrl: "Base URL",
     apiKey: "API key",
@@ -35,6 +34,7 @@ export const en = {
     newChat: "New chat",
     newChatTooltip: "Start a new Pi session",
     chooseFolderFirst: "Choose a folder first",
+    configureProviderFirst: "Configure a provider in Settings first",
     chooseFolder: "Choose folder",
     chooseFolderTooltip: "Pick a folder before starting a chat",
     recent: "Recent",
@@ -51,6 +51,7 @@ export const en = {
     composerSend: "Send",
     composerStop: "Stop",
     conversationEmpty: "No messages yet.",
+    conversationNoProvider: "No provider configured. Open Settings to add one.",
     permissionAllowOnce: "Allow once",
     permissionAlwaysAllow: "Always allow",
     permissionReject: "Reject",
