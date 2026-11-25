@@ -18,8 +18,26 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+/*
+ * Full-width scroll viewport (conversation / PI settings-content): the
+ * scrollbar sits on the pane edge. The centered column uses padding +
+ * max-width inside — never margin on the scrollport itself.
+ */
+.popola-settings-layout__scroll {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 .popola-settings-sidebar {
@@ -596,4 +614,1023 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ── provider / service chooser ─────────────────────────────────────────── */
+
+.popola-settings-provider-chooser {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-3);
+  min-height: 0;
+}
+
+.popola-settings-provider-chooser__search {
+  display: flex;
+  align-items: center;
+  gap: var(--popola-space-2);
+  flex: none;
+  padding: 0 var(--popola-space-3);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+  color: var(--popola-text-faint);
+  transition:
+    background var(--popola-duration) var(--popola-easing),
+    box-shadow var(--popola-duration) var(--popola-easing);
+}
+
+.popola-settings-provider-chooser__search:focus-within {
+  background: var(--popola-surface-raised);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--popola-accent-base) 22%, transparent);
+}
+
+.popola-settings-provider-chooser__search-icon {
+  flex: none;
+}
+
+.popola-settings-provider-chooser__search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--popola-text-base);
+  font: inherit;
+  font-size: var(--popola-text-size-md);
+  line-height: var(--popola-line-height);
+  padding: var(--popola-space-3) 0;
+  outline: none;
+}
+
+.popola-settings-provider-chooser__search-input::placeholder {
+  color: var(--popola-text-faint);
+}
+
+.popola-settings-provider-chooser__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--popola-space-2);
+}
+
+.popola-settings-provider-chooser__tile {
+  display: flex;
+  align-items: center;
+  gap: var(--popola-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--popola-space-3);
+  border: none;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+  color: var(--popola-text-base);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--popola-duration) var(--popola-easing),
+    box-shadow var(--popola-duration) var(--popola-easing);
+}
+
+.popola-settings-provider-chooser__tile:hover:not(:disabled),
+.popola-settings-provider-chooser__tile--active {
+  background: var(--popola-surface-raised);
+}
+
+.popola-settings-provider-chooser__tile:focus-visible {
+  outline: none;
+  background: var(--popola-surface-raised);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--popola-accent-base) 24%, transparent);
+}
+
+.popola-settings-provider-chooser__tile--current {
+  box-shadow: inset 0 0 0 1px var(--popola-accent-base);
+}
+
+.popola-settings-provider-chooser__tile:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popola-settings-provider-chooser__monogram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-base);
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.popola-settings-provider-chooser__tile-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.popola-settings-provider-chooser__tile-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--popola-text-size-md);
+  font-weight: 500;
+  line-height: var(--popola-line-height);
+}
+
+.popola-settings-provider-chooser__tile-detail {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  line-height: var(--popola-line-height);
+}
+
+.popola-settings-provider-chooser__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--popola-space-3);
+  padding: var(--popola-space-5) var(--popola-space-3);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+  color: var(--popola-text-faint);
+  font-size: var(--popola-text-size-sm);
+  line-height: var(--popola-line-height);
+  text-align: center;
+}
+
+.popola-settings-provider-chooser__empty-action {
+  border: none;
+  border-radius: var(--popola-radius-md);
+  background: transparent;
+  color: var(--popola-text-accent);
+  font: inherit;
+  font-size: var(--popola-text-size-sm);
+  cursor: pointer;
+  padding: var(--popola-space-1) var(--popola-space-2);
+}
+
+.popola-settings-provider-chooser__empty-action:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.popola-settings-provider-chooser__empty-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── provider model checklist ───────────────────────────────────────────── */
+
+/* Provider setup credentials — service + key share one row (PI). */
+.popola-settings-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: none;
+  min-width: 0;
+}
+
+.popola-settings-credentials__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  align-items: start;
+  min-width: 0;
+}
+
+.popola-settings-credentials__row > * {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .popola-settings-credentials__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.popola-settings-credentials__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.popola-settings-credentials__label {
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  line-height: 1.3;
+}
+
+.popola-settings-credentials__field .popola-settings__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.popola-settings-service-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 4px 6px 4px 5px;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+  overflow: hidden;
+}
+
+.popola-settings-service-chip__monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+  box-shadow: 0 0 0 1px var(--popola-border-base);
+  color: var(--popola-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.popola-settings-service-chip__copy {
+  display: flex;
+  flex: 1 1 0;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.popola-settings-service-chip__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--popola-text-base);
+  font-size: var(--popola-text-size-md);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.popola-settings-service-chip__host {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--popola-text-muted);
+  font-family: var(--popola-font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.popola-settings-service-chip__change {
+  flex: none;
+  margin: 0;
+  padding: 0 8px;
+  min-height: 24px;
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-muted);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.popola-settings-service-chip__change:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--popola-text-base) 8%, transparent);
+  color: var(--popola-text-base);
+}
+
+.popola-settings-service-chip__change:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dual-pane model picker (PI provider-setup-panes). */
+.popola-settings-model-panes {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .popola-settings-model-panes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.popola-settings-model-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-sunken);
+}
+
+.popola-settings-model-pane__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  flex-wrap: wrap;
+  padding: 7px 7px 3px;
+}
+
+.popola-settings-model-pane__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.popola-settings-model-pane__title {
+  margin: 0;
+  color: var(--popola-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.popola-settings-model-pane__count {
+  padding: 1px 6px;
+  border-radius: var(--popola-radius-pill);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+.popola-settings-model-pane__reload {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  margin: 0;
+  padding: 0 7px;
+  min-height: 24px;
+  border: 0;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-muted);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.popola-settings-model-pane__reload:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--popola-text-base) 8%, transparent);
+  color: var(--popola-text-base);
+}
+
+.popola-settings-model-pane__reload:disabled {
+  cursor: default;
+  color: var(--popola-text-faint);
+}
+
+.popola-settings-model-pane__reload--loading svg {
+  animation: popola-model-reload-spin 700ms linear infinite;
+}
+
+@keyframes popola-model-reload-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popola-settings-model-pane__reload--loading svg {
+    animation: none;
+  }
+}
+
+.popola-settings-model-pane__search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 0 7px;
+  min-height: 24px;
+  min-width: 120px;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-faint);
+}
+
+.popola-settings-model-pane__search:focus-within {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--popola-accent-base) 24%, transparent);
+}
+
+.popola-settings-model-pane__search-icon {
+  flex: none;
+}
+
+.popola-settings-model-pane__search-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  color: var(--popola-text-base);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.popola-settings-model-pane__search-input::placeholder {
+  color: var(--popola-text-faint);
+}
+
+.popola-settings-model-pane__search-input:disabled {
+  opacity: 0.5;
+}
+
+.popola-settings-model-pane__list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 3px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.popola-settings-model-pane__row {
+  border-radius: var(--popola-radius-sm);
+}
+
+.popola-settings-model-pane__row:hover {
+  background: color-mix(in srgb, var(--popola-text-base) 6%, transparent);
+}
+
+.popola-settings-model-pane__row:has(.popola-settings-model-pane__check:checked) {
+  background: color-mix(in srgb, var(--popola-accent-base) 10%, transparent);
+}
+
+.popola-settings-model-pane__row-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  cursor: pointer;
+}
+
+.popola-settings-model-pane__check {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  accent-color: var(--popola-accent-base);
+  cursor: pointer;
+}
+
+.popola-settings-model-pane__row-id {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--popola-text-base);
+  font-family: var(--popola-font-mono);
+  font-size: 12px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popola-settings-model-pane__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3px;
+  padding: 14px 10px;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-faint);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.popola-settings-model-pane__empty--error {
+  color: var(--popola-warning-base);
+  overflow-wrap: anywhere;
+}
+
+.popola-settings-model-pane__status {
+  flex: none;
+  margin: 0 3px;
+  padding: 4px 7px;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.popola-settings-model-pane__status--error {
+  background: color-mix(in srgb, var(--popola-warning-base) 12%, transparent);
+  color: var(--popola-warning-base);
+}
+
+.popola-settings-model-pane__chosen-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: var(--popola-radius-sm);
+  background: var(--popola-surface-raised);
+}
+
+.popola-settings-model-pane__chosen-id {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--popola-text-base);
+  font-family: var(--popola-font-mono);
+  font-size: 12px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popola-settings-model-pane__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: transparent;
+  color: var(--popola-text-faint);
+  cursor: pointer;
+}
+
+.popola-settings-model-pane__remove:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--popola-text-base) 8%, transparent);
+  color: var(--popola-text-base);
+}
+
+.popola-settings-model-pane__remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.popola-settings-model-pane__custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  margin-top: 2px;
+  padding: 8px;
+}
+
+.popola-settings-model-pane__custom-input {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-base);
+  color: var(--popola-text-base);
+  font: inherit;
+  font-family: var(--popola-font-mono);
+  font-size: 12px;
+  line-height: var(--popola-line-height);
+  padding: 6px 10px;
+  outline: none;
+}
+
+.popola-settings-model-pane__custom-input:focus {
+  border-color: var(--popola-accent-base);
+}
+
+.popola-settings-model-pane__custom-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.popola-settings-model-pane__custom-input::placeholder {
+  color: var(--popola-text-faint);
+}
+
+.popola-settings-model-pane__custom-button {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── dialog (PI provider-setup shell) ───────────────────────────────────── */
+
+.popola-dialog-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /*
+    Top clears frameless window controls / traffic lights (app titlebar is
+    38px); sides and bottom keep the sheet off the glass on short frames.
+  */
+  padding: 64px 48px 48px;
+  box-sizing: border-box;
+  background: rgb(0 0 0 / 0.35);
+}
+
+.popola-dialog,
+.popola-dialog * {
+  /* Portaled outside .popola-shell, so the shell border-box reset does not apply. */
+  box-sizing: border-box;
+}
+
+.popola-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-3);
+  width: min(560px, 100%);
+  min-width: 0;
+  max-width: 100%;
+  max-height: 100%;
+  padding: var(--popola-space-4);
+  border: none;
+  border-radius: var(--popola-radius-lg);
+  background: var(--popola-surface-overlay);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.2);
+  overflow: hidden;
+}
+
+.popola-dialog--setup {
+  width: min(1040px, 100%);
+  height: min(720px, 100%);
+  max-height: 100%;
+}
+
+/* Panes own the scroll; the body keeps head actions reachable. */
+.popola-dialog--setup .popola-dialog__body {
+  overflow: hidden;
+}
+
+.popola-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--popola-space-3);
+  flex: none;
+}
+
+.popola-dialog__title {
+  margin: 0;
+  color: var(--popola-text-base);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.popola-dialog__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.popola-dialog__head-actions .popola-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--popola-space-1);
+}
+
+.popola-dialog__body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--popola-space-3);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 2px;
+  overscroll-behavior: contain;
+}
+
+/* ── model config page (PI ModelConfigPage) ─────────────────────────────── */
+
+.popola-settings-model-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.popola-settings-card-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 28px;
+}
+
+.popola-settings-model-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.popola-settings-card-heading-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.popola-settings-card-heading {
+  margin: 0;
+  color: var(--popola-text-base);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.popola-settings-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--popola-radius-pill);
+  background: color-mix(in srgb, var(--popola-text-base) 8%, transparent);
+  color: var(--popola-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.popola-settings-section-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.popola-settings-btn-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.popola-settings-section-head-actions .popola-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+/*
+  Soft tile panel by default; when it only holds a service list the panel
+  dissolves and each row is its own tile (PI D297).
+*/
+.popola-settings-service-panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--popola-radius-lg);
+  background: var(--popola-surface-sunken);
+  overflow: hidden;
+}
+
+.popola-settings-service-panel:has(> .popola-settings-service-list) {
+  gap: 6px;
+  background: transparent;
+  overflow: visible;
+}
+
+.popola-settings-service-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 16px;
+  text-align: center;
+}
+
+.popola-settings-service-empty__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 2px;
+  border-radius: var(--popola-radius-pill);
+  background: var(--popola-surface-raised);
+  color: var(--popola-text-muted);
+}
+
+.popola-settings-service-empty__title {
+  color: var(--popola-text-base);
+  font-size: var(--popola-text-size-md);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.popola-settings-service-empty__desc {
+  max-width: 340px;
+  margin-bottom: 6px;
+  color: var(--popola-text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.popola-settings-service-empty .popola-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+.popola-settings-service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.popola-settings-service-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--popola-surface-sunken);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--popola-duration) var(--popola-easing);
+}
+
+.popola-settings-service-row:hover,
+.popola-settings-service-row--active {
+  background: color-mix(in srgb, var(--popola-surface-sunken) 70%, var(--popola-border-strong));
+}
+
+.popola-settings-service-row--disabled > .popola-settings-service-monogram,
+.popola-settings-service-row--disabled > .popola-settings-service-row__copy {
+  opacity: 0.55;
+}
+
+.popola-settings-service-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.popola-settings-context-menu {
+  position: fixed;
+  z-index: 220;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 168px;
+  padding: 4px;
+  border: 1px solid var(--popola-border-base);
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-overlay);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+}
+
+.popola-settings-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: transparent;
+  color: var(--popola-text-base);
+  font: inherit;
+  font-size: var(--popola-text-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.popola-settings-context-menu__item:hover:not(:disabled),
+.popola-settings-context-menu__item:focus-visible {
+  background: var(--popola-surface-sunken);
+  outline: none;
+}
+
+.popola-settings-context-menu__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.popola-settings-context-menu__item--danger {
+  color: var(--popola-danger-base);
+}
+
+.popola-settings-context-menu__item--danger:hover:not(:disabled),
+.popola-settings-context-menu__item--danger:focus-visible {
+  background: var(--popola-danger-surface);
+  color: var(--popola-danger-base);
+}
+
+.popola-settings-context-menu__item-icon {
+  display: inline-flex;
+  flex: none;
+  color: inherit;
+}
+
+.popola-settings-service-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--popola-radius-md);
+  background: var(--popola-surface-raised);
+  box-shadow: 0 0 0 1px var(--popola-border-base);
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.popola-settings-service-row__copy {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.popola-settings-service-row__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.popola-settings-service-row__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--popola-text-base);
+  font-size: var(--popola-text-size-md);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.popola-settings-service-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  color: var(--popola-text-faint);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.popola-settings-service-row__meta > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popola-settings-service-meta-dot {
+  flex: none;
+  color: var(--popola-text-faint);
 }

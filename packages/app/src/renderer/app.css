@@ -79,13 +79,4 @@ body,
   padding: 0 var(--popola-space-2) var(--popola-space-2);
 }
 
-/* Keep the main-pane drag strip pinned; only the settings body scrolls. */
-.app-settings-layout .popola-settings-layout__detail {
-  overflow: hidden;
-}
-
-.app-settings-layout .popola-settings-layout__detail > .popola-settings {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
+/* Titlebar stays pinned; the full-bleed __scroll port owns the scrollbar. */

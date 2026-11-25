@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx"
+import { makeAutoObservable, runInAction, toJS } from "mobx"
 import isErr from "licia/isErr"
 import { createStore, type PopolaStore } from "popola-ui"
 import { isAgentEvent } from "popola-protocol"
@@ -11,6 +11,7 @@ import {
   readSidebarWidth,
   writeSidebarWidth,
 } from "../sidebarWidth"
+import { appToast } from "../toastBus"
 
 export type AppScreen = "loading" | "chat" | "settings"
 
@@ -25,11 +26,9 @@ const emptyWorkspace: WorkspaceState = {
 export class AppStore {
   screen: AppScreen = "loading"
   provider: ProviderConfig | null = null
-  formError: string | null = null
   saving = false
   theme: PopolaTheme = "system"
   workspace: WorkspaceState = emptyWorkspace
-  workspaceError: string | null = null
   workspaceBusy = false
   sidebarWidth = readSidebarWidth()
   sidebarResizing = false
@@ -69,7 +68,6 @@ export class AppStore {
   }
 
   openSettings(): void {
-    this.formError = null
     this.screen = "settings"
   }
 
@@ -90,7 +88,6 @@ export class AppStore {
         this.provider = provider
         this.workspace = workspace
         this.screen = "chat"
-        this.formError = null
       })
       this.unsubscribeHost = api.onEvent((event) => {
         if (isAgentEvent(event)) this.popola.dispatch(event)
@@ -98,8 +95,10 @@ export class AppStore {
     } catch (error) {
       if (gen !== this.bootstrapGen) return
       runInAction(() => {
-        this.formError = isErr(error) ? error.message : "The app bridge is missing."
         this.screen = "chat"
+      })
+      appToast(isErr(error) ? error.message : "The app bridge is missing.", {
+        variant: "error",
       })
     }
   }
@@ -110,26 +109,45 @@ export class AppStore {
     this.unsubscribeHost = null
   }
 
-  async saveProvider(config: ProviderConfig): Promise<void> {
-    this.saving = true
-    this.formError = null
+  private async commitProvider(
+    config: ProviderConfig,
+    options: {
+      clear?: boolean
+      failMessage: string
+      afterOk?: () => void
+    },
+  ): Promise<boolean> {
+    // MobX proxies are not structured-cloneable for Electron IPC.
+    const plain = toJS(config)
     try {
-      const result = await bridge().setProvider(config)
+      const result = await bridge().setProvider(plain)
       if (!result.ok) {
-        runInAction(() => {
-          this.formError = result.error
-        })
-        return
+        appToast(result.error, { variant: "error" })
+        return false
       }
       const workspace = await bridge().getWorkspace()
       runInAction(() => {
-        this.provider = config
+        this.provider = options.clear ? null : plain
         this.workspace = workspace
-        this.screen = "chat"
+        options.afterOk?.()
       })
+      return true
     } catch (error) {
-      runInAction(() => {
-        this.formError = isErr(error) ? error.message : "Could not save the provider."
+      appToast(isErr(error) ? error.message : options.failMessage, {
+        variant: "error",
+      })
+      return false
+    }
+  }
+
+  async saveProvider(config: ProviderConfig): Promise<boolean> {
+    this.saving = true
+    try {
+      return await this.commitProvider(config, {
+        failMessage: "Could not save the provider.",
+        afterOk: () => {
+          if (this.screen !== "settings") this.screen = "chat"
+        },
       })
     } finally {
       runInAction(() => {
@@ -138,23 +156,49 @@ export class AppStore {
     }
   }
 
+  async clearProvider(): Promise<boolean> {
+    this.saving = true
+    try {
+      return await this.commitProvider(
+        { accounts: [], activeAccountId: "", model: "" },
+        {
+          clear: true,
+          failMessage: "Could not clear the provider.",
+        },
+      )
+    } finally {
+      runInAction(() => {
+        this.saving = false
+      })
+    }
+  }
+
+  async selectProviderModel(accountId: string, modelId: string): Promise<void> {
+    const current = this.provider
+    if (!current) return
+    const account = current.accounts.find((item) => item.id === accountId)
+    if (!account || account.enabled === false || !account.models.includes(modelId)) return
+    if (current.activeAccountId === accountId && current.model === modelId) return
+    await this.commitProvider(
+      { ...current, activeAccountId: accountId, model: modelId },
+      { failMessage: "Could not switch model." },
+    )
+  }
+
   async runWorkspace(action: () => Promise<WorkspaceResult>): Promise<void> {
     this.workspaceBusy = true
-    this.workspaceError = null
     try {
       const result = await action()
       if (!result.ok) {
-        runInAction(() => {
-          this.workspaceError = result.error
-        })
+        appToast(result.error, { variant: "error" })
         return
       }
       runInAction(() => {
         this.workspace = result.workspace
       })
     } catch (error) {
-      runInAction(() => {
-        this.workspaceError = isErr(error) ? error.message : "Workspace action failed."
+      appToast(isErr(error) ? error.message : "Workspace action failed.", {
+        variant: "error",
       })
     } finally {
       runInAction(() => {

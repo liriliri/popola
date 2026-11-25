@@ -53,6 +53,11 @@
   /* Motion */
   --popola-duration: 120ms;
   --popola-easing: cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* Scrollbars — always faintly visible; deepen on hover (PI-quiet, still findable). */
+  --popola-scrollbar-size: 8px;
+  --popola-scrollbar-thumb: color-mix(in srgb, var(--popola-text-faint) 55%, transparent);
+  --popola-scrollbar-thumb-strong: color-mix(in srgb, var(--popola-text-muted) 70%, transparent);
 }
 
 /*

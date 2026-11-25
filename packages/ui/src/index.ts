@@ -58,3 +58,34 @@ export type { PopolaClassName } from "./classes"
 
 export { DEFAULT_POPOLA_LABELS, resolvePopolaLabels } from "./labels"
 export type { PopolaLabels } from "./labels"
+
+export {
+  CUSTOM_PROVIDER_ID,
+  PROVIDER_PRESETS,
+  defaultProviderPresetModel,
+  filterProviderChooserOptions,
+  findProviderPreset,
+  matchProviderPreset,
+  normalizeProviderEndpointUrl,
+  providerChooserOptions,
+  providerPresetEndpointLabel,
+} from "./settings/presets"
+export type {
+  ProviderChooserOption,
+  ProviderPreset,
+  ProviderPresetMatchInput,
+} from "./settings/presets"
+
+export {
+  filterComposerModelRows,
+  flattenComposerModelGroups,
+  groupComposerModelRows,
+} from "./composer/modelPicker"
+export type {
+  ComposerModelFlatRow,
+  ComposerModelGroup,
+  ComposerModelOption,
+} from "./composer/modelPicker"
+
+export { DEFAULT_TOAST_DURATION_MS, toastClass } from "./toast"
+export type { ToastItem, ToastVariant } from "./toast"

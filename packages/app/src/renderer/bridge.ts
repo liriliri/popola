@@ -1,5 +1,7 @@
 import type {
   HostEvent,
+  ListModelsInput,
+  ListModelsResult,
   PermissionDecision,
   ProviderConfig,
   ProviderResult,
@@ -10,6 +12,7 @@ import type {
 export type PopolaBridge = {
   getProvider(): Promise<ProviderConfig | null>
   setProvider(config: ProviderConfig): Promise<ProviderResult>
+  listModels(input: ListModelsInput): Promise<ListModelsResult>
   getWorkspace(): Promise<WorkspaceState>
   pickDirectory(): Promise<WorkspaceResult>
   setCwd(cwd: string): Promise<WorkspaceResult>

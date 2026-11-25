@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld("popola", {
   setProvider(config) {
     return ipcRenderer.invoke("provider:set", config)
   },
+  listModels(input) {
+    return ipcRenderer.invoke("provider:list-models", input)
+  },
   getWorkspace() {
     return ipcRenderer.invoke("workspace:get")
   },

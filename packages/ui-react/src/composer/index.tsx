@@ -6,6 +6,9 @@ import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
 import type { PopolaSlots } from "../context"
 
+export { ComposerModelPicker, ComposerToolbar } from "./modelPicker"
+export type { ComposerModelSelection } from "./modelPicker"
+
 /** The input area. Stop appears only while a run is in flight. */
 export function PopolaComposer(props: { slots?: PopolaSlots; className?: string }) {
   const { store, onSend, onStop, labels } = usePopola()
@@ -80,40 +83,44 @@ export function PopolaComposer(props: { slots?: PopolaSlots; className?: string 
         />
 
         <div className={popolaClass.composerActions}>
-          {canStop ? (
+          <Slot name="composer.toolbar" slotProps={{}} local={props.slots} fallback={null} />
+
+          <div className={popolaClass.composerActionsTrailing}>
+            {canStop ? (
+              <Slot
+                name="composer.stop"
+                slotProps={{ onClick: () => onStop?.() }}
+                local={props.slots}
+                fallback={
+                  <button
+                    type="button"
+                    className={className(popolaClass.composerButton, popolaClass.composerStop)}
+                    aria-label={labels.composerStop}
+                    onClick={() => onStop?.()}
+                  >
+                    <Square size={10} fill="currentColor" aria-hidden />
+                  </button>
+                }
+              />
+            ) : null}
+
             <Slot
-              name="composer.stop"
-              slotProps={{ onClick: () => onStop?.() }}
+              name="composer.send"
+              slotProps={{ canSend, onClick: submit }}
               local={props.slots}
               fallback={
                 <button
                   type="button"
-                  className={className(popolaClass.composerButton, popolaClass.composerStop)}
-                  aria-label={labels.composerStop}
-                  onClick={() => onStop?.()}
+                  className={className(popolaClass.composerButton, popolaClass.composerSend)}
+                  disabled={!canSend || !onSend}
+                  aria-label={labels.composerSend}
+                  onClick={submit}
                 >
-                  <Square size={10} fill="currentColor" aria-hidden />
+                  <ArrowUp size={14} strokeWidth={2.5} aria-hidden />
                 </button>
               }
             />
-          ) : null}
-
-          <Slot
-            name="composer.send"
-            slotProps={{ canSend, onClick: submit }}
-            local={props.slots}
-            fallback={
-              <button
-                type="button"
-                className={className(popolaClass.composerButton, popolaClass.composerSend)}
-                disabled={!canSend || !onSend}
-                aria-label={labels.composerSend}
-                onClick={submit}
-              >
-                <ArrowUp size={14} strokeWidth={2.5} aria-hidden />
-              </button>
-            }
-          />
+          </div>
         </div>
       </div>
     </div>

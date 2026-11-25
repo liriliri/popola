@@ -11,6 +11,9 @@ export type PopolaLabels = {
   readonly toolCallResult: string
   readonly settingsNav: string
   readonly themePicker: string
+  readonly composerModel: string
+  readonly composerSearchModels: string
+  readonly composerNoModels: string
 }
 
 export const DEFAULT_POPOLA_LABELS: PopolaLabels = {
@@ -25,6 +28,9 @@ export const DEFAULT_POPOLA_LABELS: PopolaLabels = {
   toolCallResult: "Result",
   settingsNav: "Settings",
   themePicker: "Theme",
+  composerModel: "Model",
+  composerSearchModels: "Search models",
+  composerNoModels: "No models match that search.",
 }
 
 export function resolvePopolaLabels(partial?: Partial<PopolaLabels>): PopolaLabels {

@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next"
 import { popolaClass } from "popola-ui"
 import {
   Sidebar as SidebarFrame,
-  SidebarError,
   SidebarFooter,
   SidebarHint,
   SidebarItem,
@@ -38,14 +37,7 @@ function formatTime(ms: number): string {
 
 export const Sidebar = observer(function Sidebar() {
   const { t } = useTranslation()
-  const {
-    workspace,
-    workspaceBusy,
-    workspaceError,
-    canChat,
-    sidebarWidth,
-    sidebarResizing,
-  } = appStore
+  const { workspace, workspaceBusy, canChat, sidebarWidth, sidebarResizing } = appStore
 
   const dragRef = useRef<{ pointerId: number; startX: number; startWidth: number } | null>(null)
 
@@ -192,8 +184,6 @@ export const Sidebar = observer(function Sidebar() {
           </SidebarList>
         )}
       </SidebarSection>
-
-      {workspaceError ? <SidebarError>{workspaceError}</SidebarError> : null}
 
       <SidebarSeparator />
 

@@ -82,6 +82,7 @@ app.whenReady().then(async () => {
     const error = await host.setProvider(input)
     return error ? { ok: false, error } : { ok: true }
   })
+  ipcMain.handle("provider:list-models", (_event, input: unknown) => host.listModels(input))
   ipcMain.handle("workspace:get", () => host.getWorkspace())
   ipcMain.handle("workspace:pick", async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)

@@ -50,6 +50,12 @@ export type PopolaContextValue = {
 
 const PopolaContext = createContext<PopolaContextValue | undefined>(undefined)
 
+/** Resolved theme for body portals; falls back to system outside a provider. */
+export function usePortalTheme(override?: PopolaTheme): string {
+  const value = useContext(PopolaContext)
+  return useResolvedTheme(override ?? value?.theme ?? "system")
+}
+
 export function PopolaProvider(props: {
   /** Bring your own store, or let the provider make one. */
   store?: PopolaStore

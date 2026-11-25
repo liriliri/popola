@@ -20,33 +20,6 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-
-  /* Firefox — thin custom colors, not the OS native bar. */
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--popola-text-faint) 40%, transparent) transparent;
-}
-
-.popola-conversation__scroll::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  background: transparent;
-}
-
-.popola-conversation__scroll::-webkit-scrollbar-track,
-.popola-conversation__scroll::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-.popola-conversation__scroll::-webkit-scrollbar-thumb {
-  border: 2px solid transparent;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--popola-text-faint) 40%, transparent);
-  background-clip: content-box;
-}
-
-.popola-conversation__scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--popola-text-faint);
-  background-clip: content-box;
 }
 
 .popola-conversation__column {

@@ -18,6 +18,42 @@
   background: var(--popola-surface-base);
 }
 
+/*
+ * Quiet scrollbars (PI-Desktop tone): thin, trackless, no gutter chrome.
+ * Thumb stays faintly painted so overlay/macOS auto-hide does not make the
+ * pane look unscrolled; it deepens on thumb hover. Chromium ignores
+ * `::-webkit-scrollbar` when the same element also sets `scrollbar-width` /
+ * `scrollbar-color`, so those standard properties stay off.
+ */
+.popola-shell ::-webkit-scrollbar,
+.popola-settings-layout ::-webkit-scrollbar {
+  width: var(--popola-scrollbar-size);
+  height: var(--popola-scrollbar-size);
+}
+
+.popola-shell ::-webkit-scrollbar-track,
+.popola-shell ::-webkit-scrollbar-corner,
+.popola-settings-layout ::-webkit-scrollbar-track,
+.popola-settings-layout ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.popola-shell ::-webkit-scrollbar-thumb,
+.popola-settings-layout ::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: var(--popola-radius-pill);
+  background: var(--popola-scrollbar-thumb);
+  background-clip: content-box;
+}
+
+.popola-shell ::-webkit-scrollbar-thumb:hover,
+.popola-shell ::-webkit-scrollbar-thumb:active,
+.popola-settings-layout ::-webkit-scrollbar-thumb:hover,
+.popola-settings-layout ::-webkit-scrollbar-thumb:active {
+  background: var(--popola-scrollbar-thumb-strong);
+  background-clip: content-box;
+}
+
 /* ── shell ─────────────────────────────────────────────────────────────── */
 
 .popola-shell__header {

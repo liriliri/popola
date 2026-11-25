@@ -6,6 +6,7 @@ import { permissionClass } from "./permission"
 import { settingsClass } from "./settings"
 import { shellClass } from "./shell"
 import { sidebarClass } from "./sidebar"
+import { toastClass } from "./toast"
 
 /**
  * Public style contract: the stylesheet targets these strings only, never DOM
@@ -20,6 +21,7 @@ export const popolaClass = {
   ...markdownClass,
   ...settingsClass,
   ...sidebarClass,
+  ...toastClass,
 } as typeof shellClass &
   typeof conversationClass &
   typeof messageClass &
@@ -27,6 +29,7 @@ export const popolaClass = {
   typeof permissionClass &
   typeof markdownClass &
   typeof settingsClass &
-  typeof sidebarClass
+  typeof sidebarClass &
+  typeof toastClass
 
 export type PopolaClassName = (typeof popolaClass)[keyof typeof popolaClass]

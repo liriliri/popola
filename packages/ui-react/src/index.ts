@@ -1,6 +1,7 @@
 export {
   PopolaProvider,
   usePopola,
+  usePortalTheme,
   useResolvedTheme,
   POPOLA_THEME_OPTIONS,
   DEFAULT_POPOLA_LABELS,
@@ -21,7 +22,8 @@ export { Slot } from "./slot"
 
 export { PopolaShell } from "./shell/index"
 export { PopolaConversation } from "./conversation/index"
-export { PopolaComposer } from "./composer/index"
+export { PopolaComposer, ComposerModelPicker, ComposerToolbar } from "./composer/index"
+export type { ComposerModelSelection } from "./composer/index"
 export { PopolaPermissions, DefaultPermission } from "./permission/index"
 
 export { PopolaCard, DefaultPart, DefaultToolCall } from "./message/index"
@@ -45,10 +47,23 @@ export {
   SettingsInput,
   SettingsAction,
   SettingsDetailRow,
+  SettingsCredentialsField,
+  SettingsServiceChip,
   SettingsAddRow,
   SettingsThemePicker,
+  SettingsProviderChooser,
+  SettingsModelPanes,
+  SettingsToggle,
+  SettingsContextMenu,
+  PopolaDialog,
+  SettingsServicePanel,
 } from "./settings/index"
-export type { SettingsRowProps, SettingsSelectOption } from "./settings/index"
+export type {
+  SettingsRowProps,
+  SettingsSelectOption,
+  SettingsServiceRowData,
+  SettingsContextMenuItem,
+} from "./settings/index"
 
 export {
   Sidebar,
@@ -61,3 +76,6 @@ export {
   SidebarList,
   SidebarItem,
 } from "./sidebar/index"
+
+export { ToastProvider, useToast } from "./toast/index"
+export type { ShowToastOptions, ToastApi } from "./toast/index"

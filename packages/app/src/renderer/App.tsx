@@ -1,19 +1,23 @@
-import { useEffect, useMemo, type ReactNode } from "react"
+import { useCallback, useEffect, useMemo, type ReactNode } from "react"
 import { observer } from "mobx-react-lite"
 import { useTranslation } from "react-i18next"
 import { popolaClass } from "popola-ui"
 import {
   PopolaProvider,
   PopolaShell,
+  ToastProvider,
   usePopola,
   useResolvedTheme,
   type PopolaLabels,
+  type ToastApi,
 } from "popola-ui-react"
 import { bridge } from "./bridge"
+import { ComposerModelToolbar } from "./ComposerModelToolbar"
 import { I18nProvider } from "./i18n"
 import { SettingsPage } from "./SettingsPage"
 import { Sidebar } from "./Sidebar"
 import { TitlebarChrome } from "./TitlebarChrome"
+import { bindAppToast } from "./toastBus"
 import { appStore } from "./stores"
 
 /** Full-viewport chrome with theme tokens — used when settings replaces the shell. */
@@ -37,14 +41,11 @@ export function App() {
 
 const AppShell = observer(function AppShell() {
   const { t } = useTranslation()
-  const {
-    screen,
-    provider,
-    formError,
-    saving,
-    theme,
-    popola,
-  } = appStore
+  const { screen, provider, saving, theme, popola } = appStore
+
+  const onToastReady = useCallback((api: ToastApi | null) => {
+    bindAppToast(api ? api.show.bind(api) : null)
+  }, [])
 
   const labels = useMemo(
     (): Partial<PopolaLabels> => ({
@@ -61,6 +62,9 @@ const AppShell = observer(function AppShell() {
       toolCallResult: t("ui.toolCallResult"),
       settingsNav: t("ui.settingsNav"),
       themePicker: t("ui.themePicker"),
+      composerModel: t("ui.composerModel"),
+      composerSearchModels: t("ui.composerSearchModels"),
+      composerNoModels: t("ui.composerNoModels"),
     }),
     [provider, t],
   )
@@ -74,8 +78,9 @@ const AppShell = observer(function AppShell() {
     () => ({
       "shell.header": () => null,
       "shell.main.leading": () => <TitlebarChrome />,
-      // Module-stable `Sidebar` — a fresh component type would remount and reset scroll.
+      // Module-stable components — a fresh type would remount and reset scroll / menu.
       "shell.sidebar": screen === "chat" ? Sidebar : undefined,
+      "composer.toolbar": screen === "chat" ? ComposerModelToolbar : undefined,
     }),
     [screen],
   )
@@ -95,24 +100,23 @@ const AppShell = observer(function AppShell() {
         void bridge().respondToPermission(id, decision)
       }}
     >
-      {screen === "settings" ? (
-        <ThemedFrame>
-          <SettingsPage
-            key={provider ? `${provider.provider}:${provider.model}` : "empty"}
-            initial={provider}
-            theme={theme}
-            error={formError}
-            saving={saving}
-            onThemeChange={appStore.setTheme}
-            onBack={appStore.backToChat}
-            onSave={(config) => {
-              void appStore.saveProvider(config)
-            }}
-          />
-        </ThemedFrame>
-      ) : screen === "loading" ? null : (
-        <PopolaShell slots={slots} />
-      )}
+      <ToastProvider dismissLabel={t("ui.toastDismiss")} onReady={onToastReady}>
+        {screen === "settings" ? (
+          <ThemedFrame>
+            <SettingsPage
+              initial={provider}
+              theme={theme}
+              saving={saving}
+              onThemeChange={appStore.setTheme}
+              onBack={appStore.backToChat}
+              onSave={(config) => appStore.saveProvider(config)}
+              onClearProvider={() => appStore.clearProvider()}
+            />
+          </ThemedFrame>
+        ) : screen === "loading" ? null : (
+          <PopolaShell slots={slots} />
+        )}
+      </ToastProvider>
     </PopolaProvider>
   )
 })

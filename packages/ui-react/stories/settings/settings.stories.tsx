@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { popolaClass } from "popola-ui"
+import { popolaClass, providerChooserOptions } from "popola-ui"
 import {
   SettingsAction,
   SettingsAddRow,
@@ -10,6 +10,7 @@ import {
   SettingsInput,
   SettingsLayout,
   SettingsPage,
+  SettingsProviderChooser,
   SettingsSection,
   SettingsSelect,
   SettingsSidebar,
@@ -90,28 +91,7 @@ function SidebarDemo() {
         ) : null}
 
         {section === "provider" ? (
-          <SettingsSection title="Provider">
-            <SettingsCard>
-              <SettingsInput
-                label="Provider"
-                value={provider}
-                placeholder="openai"
-                onValueChange={setProvider}
-              />
-              <SettingsInput
-                label="Model"
-                value={model}
-                placeholder="gpt-4o"
-                onValueChange={setModel}
-              />
-              <SettingsAction
-                label="Session"
-                hint="Saving starts a new session."
-                actionLabel="Save"
-                onPress={() => {}}
-              />
-            </SettingsCard>
-          </SettingsSection>
+          <ProviderChooserDemo provider={provider} model={model} onProvider={setProvider} onModel={setModel} />
         ) : null}
 
         {section === "advanced" ? (
@@ -133,6 +113,65 @@ function SidebarDemo() {
         ) : null}
       </SettingsPage>
     </SettingsLayout>
+  )
+}
+
+function ProviderChooserDemo(props: {
+  provider: string
+  model: string
+  onProvider: (value: string) => void
+  onModel: (value: string) => void
+}) {
+  const [choosing, setChoosing] = useState(!props.provider)
+  const options = useMemo(
+    () =>
+      providerChooserOptions({
+        customLabel: "Custom endpoint",
+        customDetail: "Any OpenAI-compatible base URL",
+      }),
+    [],
+  )
+
+  if (choosing) {
+    return (
+      <SettingsSection title="Provider">
+        <SettingsProviderChooser
+          options={options}
+          current={props.provider || undefined}
+          searchPlaceholder="Search services"
+          emptyLabel="No services match that search."
+          emptyActionLabel="Use a custom endpoint"
+          onPick={(id) => {
+            props.onProvider(id)
+            setChoosing(false)
+          }}
+        />
+      </SettingsSection>
+    )
+  }
+
+  return (
+    <SettingsSection title="Provider">
+      <SettingsCard>
+        <SettingsDetailRow
+          label="Service"
+          summary={props.provider || "Custom"}
+          onPress={() => setChoosing(true)}
+        />
+        <SettingsInput
+          label="Model"
+          value={props.model}
+          placeholder="gpt-4o"
+          onValueChange={props.onModel}
+        />
+        <SettingsAction
+          label="Session"
+          hint="Saving starts a new session."
+          actionLabel="Save"
+          onPress={() => {}}
+        />
+      </SettingsCard>
+    </SettingsSection>
   )
 }
 

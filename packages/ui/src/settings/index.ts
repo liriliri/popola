@@ -1,3 +1,20 @@
+export {
+  CUSTOM_PROVIDER_ID,
+  PROVIDER_PRESETS,
+  defaultProviderPresetModel,
+  filterProviderChooserOptions,
+  findProviderPreset,
+  matchProviderPreset,
+  normalizeProviderEndpointUrl,
+  providerChooserOptions,
+  providerPresetEndpointLabel,
+} from "./presets"
+export type {
+  ProviderChooserOption,
+  ProviderPreset,
+  ProviderPresetMatchInput,
+} from "./presets"
+
 /** Class names for settings layouts. Purely presentational; hosts compose them. */
 export const settingsClass = {
   /** Detail column: padded content inside the layout's main pane. */
@@ -6,6 +23,8 @@ export const settingsClass = {
   /** Desktop split: sidebar + detail. */
   settingsLayout: "popola-settings-layout",
   settingsDetail: "popola-settings-layout__detail",
+  /** Full-bleed scrollport in the detail pane — scrollbar sits on the pane edge. */
+  settingsDetailScroll: "popola-settings-layout__scroll",
 
   settingsSidebar: "popola-settings-sidebar",
   settingsSidebarHeader: "popola-settings-sidebar__header",
@@ -84,4 +103,101 @@ export const settingsClass = {
   settingsThemePreviewSystemDark: "popola-settings-theme__preview-system-dark",
   settingsThemePreviewSystemDarkInner: "popola-settings-theme__preview-system-dark-inner",
   settingsThemeLabel: "popola-settings-theme__label",
+
+  /** Provider / service chooser (preset tiles). */
+  settingsProviderChooser: "popola-settings-provider-chooser",
+  settingsProviderChooserSearch: "popola-settings-provider-chooser__search",
+  settingsProviderChooserSearchIcon: "popola-settings-provider-chooser__search-icon",
+  settingsProviderChooserSearchInput: "popola-settings-provider-chooser__search-input",
+  settingsProviderChooserGrid: "popola-settings-provider-chooser__grid",
+  settingsProviderChooserTile: "popola-settings-provider-chooser__tile",
+  settingsProviderChooserTileActive: "popola-settings-provider-chooser__tile--active",
+  settingsProviderChooserTileCurrent: "popola-settings-provider-chooser__tile--current",
+  settingsProviderChooserMonogram: "popola-settings-provider-chooser__monogram",
+  settingsProviderChooserTileCopy: "popola-settings-provider-chooser__tile-copy",
+  settingsProviderChooserTileName: "popola-settings-provider-chooser__tile-name",
+  settingsProviderChooserTileDetail: "popola-settings-provider-chooser__tile-detail",
+  settingsProviderChooserEmpty: "popola-settings-provider-chooser__empty",
+  settingsProviderChooserEmptyAction: "popola-settings-provider-chooser__empty-action",
+
+  /** Provider setup credentials (service + key on one row). */
+  settingsCredentials: "popola-settings-credentials",
+  settingsCredentialsRow: "popola-settings-credentials__row",
+  settingsCredentialsField: "popola-settings-credentials__field",
+  settingsCredentialsLabel: "popola-settings-credentials__label",
+  settingsServiceChip: "popola-settings-service-chip",
+  settingsServiceChipMonogram: "popola-settings-service-chip__monogram",
+  settingsServiceChipCopy: "popola-settings-service-chip__copy",
+  settingsServiceChipName: "popola-settings-service-chip__name",
+  settingsServiceChipHost: "popola-settings-service-chip__host",
+  settingsServiceChipChange: "popola-settings-service-chip__change",
+
+  /** Dual-pane model picker (PI ModelSelectionPanes): available | chosen. */
+  settingsModelPanes: "popola-settings-model-panes",
+  settingsModelPane: "popola-settings-model-pane",
+  settingsModelPaneHead: "popola-settings-model-pane__head",
+  settingsModelPaneHeading: "popola-settings-model-pane__heading",
+  settingsModelPaneTitle: "popola-settings-model-pane__title",
+  settingsModelPaneCount: "popola-settings-model-pane__count",
+  settingsModelPaneReload: "popola-settings-model-pane__reload",
+  settingsModelPaneReloadLoading: "popola-settings-model-pane__reload--loading",
+  settingsModelPaneSearch: "popola-settings-model-pane__search",
+  settingsModelPaneEmptyError: "popola-settings-model-pane__empty--error",
+  settingsModelPaneStatus: "popola-settings-model-pane__status",
+  settingsModelPaneStatusError: "popola-settings-model-pane__status--error",
+  settingsModelPaneSearchIcon: "popola-settings-model-pane__search-icon",
+  settingsModelPaneSearchInput: "popola-settings-model-pane__search-input",
+  settingsModelPaneList: "popola-settings-model-pane__list",
+  settingsModelPaneRow: "popola-settings-model-pane__row",
+  settingsModelPaneRowLabel: "popola-settings-model-pane__row-label",
+  settingsModelPaneCheck: "popola-settings-model-pane__check",
+  settingsModelPaneRowId: "popola-settings-model-pane__row-id",
+  settingsModelPaneEmpty: "popola-settings-model-pane__empty",
+  settingsModelPaneChosenRow: "popola-settings-model-pane__chosen-row",
+  settingsModelPaneChosenId: "popola-settings-model-pane__chosen-id",
+  settingsModelPaneRemove: "popola-settings-model-pane__remove",
+  settingsModelPaneCustom: "popola-settings-model-pane__custom",
+  settingsModelPaneCustomInput: "popola-settings-model-pane__custom-input",
+  settingsModelPaneCustomButton: "popola-settings-model-pane__custom-button",
+
+  /** Modal dialog (PI provider-setup shell). */
+  dialogLayer: "popola-dialog-layer",
+  dialog: "popola-dialog",
+  dialogSetup: "popola-dialog--setup",
+  dialogHead: "popola-dialog__head",
+  dialogTitle: "popola-dialog__title",
+  dialogHeadActions: "popola-dialog__head-actions",
+  dialogBody: "popola-dialog__body",
+
+  /** Model config page — AI services block (PI ModelConfigPage). */
+  settingsModelPage: "popola-settings-model-page",
+  settingsCardBlock: "popola-settings-card-block",
+  settingsModelSectionHead: "popola-settings-model-section-head",
+  settingsCardHeadingLine: "popola-settings-card-heading-line",
+  settingsCardHeading: "popola-settings-card-heading",
+  settingsSectionCount: "popola-settings-section-count",
+  settingsSectionHeadActions: "popola-settings-section-head-actions",
+  settingsBtnInner: "popola-settings-btn-inner",
+
+  settingsServicePanel: "popola-settings-service-panel",
+  settingsServiceEmpty: "popola-settings-service-empty",
+  settingsServiceEmptyIcon: "popola-settings-service-empty__icon",
+  settingsServiceEmptyTitle: "popola-settings-service-empty__title",
+  settingsServiceEmptyDesc: "popola-settings-service-empty__desc",
+  settingsServiceList: "popola-settings-service-list",
+  settingsServiceRow: "popola-settings-service-row",
+  settingsServiceRowActive: "popola-settings-service-row--active",
+  settingsServiceRowDisabled: "popola-settings-service-row--disabled",
+  settingsServiceMonogram: "popola-settings-service-monogram",
+  settingsServiceRowCopy: "popola-settings-service-row__copy",
+  settingsServiceRowTitle: "popola-settings-service-row__title",
+  settingsServiceRowName: "popola-settings-service-row__name",
+  settingsServiceRowMeta: "popola-settings-service-row__meta",
+  settingsServiceMetaDot: "popola-settings-service-meta-dot",
+  settingsServiceRowActions: "popola-settings-service-row__actions",
+  settingsServiceRowMenuOpen: "popola-settings-service-row--menu-open",
+  settingsContextMenu: "popola-settings-context-menu",
+  settingsContextMenuItem: "popola-settings-context-menu__item",
+  settingsContextMenuItemDanger: "popola-settings-context-menu__item--danger",
+  settingsContextMenuItemIcon: "popola-settings-context-menu__item-icon",
 } as const
