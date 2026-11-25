@@ -42,7 +42,7 @@ export type PiSessionConfig = {
   readonly askPermission?: boolean
 }
 
-const DEFAULT_SYSTEM_PROMPT = `You are a coding assistant running inside the popola test app.
+const DEFAULT_SYSTEM_PROMPT = `You are a coding assistant.
 You can read, edit, and write files, and run shell commands in the workspace.
 Be concise and prefer making concrete code changes when asked.`
 

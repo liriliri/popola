@@ -153,5 +153,6 @@ npm run start           # Electron (POPOLA_DEV=1; waits for Vite)
 - [`popola-protocol`](./packages/protocol/README.md) — the agent contract
 - [`popola-ui`](./packages/ui/README.md) — state core, slots, stylesheet
 - [`popola-ui-react`](./packages/ui-react/README.md) — components, Markdown, streaming
-- [`popola-app`](./packages/app/README.md) — Electron test host (`pi` agent)
+- [`popola-pi`](./packages/pi/README.md) — Pi coding agent adapter
+- [`popola-app`](./packages/app/README.md) — Electron test host
 - [AGENTS.md](./AGENTS.md) — structure, tech stack, contributor conventions

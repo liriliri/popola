@@ -1,0 +1,35 @@
+{
+  "name": "popola-pi",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Pi coding agent adapter for popola-protocol.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "^0.80.6",
+    "@earendil-works/pi-ai": "^0.80.6",
+    "@earendil-works/pi-coding-agent": "^0.80.6",
+    "licia": "^1.49.0",
+    "popola-protocol": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.13",
+    "typescript": "7.0.2"
+  }
+}

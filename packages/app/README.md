@@ -1,7 +1,7 @@
 # popola-app
 
-Private Electron host for trying `popola-ui-react` against a real `pi` coding
-agent (read, bash, edit, write tools). Not published.
+Private Electron host for trying `popola-ui-react` against
+[`popola-pi`](../pi/README.md). Not published.
 
 ## Run
 
@@ -11,7 +11,8 @@ npm run dev -w popola-app    # build main, start Vite on 127.0.0.1:5173
 npm run start -w popola-app  # Electron with POPOLA_DEV=1 (waits for Vite)
 ```
 
-Vite aliases both libs to source, so no prior package build is needed.
+Vite aliases workspace libs (`popola-pi`, `popola-ui`, `popola-protocol`, and
+the renderer’s `popola-ui-react`) to source, so no prior package build is needed.
 `POPOLA_DEV=1` loads the Vite URL and keeps data in `packages/app/.data`;
 without it the window loads `dist/renderer/index.html` with the normal
 Electron `userData`.
@@ -49,8 +50,6 @@ src/
   main/
     index.ts      window, IPC handlers, dev/prod loading
     host.ts       AgentHost: session lifecycle, state mirror, event fan-out
-    adapters/
-      pi.ts            pi agent → popola-protocol events
   preload.cjs     contextBridge exposing window.popola
   renderer/
     App.tsx          workspace sidebar + settings / chat + PopolaShell
@@ -73,16 +72,15 @@ through `window.popola`:
 | `host:listen` | send | triggers the `session.snapshot` replay |
 | `host-event` | push | one `popola-protocol` `AgentEvent` |
 
-`host-event` carries protocol events only. `adapters/pi.ts` maps pi's own event
-vocabulary onto `AgentEvent`, the host mirrors them through the state core, and
-the renderer dispatches them straight into the store — no diffing in the
-renderer. A renderer that connects mid-run is handed a `session.snapshot`
-instead of the whole event history.
+`host-event` carries protocol events only. `popola-pi` maps Pi onto
+`AgentEvent`, the host mirrors them through the state core, and the renderer
+dispatches them straight into the store — no diffing in the renderer. A
+renderer that connects mid-run is handed a `session.snapshot` instead of the
+whole event history.
 
-The host never names a concrete adapter: it asks the protocol's
-`AgentSessionFactory` for a session (`adapters/pi.ts` exports
-`createPiSession`), so a second adapter can be registered beside pi without
-touching the host.
+The host creates sessions with `createPiSession` from `popola-pi` and keeps the
+concrete `PiSession` so it can read the JSONL path and initial snapshot when
+reopening chats.
 
 ## Security
 

@@ -3,8 +3,7 @@ import { initialState, reduce, selectSnapshot } from "popola-ui"
 import type { AgentEvent, PermissionDecision, PopolaState } from "popola-ui"
 import isErr from "licia/isErr"
 import rtrim from "licia/rtrim"
-import { createPiSession, type PiSession } from "./adapters/pi"
-import { listPiSessions } from "./sessions"
+import { createPiSession, listPiSessions, type PiSession } from "popola-pi"
 import { WorkspaceStore } from "./workspaceStore"
 import type {
   HostEvent,

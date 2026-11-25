@@ -2,7 +2,7 @@
   "name": "popola-protocol",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Transport-neutral contract between an agent runtime and the popola UI layer.",
+  "description": "Transport-neutral contract between an agent runtime and a host: AgentSession, AgentEvent, and shared shapes.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

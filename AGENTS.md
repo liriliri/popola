@@ -5,8 +5,8 @@ Guidance for AI agents and contributors. For usage, see [README.md](./README.md)
 ## What this is
 
 `popola` is an npm workspace monorepo for embedding a coding agent's UI into an
-Electron/React app: one framework-agnostic state core, one React renderer, one
-private test app wiring a real agent to them.
+Electron/React app: one framework-agnostic state core, one React renderer,
+agent adapters such as `popola-pi`, and a private test app that wires them.
 
 ## Tech stack
 
@@ -46,9 +46,10 @@ packages/
   ui-react/    popola-ui-react React renderer (published)
     src/                     mirrors the domain dirs
     stories/ .storybook/     dev only, never published
+  pi/          popola-pi      Pi → popola-protocol adapter (published)
+    src/                     createPiSession, listPiSessions
   app/         popola-app     Electron test host (private)
-    src/main/                window, IPC, AgentHost, pi agent → protocol events
-    src/main/adapters/       agent adapters (pi.ts)
+    src/main/                window, IPC, AgentHost
     src/preload.cjs          contextBridge exposing window.popola
     src/renderer/            provider form, bridge, store binding
     src/shared/types.ts      main/renderer wire contract
@@ -85,8 +86,12 @@ map, one class map.
   React/ReactDOM peers; `licia`, `lucide-react`, `markdown-it`, `popola-ui`
   runtime deps. Hosts localize chrome copy via `PopolaProvider` `labels`
   (types/defaults from `popola-ui`). `sideEffects: false`.
-- **`popola-app`** (`0.0.0`, private) — Electron host running a `pi` agent.
-  See [packages/app/README.md](./packages/app/README.md).
+- **`popola-pi`** (`0.1.0`, MIT) — Pi coding agent adapter: `createPiSession`
+  implements `AgentSession`, plus `listPiSessions` for JSONL chats under
+  `~/.pi/agent/sessions/`. Depends on `popola-protocol` and the `@earendil-works/pi-*`
+  packages.
+- **`popola-app`** (`0.0.0`, private) — Electron host wiring `popola-pi` to the
+  UI. See [packages/app/README.md](./packages/app/README.md).
 
 ## The agent contract
 
@@ -103,8 +108,9 @@ map, one class map.
   `AbortSignal`, so the contract stays free of ambient globals that differ
   between the DOM and Node type libraries.
 - A host creates a session through `AgentSessionFactory`, so it names the
-  contract, not a concrete adapter. `packages/app` exports `createPiSession`
-  and its `AgentHost` holds an `AgentSession`, not a `PiSession`.
+  contract, not a concrete adapter. `popola-pi` exports `createPiSession`; a
+  host that only needs the contract holds an `AgentSession`, while one that
+  reopens Pi JSONL chats may keep the concrete `PiSession`.
 - `PermissionDecision` is `"once" | "always" | "reject"`. An adapter must give
   `"always"` a real meaning: the pi adapter remembers the grant for the exact
   tool and resource that were shown, and stops asking for that one.
@@ -129,7 +135,7 @@ map, one class map.
 
 ```bash
 # root
-npm run build           # protocol + ui + ui-react (ESM)
+npm run build           # protocol + ui + ui-react + pi (ESM)
 npm run typecheck       # tsc -b across references
 npm run clean           # dist, tsbuildinfo, storybook-static
 

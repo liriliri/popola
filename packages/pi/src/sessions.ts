@@ -1,15 +1,23 @@
 import { SessionManager, type SessionInfo } from "@earendil-works/pi-coding-agent"
-import type { SessionSummary } from "../shared/types"
+
+/** One Pi JSONL session under a working directory. */
+export type PiSessionSummary = {
+  readonly id: string
+  readonly path: string
+  readonly title: string
+  readonly modifiedAt: number
+  readonly messageCount: number
+}
 
 /** Lists Pi session files for a working directory (`~/.pi/agent/sessions/…`). */
-export async function listPiSessions(cwd: string): Promise<SessionSummary[]> {
+export async function listPiSessions(cwd: string): Promise<PiSessionSummary[]> {
   const sessions = await SessionManager.list(cwd)
   return sessions
     .map(summarize)
     .sort((left, right) => right.modifiedAt - left.modifiedAt)
 }
 
-function summarize(session: SessionInfo): SessionSummary {
+function summarize(session: SessionInfo): PiSessionSummary {
   const title = session.name?.trim() || firstLine(session.firstMessage) || "Empty chat"
   return {
     id: session.id,
