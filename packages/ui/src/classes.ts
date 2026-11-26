@@ -1,6 +1,7 @@
 import { composerClass } from "./composer"
 import { conversationClass } from "./conversation"
 import { markdownClass } from "./markdown"
+import { menuClass } from "./menu"
 import { messageClass } from "./message"
 import { permissionClass } from "./permission"
 import { settingsClass } from "./settings"
@@ -19,6 +20,7 @@ export const popolaClass = {
   ...composerClass,
   ...permissionClass,
   ...markdownClass,
+  ...menuClass,
   ...settingsClass,
   ...sidebarClass,
   ...toastClass,
@@ -28,6 +30,7 @@ export const popolaClass = {
   typeof composerClass &
   typeof permissionClass &
   typeof markdownClass &
+  typeof menuClass &
   typeof settingsClass &
   typeof sidebarClass &
   typeof toastClass

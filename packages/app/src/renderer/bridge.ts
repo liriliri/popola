@@ -14,11 +14,15 @@ export type PopolaBridge = {
   setProvider(config: ProviderConfig): Promise<ProviderResult>
   listModels(input: ListModelsInput): Promise<ListModelsResult>
   getWorkspace(): Promise<WorkspaceState>
-  pickDirectory(): Promise<WorkspaceResult>
-  setCwd(cwd: string): Promise<WorkspaceResult>
+  addProject(): Promise<WorkspaceResult>
+  selectProject(cwd: string): Promise<WorkspaceResult>
+  setProjectCollapsed(cwd: string, collapsed: boolean): Promise<WorkspaceResult>
   newSession(): Promise<WorkspaceResult>
   openSession(sessionFile: string): Promise<WorkspaceResult>
-  prompt(text: string): Promise<void>
+  archiveSession(sessionFile: string): Promise<WorkspaceResult>
+  removeProject(cwd: string): Promise<WorkspaceResult>
+  /** Returns an updated workspace when the catalog changed; otherwise null. */
+  prompt(text: string): Promise<WorkspaceState | null>
   abort(): Promise<void>
   respondToPermission(id: string, decision: PermissionDecision): Promise<void>
   onEvent(listener: (event: HostEvent) => void): () => void

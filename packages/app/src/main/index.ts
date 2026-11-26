@@ -84,10 +84,10 @@ app.whenReady().then(async () => {
   })
   ipcMain.handle("provider:list-models", (_event, input: unknown) => host.listModels(input))
   ipcMain.handle("workspace:get", () => host.getWorkspace())
-  ipcMain.handle("workspace:pick", async (event) => {
+  ipcMain.handle("workspace:add-project", async (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     const options = {
-      title: "Working directory",
+      title: "Add project",
       properties: ["openDirectory", "createDirectory"] as Array<
         "openDirectory" | "createDirectory"
       >,
@@ -98,14 +98,23 @@ app.whenReady().then(async () => {
     if (result.canceled || result.filePaths.length === 0) {
       return { ok: true, workspace: await host.getWorkspace() }
     }
-    return host.setCwd(result.filePaths[0]!)
+    return host.addProject(result.filePaths[0]!)
   })
-  ipcMain.handle("workspace:set-cwd", async (_event, cwd: unknown) => {
+  ipcMain.handle("workspace:select-project", async (_event, cwd: unknown) => {
     if (typeof cwd !== "string" || !cwd.trim()) {
-      return { ok: false, error: "Pick a working directory." }
+      return { ok: false, error: "Pick a project." }
     }
-    return host.setCwd(cwd)
+    return host.selectProject(cwd)
   })
+  ipcMain.handle(
+    "workspace:set-collapsed",
+    async (_event, cwd: unknown, collapsed: unknown) => {
+      if (typeof cwd !== "string" || !cwd.trim()) {
+        return { ok: false, error: "Pick a project." }
+      }
+      return host.setProjectCollapsed(cwd, collapsed === true)
+    },
+  )
   ipcMain.handle("session:new", () => host.newSession())
   ipcMain.handle("session:open", (_event, sessionFile: unknown) => {
     if (typeof sessionFile !== "string" || !sessionFile) {
@@ -113,9 +122,21 @@ app.whenReady().then(async () => {
     }
     return host.openSession(sessionFile)
   })
-  ipcMain.handle("prompt", async (_event, text: unknown) => {
-    await host.prompt(typeof text === "string" ? text : "")
+  ipcMain.handle("session:archive", (_event, sessionFile: unknown) => {
+    if (typeof sessionFile !== "string" || !sessionFile) {
+      return { ok: false, error: "Missing session path." }
+    }
+    return host.archiveSession(sessionFile)
   })
+  ipcMain.handle("workspace:remove-project", (_event, cwd: unknown) => {
+    if (typeof cwd !== "string" || !cwd.trim()) {
+      return { ok: false, error: "Pick a project." }
+    }
+    return host.removeProject(cwd)
+  })
+  ipcMain.handle("prompt", (_event, text: unknown) =>
+    host.prompt(typeof text === "string" ? text : ""),
+  )
   ipcMain.handle("abort", () => {
     host.abort()
   })

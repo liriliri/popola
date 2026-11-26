@@ -19,9 +19,11 @@ the renderer’s `popola-ui-react`) to source, so no prior package build is need
 App data lives under `~/.popola` (override with `POPOLA_HOME`):
 `provider.json` and `workspace.json` (mode `0600`). Without a provider the chat
 shell still opens and points you to **Settings** to add an OpenAI-compatible
-endpoint (`provider`, `baseUrl`, `apiKey`, `model`). The sidebar requires a
-working directory before **New chat**. Chats are Pi JSONL sessions under
-`~/.pi/agent/sessions/` for that directory (same store as the Pi CLI).
+endpoint (`provider`, `baseUrl`, `apiKey`, `model`). The sidebar is a project
+tree (PI Desktop–style): **Add project** picks a folder, **New task** creates a
+chat under the selected project. The catalog is owned by popola
+(`workspace.json` → `projects` + `sessions`); Pi JSONL under
+`~/.pi/agent/sessions/` is only the transcript persistence handle.
 
 
 ## Approvals
@@ -53,7 +55,7 @@ src/
   preload.cjs     contextBridge exposing window.popola
   renderer/
     App.tsx          workspace sidebar + settings / chat + PopolaShell
-    Sidebar.tsx      directory picker + Pi session list
+    Sidebar.tsx      project tree + popola-owned task list
     SettingsPage.tsx app settings (appearance / provider)
     bridge.ts        typed wrapper around window.popola
   shared/types.ts main/renderer wire contract (HostEvent, ProviderConfig)

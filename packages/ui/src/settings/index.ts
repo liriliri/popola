@@ -196,8 +196,4 @@ export const settingsClass = {
   settingsServiceMetaDot: "popola-settings-service-meta-dot",
   settingsServiceRowActions: "popola-settings-service-row__actions",
   settingsServiceRowMenuOpen: "popola-settings-service-row--menu-open",
-  settingsContextMenu: "popola-settings-context-menu",
-  settingsContextMenuItem: "popola-settings-context-menu__item",
-  settingsContextMenuItemDanger: "popola-settings-context-menu__item--danger",
-  settingsContextMenuItemIcon: "popola-settings-context-menu__item-icon",
 } as const

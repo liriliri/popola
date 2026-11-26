@@ -91,7 +91,7 @@ const AppShell = observer(function AppShell() {
       theme={theme}
       labels={labels}
       onSend={(payload) => {
-        void bridge().prompt(payload.text)
+        void appStore.prompt(payload.text)
       }}
       onStop={() => {
         void bridge().abort()

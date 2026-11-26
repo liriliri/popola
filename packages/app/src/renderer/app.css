@@ -47,6 +47,152 @@ body,
   background: var(--popola-accent-base);
 }
 
+/* Project tree (PI Desktop–style groups). */
+.app-sidebar__projects {
+  padding-bottom: 0;
+}
+
+.app-sidebar__tree {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.app-sidebar__project {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-sidebar__project-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--popola-space-1);
+  width: 100%;
+  min-height: 32px;
+  padding: var(--popola-space-1) var(--popola-space-2);
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: transparent;
+  color: var(--popola-text-base);
+  font: inherit;
+  font-size: var(--popola-text-size-sm);
+  text-align: left;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.app-sidebar__project-header:hover,
+.app-sidebar__project[data-menu-open="true"] > .app-sidebar__project-header {
+  background: var(--popola-surface-sunken);
+}
+
+.app-sidebar__project-header:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.app-sidebar__project-chevron {
+  flex: none;
+  color: var(--popola-text-muted);
+  transition: transform var(--popola-duration) var(--popola-easing);
+}
+
+.app-sidebar__project[data-collapsed="true"] .app-sidebar__project-chevron {
+  transform: rotate(-90deg);
+}
+
+.app-sidebar__project-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.app-sidebar__project-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--popola-accent-base);
+}
+
+.app-sidebar__project-sessions {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Author `display: flex` would otherwise override the UA `[hidden]` rule. */
+.app-sidebar__project-sessions[hidden] {
+  display: none;
+}
+
+.app-sidebar__project-empty {
+  padding: var(--popola-space-1) var(--popola-space-2) var(--popola-space-1) calc(var(--popola-space-2) + 26px);
+  color: var(--popola-text-muted);
+  font-size: var(--popola-text-size-sm);
+}
+
+.app-sidebar__session {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--popola-space-2);
+  width: 100%;
+  min-height: 28px;
+  padding: 4px var(--popola-space-2) 4px calc(var(--popola-space-2) + 26px);
+  border: none;
+  border-radius: var(--popola-radius-sm);
+  background: transparent;
+  color: var(--popola-text-base);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.app-sidebar__session:hover,
+.app-sidebar__session[data-menu-open="true"] {
+  background: var(--popola-surface-sunken);
+}
+
+.app-sidebar__session[data-selected="true"] {
+  background: var(--popola-surface-sunken);
+}
+
+.app-sidebar__session:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.app-sidebar__session-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--popola-text-size-sm);
+  line-height: 20px;
+}
+
+.app-sidebar__session-time {
+  flex: none;
+  color: var(--popola-text-faint, var(--popola-text-muted));
+  font-size: var(--popola-text-size-sm);
+  line-height: 20px;
+  white-space: nowrap;
+}
+
 /*
  * Drag strip at the top of the sidebar (paseo-style). Clears macOS traffic
  * lights; sidebar + main stay flush with the window top.

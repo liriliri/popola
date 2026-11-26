@@ -13,11 +13,14 @@ contextBridge.exposeInMainWorld("popola", {
   getWorkspace() {
     return ipcRenderer.invoke("workspace:get")
   },
-  pickDirectory() {
-    return ipcRenderer.invoke("workspace:pick")
+  addProject() {
+    return ipcRenderer.invoke("workspace:add-project")
   },
-  setCwd(cwd) {
-    return ipcRenderer.invoke("workspace:set-cwd", cwd)
+  selectProject(cwd) {
+    return ipcRenderer.invoke("workspace:select-project", cwd)
+  },
+  setProjectCollapsed(cwd, collapsed) {
+    return ipcRenderer.invoke("workspace:set-collapsed", cwd, collapsed)
   },
   newSession() {
     return ipcRenderer.invoke("session:new")
@@ -25,8 +28,14 @@ contextBridge.exposeInMainWorld("popola", {
   openSession(sessionFile) {
     return ipcRenderer.invoke("session:open", sessionFile)
   },
+  archiveSession(sessionFile) {
+    return ipcRenderer.invoke("session:archive", sessionFile)
+  },
+  removeProject(cwd) {
+    return ipcRenderer.invoke("workspace:remove-project", cwd)
+  },
   prompt(text) {
-    return ipcRenderer.invoke("prompt", text)
+    return ipcRenderer.invoke("prompt", text) // → WorkspaceState | null
   },
   abort() {
     return ipcRenderer.invoke("abort")

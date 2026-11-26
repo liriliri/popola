@@ -3,7 +3,14 @@ import isErr from "licia/isErr"
 import { createStore, type PopolaStore } from "popola-ui"
 import { isAgentEvent } from "popola-protocol"
 import type { PopolaTheme } from "popola-ui-react"
-import type { ProviderConfig, SessionSummary, WorkspaceResult, WorkspaceState } from "../../shared/types"
+import type {
+  ProjectSummary,
+  ProviderConfig,
+  SessionSummary,
+  WorkspaceResult,
+  WorkspaceState,
+} from "../../shared/types"
+import { projectName, titleFromPrompt } from "../../shared/types"
 import { bridge } from "../bridge"
 import {
   applySidebarWidth,
@@ -18,8 +25,7 @@ export type AppScreen = "loading" | "chat" | "settings"
 const emptyWorkspace: WorkspaceState = {
   cwd: null,
   sessionFile: null,
-  recent: [],
-  sessions: [],
+  projects: [],
 }
 
 /** Host shell state. Conversation/agent state stays in `popola`. */
@@ -47,7 +53,17 @@ export class AppStore {
   }
 
   get canChat(): boolean {
-    return Boolean(this.provider && this.workspace.cwd) && !this.workspaceBusy
+    // Do not gate on workspaceBusy — that dims New task on every session switch.
+    return Boolean(this.provider && this.workspace.cwd)
+  }
+
+  /** Live chat not yet in the catalog — New task stays selected until the first send. */
+  get drafting(): boolean {
+    const file = this.workspace.sessionFile
+    if (!file) return false
+    return !this.workspace.projects.some((project) =>
+      project.sessions.some((session) => session.path === file),
+    )
   }
 
   setTheme(theme: PopolaTheme): void {
@@ -185,8 +201,12 @@ export class AppStore {
     )
   }
 
-  async runWorkspace(action: () => Promise<WorkspaceResult>): Promise<void> {
-    this.workspaceBusy = true
+  async runWorkspace(
+    action: () => Promise<WorkspaceResult>,
+    options?: { busy?: boolean },
+  ): Promise<void> {
+    const busy = options?.busy !== false
+    if (busy) this.workspaceBusy = true
     try {
       const result = await action()
       if (!result.ok) {
@@ -201,33 +221,145 @@ export class AppStore {
         variant: "error",
       })
     } finally {
+      if (busy) {
+        runInAction(() => {
+          this.workspaceBusy = false
+        })
+      }
+    }
+  }
+
+  addProject(): Promise<void> {
+    return this.runWorkspace(() => bridge().addProject())
+  }
+
+  /** Select the project if needed, then toggle its collapsed state (PI Desktop). */
+  async activateProject(project: ProjectSummary): Promise<void> {
+    const active = this.workspace.cwd === project.path
+    if (!active) {
+      await this.runWorkspace(() => bridge().selectProject(project.path), { busy: false })
+      return
+    }
+    // Collapse is presentation-only — update locally so the rail does not flash busy.
+    await this.setProjectCollapsed(project.path, !project.collapsed)
+  }
+
+  /** Persist expand/collapse without the workspace busy dim. */
+  async setProjectCollapsed(cwd: string, collapsed: boolean): Promise<void> {
+    const previous = this.workspace
+    runInAction(() => {
+      this.workspace = {
+        ...this.workspace,
+        projects: this.workspace.projects.map((project) =>
+          project.path === cwd ? { ...project, collapsed } : project,
+        ),
+      }
+    })
+    try {
+      const result = await bridge().setProjectCollapsed(cwd, collapsed)
+      if (!result.ok) {
+        runInAction(() => {
+          this.workspace = previous
+        })
+        appToast(result.error, { variant: "error" })
+      }
+    } catch (error) {
       runInAction(() => {
-        this.workspaceBusy = false
+        this.workspace = previous
+      })
+      appToast(isErr(error) ? error.message : "Could not update the project.", {
+        variant: "error",
       })
     }
   }
 
-  pickDirectory(): Promise<void> {
-    return this.runWorkspace(() => bridge().pickDirectory())
-  }
-
-  selectRecent(cwd: string): Promise<void> {
-    return this.runWorkspace(() => bridge().setCwd(cwd))
-  }
-
-  newChat(): Promise<void> {
-    return this.runWorkspace(() => bridge().newSession())
+  newTask(): Promise<void> {
+    return this.runWorkspace(() => bridge().newSession(), { busy: false })
   }
 
   openSession(session: SessionSummary): Promise<void> {
-    return this.runWorkspace(() => bridge().openSession(session.path))
+    // Paint selection immediately so New task / other rows do not flash busy state.
+    runInAction(() => {
+      this.workspace = { ...this.workspace, sessionFile: session.path }
+    })
+    return this.runWorkspace(() => bridge().openSession(session.path), { busy: false })
   }
 
-  refreshWorkspace(): Promise<void> {
-    return this.runWorkspace(async () => ({
-      ok: true,
-      workspace: await bridge().getWorkspace(),
-    }))
+  archiveSession(session: SessionSummary): Promise<void> {
+    return this.runWorkspace(() => bridge().archiveSession(session.path), { busy: false })
+  }
+
+  removeProject(project: ProjectSummary): Promise<void> {
+    return this.runWorkspace(() => bridge().removeProject(project.path), { busy: false })
+  }
+
+  /** Apply a workspace snapshot without toggling the busy flag (e.g. after prompt). */
+  applyWorkspace(workspace: WorkspaceState | null | undefined): void {
+    if (!workspace) return
+    this.workspace = workspace
+  }
+
+  async prompt(text: string): Promise<void> {
+    const sessionFile = this.workspace.sessionFile
+    const cwd = this.workspace.cwd
+    if (sessionFile && cwd) {
+      const title = titleFromPrompt(text)
+      const entry: SessionSummary = {
+        id: sessionFile,
+        path: sessionFile,
+        title,
+        modifiedAt: Date.now(),
+        messageCount: 1,
+      }
+      runInAction(() => {
+        const projects = this.workspace.projects
+        const index = projects.findIndex((project) => project.path === cwd)
+        if (index < 0) {
+          this.workspace = {
+            ...this.workspace,
+            projects: [
+              {
+                path: cwd,
+                name: projectName(cwd),
+                collapsed: false,
+                sessions: [entry],
+              },
+              ...projects,
+            ],
+          }
+          return
+        }
+        const project = projects[index]!
+        const existing = project.sessions.find((session) => session.path === sessionFile)
+        const updated: SessionSummary = existing
+          ? {
+              ...existing,
+              title:
+                !existing.title.trim() || existing.title === "New chat" ? title : existing.title,
+              modifiedAt: Date.now(),
+              messageCount: Math.max(existing.messageCount, 1),
+            }
+          : entry
+        const without = project.sessions.filter((session) => session.path !== sessionFile)
+        const next = projects.slice()
+        next[index] = {
+          ...project,
+          collapsed: false,
+          sessions: [updated, ...without],
+        }
+        this.workspace = { ...this.workspace, projects: next }
+      })
+    }
+    try {
+      const workspace = await bridge().prompt(text)
+      runInAction(() => {
+        this.applyWorkspace(workspace)
+      })
+    } catch (error) {
+      appToast(isErr(error) ? error.message : "Could not send the message.", {
+        variant: "error",
+      })
+    }
   }
 }
 

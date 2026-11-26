@@ -95,8 +95,9 @@
 
   --popola-surface-base: #16181d;
   --popola-surface-raised: #1e2128;
-  --popola-surface-sunken: #101216;
-  --popola-surface-overlay: #22252d;
+  /* Lift vs base/raised so hover/selection reads as highlight, not a black hole. */
+  --popola-surface-sunken: #2a2e38;
+  --popola-surface-overlay: #2e323c;
 
   --popola-text-base: #e8e9ec;
   --popola-text-muted: #9aa0ab;

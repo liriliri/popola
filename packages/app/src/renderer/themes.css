@@ -1,6 +1,7 @@
 /*
  * Host theme variants on top of popola-ui's light/dark. Each block sets the
  * same token names so previews and the shell pick them up via data-popola-theme.
+ * Dark themes keep sunken lighter than raised so row hover/selection is a lift.
  */
 
 /* Claude — warm orange. */
@@ -9,8 +10,8 @@
 
   --popola-surface-base: #1f1f1e;
   --popola-surface-raised: #262523;
-  --popola-surface-sunken: #1a1918;
-  --popola-surface-overlay: #2f2d2b;
+  --popola-surface-sunken: #32302d;
+  --popola-surface-overlay: #3a3733;
 
   --popola-text-base: #fafafa;
   --popola-text-muted: #ada9a5;
@@ -36,8 +37,8 @@
 
   --popola-surface-base: #141414;
   --popola-surface-raised: #1c1c1c;
-  --popola-surface-sunken: #0f0f0f;
-  --popola-surface-overlay: #262626;
+  --popola-surface-sunken: #2a2a2a;
+  --popola-surface-overlay: #303030;
 
   --popola-text-base: #ececec;
   --popola-text-muted: #a0a0a0;
@@ -63,8 +64,8 @@
 
   --popola-surface-base: #0f1629;
   --popola-surface-raised: #161e35;
-  --popola-surface-sunken: #0a1020;
-  --popola-surface-overlay: #1e2842;
+  --popola-surface-sunken: #222c48;
+  --popola-surface-overlay: #283352;
 
   --popola-text-base: #eef2ff;
   --popola-text-muted: #9aa8c7;
@@ -90,8 +91,8 @@
 
   --popola-surface-base: #131314;
   --popola-surface-raised: #1b1b1d;
-  --popola-surface-sunken: #0e0e0f;
-  --popola-surface-overlay: #262629;
+  --popola-surface-sunken: #2a2a2e;
+  --popola-surface-overlay: #323236;
 
   --popola-text-base: #e8eaed;
   --popola-text-muted: #9aa0a6;
@@ -117,8 +118,8 @@
 
   --popola-surface-base: #212121;
   --popola-surface-raised: #2f2f2f;
-  --popola-surface-sunken: #1a1a1a;
-  --popola-surface-overlay: #3a3a3a;
+  --popola-surface-sunken: #3a3a3a;
+  --popola-surface-overlay: #444444;
 
   --popola-text-base: #ececec;
   --popola-text-muted: #b4b4b4;

@@ -40,7 +40,7 @@ packages/
     src/
       index.ts               public re-exports
       state.ts reducer.ts store.ts selectors.ts slots.ts classes.ts style.css
-      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/ settings/ sidebar/
+      <domain>/              shell/ conversation/ message/ composer/ permission/ markdown/ settings/ sidebar/ menu/
         index.ts             data shapes, selectors, slot/class contracts for that domain
         style.css           authored CSS, @imported by root style.css
   ui-react/    popola-ui-react React renderer (published)
@@ -49,7 +49,7 @@ packages/
   pi/          popola-pi      Pi → popola-protocol adapter (published)
     src/                     createPiSession, listPiSessions
   app/         popola-app     Electron test host (private)
-    src/main/                window, IPC, AgentHost
+    src/main/                window, IPC, AgentHost, WorkspaceStore
     src/preload.cjs          contextBridge exposing window.popola
     src/renderer/            settings, sidebar, bridge, store binding
     src/shared/types.ts      main/renderer wire contract
@@ -81,16 +81,18 @@ map, one class map.
   drive an agent.
 - **`popola-ui-react`** (`0.1.0`, MIT) — binds the core with
   `useSyncExternalStore`. Exports `.` + subpaths `./shell`, `./conversation`,
-  `./composer`, `./permission`, `./markdown`, `./settings`, `./sidebar`.
-  React/ReactDOM peers; `licia`, `lucide-react`, `markdown-it`, `popola-ui`
-  runtime deps. Hosts localize chrome copy via `PopolaProvider` `labels`
-  (types/defaults from `popola-ui`). `sideEffects: false`.
+  `./composer`, `./permission`, `./markdown`, `./settings`, `./sidebar`,
+  `./menu`. React/ReactDOM peers; `licia`, `lucide-react`, `markdown-it`,
+  `popola-ui` runtime deps. Hosts localize chrome copy via `PopolaProvider`
+  `labels` (types/defaults from `popola-ui`). `sideEffects: false`.
 - **`popola-pi`** (`0.1.0`, MIT) — Pi coding agent adapter: `createPiSession`
   implements `AgentSession`, plus `listPiSessions` for JSONL chats under
   `~/.pi/agent/sessions/`. Depends on `popola-protocol` and the `@earendil-works/pi-*`
-  packages.
+  packages. The test app does **not** drive its sidebar from `listPiSessions`.
 - **`popola-app`** (`0.0.0`, private) — Electron host wiring `popola-pi` to the
-  UI. See [packages/app/README.md](./packages/app/README.md).
+  UI. Owns the sidebar catalog in `~/.popola/workspace.json` (`projects` +
+  `sessions`); Pi JSONL is only the transcript handle. See
+  [packages/app/README.md](./packages/app/README.md).
 
 ## The agent contract
 

@@ -1,9 +1,10 @@
 import { readFile, writeFile } from "node:fs/promises"
+import path from "node:path"
 import { initialState, reduce, selectSnapshot } from "popola-ui"
 import type { AgentEvent, PermissionDecision, PopolaState } from "popola-ui"
 import isErr from "licia/isErr"
 import rtrim from "licia/rtrim"
-import { createPiSession, listPiSessions, type PiSession } from "popola-pi"
+import { createPiSession, type PiSession } from "popola-pi"
 import { WorkspaceStore } from "./workspaceStore"
 import type {
   HostEvent,
@@ -11,10 +12,11 @@ import type {
   ListModelsResult,
   ProviderAccount,
   ProviderConfig,
+  SessionSummary,
   WorkspaceResult,
   WorkspaceState,
 } from "../shared/types"
-import { activeProviderModel } from "../shared/types"
+import { activeProviderModel, projectName, titleFromPrompt } from "../shared/types"
 
 const NOTICE_ID = "host-notice"
 
@@ -56,12 +58,17 @@ export class AgentHost {
 
   async getWorkspace(): Promise<WorkspaceState> {
     const data = this.workspace.get()
-    const sessions = data.cwd ? await listPiSessions(data.cwd) : []
+    // Catalog projects stay visible even with an empty chat list. A folder is
+    // only added to `projects` once the first chat is created.
     return {
       cwd: data.cwd,
       sessionFile: data.sessionFile,
-      recent: data.recent,
-      sessions,
+      projects: data.projects.map((project) => ({
+        path: project.path,
+        name: projectName(project.path),
+        collapsed: project.collapsed,
+        sessions: this.workspace.sessionsFor(project.path).map(toSummary),
+      })),
     }
   }
 
@@ -129,59 +136,147 @@ export class AgentHost {
     return null
   }
 
-  async setCwd(cwd: string): Promise<WorkspaceResult> {
-    await this.workspace.setCwd(cwd)
+  /** Add a folder as a project and select it (PI Desktop “New project”). */
+  async addProject(cwd: string): Promise<WorkspaceResult> {
+    await this.workspace.addProject(cwd)
     this.closeSession()
     return { ok: true, workspace: await this.getWorkspace() }
   }
 
+  /** Select a project in the tree. Clears the open chat. */
+  async selectProject(cwd: string): Promise<WorkspaceResult> {
+    const normalized = path.resolve(cwd)
+    const data = this.workspace.get()
+    if (data.cwd === normalized) {
+      return { ok: true, workspace: await this.getWorkspace() }
+    }
+    await this.workspace.selectProject(normalized)
+    this.closeSession()
+    return { ok: true, workspace: await this.getWorkspace() }
+  }
+
+  async setProjectCollapsed(cwd: string, collapsed: boolean): Promise<WorkspaceResult> {
+    await this.workspace.setCollapsed(cwd, collapsed)
+    return { ok: true, workspace: await this.getWorkspace() }
+  }
+
+  /**
+   * Start a draft task under the selected project. The chat stays off the
+   * sidebar until the first prompt (`upsertSession` in `prompt`).
+   */
   async newSession(): Promise<WorkspaceResult> {
     const data = this.workspace.get()
-    if (!data.cwd) return { ok: false, error: "Pick a working directory first." }
+    if (!data.cwd) return { ok: false, error: "Add a project first." }
     if (!this.config) return { ok: false, error: "Save a provider before starting a chat." }
     try {
       await this.recreate({ cwd: data.cwd })
     } catch (error) {
       return { ok: false, error: errorText(error) }
     }
+    // Remember the live transcript path for selection, but do not catalog it yet.
     await this.workspace.setSession(this.session?.sessionFile ?? null)
+    await this.workspace.setCollapsed(data.cwd, false)
     return { ok: true, workspace: await this.getWorkspace() }
   }
 
   async openSession(sessionFile: string): Promise<WorkspaceResult> {
-    const data = this.workspace.get()
-    if (!data.cwd) return { ok: false, error: "Pick a working directory first." }
+    const stored = this.workspace.findSession(sessionFile)
+    const cwd = stored?.cwd ?? this.workspace.get().cwd
+    if (!cwd) return { ok: false, error: "Add a project first." }
     if (!this.config) return { ok: false, error: "Save a provider before opening a chat." }
     try {
-      await this.recreate({ cwd: data.cwd, sessionFile })
+      await this.workspace.activateProject(cwd)
+      await this.recreate({ cwd, sessionFile })
     } catch (error) {
       return { ok: false, error: errorText(error) }
     }
+    await this.workspace.upsertSession({
+      path: sessionFile,
+      cwd,
+      messageCount: countMessages(this.state),
+    })
     await this.workspace.setSession(sessionFile)
     return { ok: true, workspace: await this.getWorkspace() }
   }
 
-  async prompt(text: string): Promise<void> {
+  /**
+   * Drop a chat from the sidebar catalog (paseo-style archive): it disappears
+   * from the tree; the transcript file is left alone.
+   */
+  async archiveSession(sessionFile: string): Promise<WorkspaceResult> {
+    const removed = await this.workspace.deleteSession(sessionFile)
+    if (!removed) return { ok: false, error: "That chat is gone." }
+    if (this.session?.sessionFile === sessionFile) {
+      this.closeSession()
+    }
+    return { ok: true, workspace: await this.getWorkspace() }
+  }
+
+  /** Remove a project from the sidebar catalog (and its listed chats). */
+  async removeProject(cwd: string): Promise<WorkspaceResult> {
+    const trimmed = cwd.trim()
+    if (!trimmed) return { ok: false, error: "Pick a project." }
+    const normalized = path.resolve(trimmed)
+    const data = this.workspace.get()
+    const open = this.session?.sessionFile
+      ? this.workspace.findSession(this.session.sessionFile)
+      : null
+    const liveUnderProject =
+      this.session != null && (data.cwd === normalized || open?.cwd === normalized)
+    const removed = await this.workspace.removeProject(normalized)
+    if (!removed) return { ok: false, error: "That project is gone." }
+    if (liveUnderProject) this.closeSession()
+    return { ok: true, workspace: await this.getWorkspace() }
+  }
+
+  async prompt(text: string): Promise<WorkspaceState | null> {
     const trimmed = text.trim()
-    if (!trimmed) return
+    if (!trimmed) return null
     if (!this.config) {
       this.setNotice("No provider configured. Open Settings to add one.")
-      return
+      return null
     }
     if (!this.session) {
       this.setNotice(
         this.workspace.get().cwd
           ? "Start or open a chat in the sidebar."
-          : "Pick a working directory, then start a chat.",
+          : "Add a project, then start a chat.",
       )
-      return
+      return null
     }
     this.setNotice(null)
+
+    const sessionFile = this.session.sessionFile
+    const cwd = this.workspace.get().cwd
+    if (sessionFile && cwd) {
+      // First send (or a follow-up) is what creates / bumps the sidebar row.
+      await this.workspace.upsertSession({
+        path: sessionFile,
+        cwd,
+        title: titleFromPrompt(trimmed),
+        messageCount: countMessages(this.state) + 1,
+        touch: true,
+      })
+      await this.workspace.setCollapsed(cwd, false)
+    }
+
     try {
       await this.session.prompt(trimmed)
     } catch (error) {
       this.setNotice(errorText(error))
+      return sessionFile && cwd ? await this.getWorkspace() : null
     }
+
+    if (sessionFile && cwd) {
+      await this.workspace.upsertSession({
+        path: sessionFile,
+        cwd,
+        messageCount: countMessages(this.state),
+        touch: true,
+      })
+      return this.getWorkspace()
+    }
+    return null
   }
 
   abort(): void {
@@ -265,6 +360,26 @@ export class AgentHost {
 
 function errorText(error: unknown): string {
   return isErr(error) && error.message ? error.message : "The request failed."
+}
+
+function countMessages(state: PopolaState): number {
+  return state.messages.filter((message) => message.id !== NOTICE_ID).length
+}
+
+function toSummary(session: {
+  id: string
+  path: string
+  title: string
+  modifiedAt: number
+  messageCount: number
+}): SessionSummary {
+  return {
+    id: session.id,
+    path: session.path,
+    title: session.title,
+    modifiedAt: session.modifiedAt,
+    messageCount: session.messageCount,
+  }
 }
 
 function parseAccount(input: unknown): ProviderAccount | null {

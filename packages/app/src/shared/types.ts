@@ -71,21 +71,45 @@ export function activeProviderModel(config: ProviderConfig): ActiveProviderModel
   }
 }
 
-/** One Pi session under the current working directory. */
+/** One popola-managed chat under a project. */
 export type SessionSummary = {
   id: string
+  /** Provider transcript path (Pi JSONL); open handle only. */
   path: string
   title: string
   modifiedAt: number
   messageCount: number
 }
 
-/** Sidebar workspace: a cwd, its Pi chats, and a few recent directories. */
+/** One project row in the sidebar tree. */
+export type ProjectSummary = {
+  path: string
+  name: string
+  collapsed: boolean
+  sessions: SessionSummary[]
+}
+
+/** Sidebar title from the first line of a user prompt. */
+export function titleFromPrompt(text: string): string {
+  const line = text.trim().split(/\r?\n/, 1)[0] ?? ""
+  if (!line) return "New chat"
+  return line.length > 80 ? `${line.slice(0, 79)}…` : line
+}
+
+/** Display name for a project path (final path segment). */
+export function projectName(cwd: string): string {
+  const parts = cwd.replace(/\\/g, "/").split("/").filter(Boolean)
+  return parts[parts.length - 1] ?? cwd
+}
+
+/**
+ * Sidebar workspace: selected project (`cwd`), open chat, and the project tree
+ * (each project owns its sessions).
+ */
 export type WorkspaceState = {
   cwd: string | null
   sessionFile: string | null
-  recent: string[]
-  sessions: SessionSummary[]
+  projects: ProjectSummary[]
 }
 
 export type WorkspaceResult = { ok: true; workspace: WorkspaceState } | { ok: false; error: string }

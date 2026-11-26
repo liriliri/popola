@@ -54,16 +54,21 @@ export {
   SettingsProviderChooser,
   SettingsModelPanes,
   SettingsToggle,
-  SettingsContextMenu,
   PopolaDialog,
   SettingsServicePanel,
+  /** @deprecated Use `PopolaContextMenu`. */
+  SettingsContextMenu,
 } from "./settings/index"
 export type {
   SettingsRowProps,
   SettingsSelectOption,
   SettingsServiceRowData,
+  /** @deprecated Use `PopolaContextMenuItem`. */
   SettingsContextMenuItem,
 } from "./settings/index"
+
+export { PopolaContextMenu } from "./menu/index"
+export type { PopolaContextMenuItem } from "./menu/index"
 
 export {
   Sidebar,
