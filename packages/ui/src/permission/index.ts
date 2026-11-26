@@ -11,8 +11,13 @@ export const permissionClass = {
   permission: "popola-permission",
   permissionLayer: "popola-permission-layer",
   permissionTitle: "popola-permission__title",
+  permissionDetail: "popola-permission__detail",
   permissionResources: "popola-permission__resources",
+  permissionQuestion: "popola-permission__question",
   permissionActions: "popola-permission__actions",
+  permissionOption: "popola-permission__option",
+  permissionOptionPrimary: "popola-permission__option--primary",
+  permissionOptionLabel: "popola-permission__option-label",
 
   button: "popola-button",
   buttonPrimary: "popola-button--primary",

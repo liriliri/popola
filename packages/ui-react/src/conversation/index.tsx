@@ -23,7 +23,9 @@ export function PopolaConversation(props: { slots?: PopolaSlots; className?: str
               name="conversation.empty"
               slotProps={{}}
               local={props.slots}
-              fallback={<div className={popolaClass.conversationEmpty}>{labels.conversationEmpty}</div>}
+              fallback={
+                <h1 className={popolaClass.conversationEmpty}>{labels.conversationEmpty}</h1>
+              }
             />
           ) : (
             messages.map((message, index) => (

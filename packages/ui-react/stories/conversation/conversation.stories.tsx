@@ -13,7 +13,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** Nothing has been said. */
+/** New task — welcome prompt before the first message. */
 export const Empty: Story = {
   render: () => (
     <Stage>

@@ -7,6 +7,7 @@ export type PopolaLabels = {
   readonly permissionAllowOnce: string
   readonly permissionAlwaysAllow: string
   readonly permissionReject: string
+  readonly permissionQuestion: string
   readonly toolCallRequest: string
   readonly toolCallResult: string
   readonly settingsNav: string
@@ -20,10 +21,11 @@ export const DEFAULT_POPOLA_LABELS: PopolaLabels = {
   composerPlaceholder: "Ask anything",
   composerSend: "Send",
   composerStop: "Stop",
-  conversationEmpty: "No messages yet.",
+  conversationEmpty: "What can I help you build?",
   permissionAllowOnce: "Allow once",
   permissionAlwaysAllow: "Always allow",
   permissionReject: "Reject",
+  permissionQuestion: "How would you like to proceed?",
   toolCallRequest: "Request",
   toolCallResult: "Result",
   settingsNav: "Settings",

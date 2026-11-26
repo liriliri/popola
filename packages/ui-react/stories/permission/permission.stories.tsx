@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { createStore } from "popola-ui"
-import { PopolaConversation, PopolaPermissions } from "popola-ui-react"
+import { PopolaComposer, PopolaConversation, PopolaPermissions } from "popola-ui-react"
 import { message, textPart } from "../mock"
 import { Stage } from "../stage"
 
@@ -36,6 +36,7 @@ export const Asking: Story = {
     >
       <PopolaConversation />
       <PopolaPermissions />
+      <PopolaComposer />
     </Stage>
   ),
 }

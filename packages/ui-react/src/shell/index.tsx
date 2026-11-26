@@ -47,8 +47,8 @@ export function PopolaShell(props: {
           {props.children ?? (
             <>
               <PopolaConversation slots={props.slots} />
-              <PopolaComposer slots={props.slots} />
               <PopolaPermissions slots={props.slots} />
+              <PopolaComposer slots={props.slots} />
             </>
           )}
         </div>

@@ -136,7 +136,7 @@ export class AgentHost {
     return null
   }
 
-  /** Add a folder as a project and select it (PI Desktop “New project”). */
+  /** Add a folder as a project and select it. */
   async addProject(cwd: string): Promise<WorkspaceResult> {
     await this.workspace.addProject(cwd)
     this.closeSession()
@@ -200,8 +200,8 @@ export class AgentHost {
   }
 
   /**
-   * Drop a chat from the sidebar catalog (paseo-style archive): it disappears
-   * from the tree; the transcript file is left alone.
+   * Drop a chat from the sidebar catalog: it disappears from the tree; the
+   * transcript file is left alone.
    */
   async archiveSession(sessionFile: string): Promise<WorkspaceResult> {
     const removed = await this.workspace.deleteSession(sessionFile)

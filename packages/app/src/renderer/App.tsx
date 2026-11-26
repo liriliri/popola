@@ -16,7 +16,7 @@ import { ComposerModelToolbar } from "./ComposerModelToolbar"
 import { I18nProvider } from "./i18n"
 import { SettingsPage } from "./SettingsPage"
 import { Sidebar } from "./Sidebar"
-import { TitlebarChrome } from "./TitlebarChrome"
+import { ConversationTopbar } from "./ConversationTopbar"
 import { bindAppToast } from "./toastBus"
 import { appStore } from "./stores"
 
@@ -41,7 +41,7 @@ export function App() {
 
 const AppShell = observer(function AppShell() {
   const { t } = useTranslation()
-  const { screen, provider, saving, theme, popola } = appStore
+  const { screen, provider, saving, theme, popola, activeProject, sidebarCollapsed } = appStore
 
   const onToastReady = useCallback((api: ToastApi | null) => {
     bindAppToast(api ? api.show.bind(api) : null)
@@ -52,12 +52,15 @@ const AppShell = observer(function AppShell() {
       composerPlaceholder: t("ui.composerPlaceholder"),
       composerSend: t("ui.composerSend"),
       composerStop: t("ui.composerStop"),
-      conversationEmpty: provider
-        ? t("ui.conversationEmpty")
-        : t("ui.conversationNoProvider"),
+      conversationEmpty: !provider
+        ? t("ui.conversationNoProvider")
+        : activeProject
+          ? t("ui.conversationEmptyInProject", { project: activeProject.name })
+          : t("ui.conversationEmpty"),
       permissionAllowOnce: t("ui.permissionAllowOnce"),
       permissionAlwaysAllow: t("ui.permissionAlwaysAllow"),
       permissionReject: t("ui.permissionReject"),
+      permissionQuestion: t("ui.permissionQuestion"),
       toolCallRequest: t("ui.toolCallRequest"),
       toolCallResult: t("ui.toolCallResult"),
       settingsNav: t("ui.settingsNav"),
@@ -66,7 +69,7 @@ const AppShell = observer(function AppShell() {
       composerSearchModels: t("ui.composerSearchModels"),
       composerNoModels: t("ui.composerNoModels"),
     }),
-    [provider, t],
+    [activeProject, provider, t],
   )
 
   useEffect(() => {
@@ -77,12 +80,12 @@ const AppShell = observer(function AppShell() {
   const slots = useMemo(
     () => ({
       "shell.header": () => null,
-      "shell.main.leading": () => <TitlebarChrome />,
-      // Module-stable components — a fresh type would remount and reset scroll / menu.
-      "shell.sidebar": screen === "chat" ? Sidebar : undefined,
+      // Stable component refs — a fresh arrow would remount on every collapse toggle.
+      "shell.main.leading": ConversationTopbar,
+      "shell.sidebar": screen === "chat" && !sidebarCollapsed ? Sidebar : undefined,
       "composer.toolbar": screen === "chat" ? ComposerModelToolbar : undefined,
     }),
-    [screen],
+    [screen, sidebarCollapsed],
   )
 
   return (

@@ -11,14 +11,17 @@
 }
 
 /*
- * Full-width scroll viewport so the scrollbar sits on the pane's right edge
- * (paseo). Message column is centered inside via __column.
+ * Full-width scroll viewport so the scrollbar sits on the pane's right edge.
+ * Message column is centered inside via __column.
  */
 .popola-conversation__scroll {
   flex: 1;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
+  /* Keep the content axis stable when the scrollbar appears/disappears —
+     avoids jump when switching chats. */
+  scrollbar-gutter: stable;
   overscroll-behavior-y: contain;
 }
 
@@ -35,7 +38,11 @@
 
 .popola-conversation__empty {
   margin: auto;
-  color: var(--popola-text-faint);
+  max-width: 42rem;
+  color: var(--popola-text-base);
   text-align: center;
-  font-size: var(--popola-text-size-md);
+  font-size: 24px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }

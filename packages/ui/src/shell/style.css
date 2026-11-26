@@ -19,11 +19,11 @@
 }
 
 /*
- * Quiet scrollbars (PI-Desktop tone): thin, trackless, no gutter chrome.
- * Thumb stays faintly painted so overlay/macOS auto-hide does not make the
- * pane look unscrolled; it deepens on thumb hover. Chromium ignores
- * `::-webkit-scrollbar` when the same element also sets `scrollbar-width` /
- * `scrollbar-color`, so those standard properties stay off.
+ * Quiet scrollbars: thin, trackless, no gutter chrome. Thumb stays faintly
+ * painted so overlay/macOS auto-hide does not make the pane look unscrolled;
+ * it deepens on thumb hover. Chromium ignores `::-webkit-scrollbar` when the
+ * same element also sets `scrollbar-width` / `scrollbar-color`, so those
+ * standard properties stay off.
  */
 .popola-shell ::-webkit-scrollbar,
 .popola-settings-layout ::-webkit-scrollbar {
@@ -80,7 +80,7 @@
   min-height: 0;
   min-width: 0;
   /* Conversation owns scrolling so its scrollbar can sit on the pane edge;
-     composer / permissions stay pinned below. */
+     permissions / composer stay pinned below. */
   overflow: hidden;
 }
 

@@ -1,5 +1,6 @@
 import { popolaClass, selectPermissions, type PermissionDecision, type PermissionRequest } from "popola-ui"
 import className from "licia/className"
+import { Check, X } from "lucide-react"
 import { usePopola } from "../context"
 import { usePopolaState } from "../usePopolaState"
 import { Slot } from "../slot"
@@ -27,33 +28,52 @@ export function PopolaPermissions(props: { slots?: PopolaSlots; className?: stri
   )
 }
 
+type PermissionAction = {
+  decision: PermissionDecision
+  label: string
+  primary?: boolean
+}
+
 export function DefaultPermission(props: {
   requests: PermissionRequest[]
   onReply: (id: string, decision: PermissionDecision) => void
 }) {
   const { labels } = usePopola()
+  const actions: PermissionAction[] = [
+    { decision: "reject", label: labels.permissionReject },
+    { decision: "once", label: labels.permissionAllowOnce, primary: true },
+    { decision: "always", label: labels.permissionAlwaysAllow },
+  ]
+
   return (
     <div className={popolaClass.permissionLayer}>
       {props.requests.map((request) => (
         <div key={request.id} className={popolaClass.permission}>
           <div className={popolaClass.permissionTitle}>{request.title}</div>
-          <div className={popolaClass.permissionResources}>{request.resources.join("\n")}</div>
+          {request.detail ? (
+            <div className={popolaClass.permissionDetail}>{request.detail}</div>
+          ) : null}
+          {request.resources.length > 0 ? (
+            <pre className={popolaClass.permissionResources}>{request.resources.join("\n")}</pre>
+          ) : null}
+          <div className={popolaClass.permissionQuestion}>{labels.permissionQuestion}</div>
           <div className={popolaClass.permissionActions}>
-            <button
-              className={className(popolaClass.button, popolaClass.buttonPrimary)}
-              onClick={() => props.onReply(request.id, "once")}
-            >
-              {labels.permissionAllowOnce}
-            </button>
-            <button className={popolaClass.button} onClick={() => props.onReply(request.id, "always")}>
-              {labels.permissionAlwaysAllow}
-            </button>
-            <button
-              className={className(popolaClass.button, popolaClass.buttonGhost)}
-              onClick={() => props.onReply(request.id, "reject")}
-            >
-              {labels.permissionReject}
-            </button>
+            {actions.map((action) => {
+              const Icon = action.decision === "reject" ? X : Check
+              return (
+                <button
+                  key={action.decision}
+                  type="button"
+                  className={className(popolaClass.permissionOption, {
+                    [popolaClass.permissionOptionPrimary]: action.primary,
+                  })}
+                  onClick={() => props.onReply(request.id, action.decision)}
+                >
+                  <Icon size={14} strokeWidth={2} aria-hidden />
+                  <span className={popolaClass.permissionOptionLabel}>{action.label}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
       ))}

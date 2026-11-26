@@ -8,8 +8,8 @@ import { resolvePopolaHome } from "./popolaHome"
 const here = path.dirname(fileURLToPath(import.meta.url))
 const dev = process.env.POPOLA_DEV === "1"
 
-/** Matches paseo's `MAC_TRAFFIC_LIGHT_POSITION`. */
-const MAC_TRAFFIC_LIGHT_POSITION = { x: 16, y: 14 } as const
+/** Vertically centers traffic lights in the 44px toolbar band. */
+const MAC_TRAFFIC_LIGHT_POSITION = { x: 16, y: 15 } as const
 
 /** macOS keeps traffic lights overlaid; Windows/Linux go frameless. */
 function getMainWindowChromeOptions(): Pick<
@@ -29,10 +29,15 @@ function getMainWindowChromeOptions(): Pick<
   }
 }
 
+const WINDOW_MIN_WIDTH = 800
+const WINDOW_MIN_HEIGHT = 560
+
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1100,
     height: 800,
+    minWidth: WINDOW_MIN_WIDTH,
+    minHeight: WINDOW_MIN_HEIGHT,
     show: false,
     title: "popola",
     ...getMainWindowChromeOptions(),

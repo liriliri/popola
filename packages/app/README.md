@@ -20,7 +20,7 @@ App data lives under `~/.popola` (override with `POPOLA_HOME`):
 `provider.json` and `workspace.json` (mode `0600`). Without a provider the chat
 shell still opens and points you to **Settings** to add an OpenAI-compatible
 endpoint (`provider`, `baseUrl`, `apiKey`, `model`). The sidebar is a project
-tree (PI Desktop–style): **Add project** picks a folder, **New task** creates a
+tree: **Add project** picks a folder, **New task** creates a
 chat under the selected project. The catalog is owned by popola
 (`workspace.json` → `projects` + `sessions`); Pi JSONL under
 `~/.pi/agent/sessions/` is only the transcript persistence handle.

@@ -29,7 +29,7 @@ const GAP = 6
 
 /**
  * Chip + menu for picking a provider account and model, patterned after
- * PI-Desktop's composer model menu. Hosts pass configured groups; selection
+ * Composer model menu. Hosts pass configured groups; selection
  * is reported up and never stored here.
  */
 export function ComposerModelPicker(props: {

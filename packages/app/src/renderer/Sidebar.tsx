@@ -1,6 +1,6 @@
 import { useRef, useState, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent } from "react"
 import { observer } from "mobx-react-lite"
-import { Archive, ChevronDown, Folder, FolderMinus, FolderPlus, Settings } from "lucide-react"
+import { Archive, ChevronDown, Folder, FolderMinus, FolderPlus, PanelLeft, Settings } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import {
   PopolaContextMenu,
@@ -15,11 +15,11 @@ import {
   type PopolaContextMenuItem,
 } from "popola-ui-react"
 import type { ProjectSummary, SessionSummary } from "../shared/types"
-import { TitlebarChrome } from "./TitlebarChrome"
+import { TitlebarResizer } from "./TitlebarChrome"
 import { SIDEBAR_WIDTH_MAX, SIDEBAR_WIDTH_MIN } from "./sidebarWidth"
 import { appStore } from "./stores"
 
-/** Compact relative time in the trailing slot (paseo-style). */
+/** Compact relative time in the trailing slot. */
 function formatCompactTime(ms: number, nowLabel: string): string {
   if (!ms) return ""
   const diff = Date.now() - ms
@@ -109,7 +109,19 @@ export const Sidebar = observer(function Sidebar() {
 
   return (
     <SidebarFrame className="app-sidebar">
-      <TitlebarChrome />
+      <div className="app-sidebar__header">
+        <TitlebarResizer />
+        <button
+          type="button"
+          className="app-chrome-icon-btn"
+          title={t("sidebar.collapse")}
+          aria-label={t("sidebar.collapse")}
+          aria-expanded={true}
+          onClick={() => appStore.toggleSidebar()}
+        >
+          <PanelLeft size={15} strokeWidth={1.75} aria-hidden />
+        </button>
+      </div>
       <div
         className="app-sidebar__resize"
         role="separator"

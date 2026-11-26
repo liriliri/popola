@@ -15,7 +15,9 @@ import { bridge } from "../bridge"
 import {
   applySidebarWidth,
   clampSidebarWidth,
+  readSidebarCollapsed,
   readSidebarWidth,
+  writeSidebarCollapsed,
   writeSidebarWidth,
 } from "../sidebarWidth"
 import { appToast } from "../toastBus"
@@ -38,6 +40,7 @@ export class AppStore {
   workspaceBusy = false
   sidebarWidth = readSidebarWidth()
   sidebarResizing = false
+  sidebarCollapsed = readSidebarCollapsed()
 
   /** Framework-agnostic conversation store; not an observable field. */
   readonly popola: PopolaStore
@@ -50,6 +53,18 @@ export class AppStore {
     this.popola = popola
     makeAutoObservable(this, { popola: false }, { autoBind: true })
     applySidebarWidth(this.sidebarWidth)
+  }
+
+  toggleSidebar(): void {
+    this.sidebarCollapsed = !this.sidebarCollapsed
+    writeSidebarCollapsed(this.sidebarCollapsed)
+  }
+
+  /** Selected project row, if `workspace.cwd` is set. */
+  get activeProject(): ProjectSummary | null {
+    const cwd = this.workspace.cwd
+    if (!cwd) return null
+    return this.workspace.projects.find((project) => project.path === cwd) ?? null
   }
 
   get canChat(): boolean {
@@ -233,7 +248,7 @@ export class AppStore {
     return this.runWorkspace(() => bridge().addProject())
   }
 
-  /** Select the project if needed, then toggle its collapsed state (PI Desktop). */
+  /** Select the project if needed, then toggle its collapsed state. */
   async activateProject(project: ProjectSummary): Promise<void> {
     const active = this.workspace.cwd === project.path
     if (!active) {

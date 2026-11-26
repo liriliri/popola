@@ -49,7 +49,7 @@ function Demo() {
 
       <SidebarSection title="Recent">
         <SidebarList>
-          <SidebarItem title="paseo" meta="/Users/surunzi/code/paseo" onPress={() => {}} />
+          <SidebarItem title="popola" meta="/Users/surunzi/code/popola" onPress={() => {}} />
           <SidebarItem title="licia" meta="/Users/surunzi/code/licia" onPress={() => {}} />
         </SidebarList>
       </SidebarSection>
